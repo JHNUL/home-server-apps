@@ -1,4 +1,4 @@
-package org.juhanir.message_server.websockets;
+package org.juhanir.message_server.websocket;
 
 import io.quarkus.websockets.next.OnClose;
 import io.quarkus.websockets.next.OnOpen;

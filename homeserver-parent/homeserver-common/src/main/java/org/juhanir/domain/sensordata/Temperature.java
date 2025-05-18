@@ -3,6 +3,7 @@ package org.juhanir.domain.sensordata;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import org.juhanir.domain.BaseEntity;
 
 import java.math.BigDecimal;
@@ -15,6 +16,7 @@ public class Temperature extends BaseEntity {
     private TemperatureUnit unit;
 
     @NotNull
+    @Positive
     private BigDecimal value;
 
     @NotNull

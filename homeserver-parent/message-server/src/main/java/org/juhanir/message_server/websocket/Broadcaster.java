@@ -1,4 +1,4 @@
-package org.juhanir.message_server.websockets;
+package org.juhanir.message_server.websocket;
 
 import io.quarkus.vertx.ConsumeEvent;
 import io.quarkus.websockets.next.OpenConnections;

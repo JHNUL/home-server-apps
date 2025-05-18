@@ -36,6 +36,11 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-reactive-pg-client</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.juhanir</groupId>
+            <artifactId>homeserver-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!-- TEST DEPENDENCIES-->
         <dependency>
