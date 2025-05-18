@@ -23,6 +23,7 @@
 
     <modules>
         <module>message-server</module>
+        <module>homeserver-common</module>
     </modules>
 
     <dependencyManagement>
