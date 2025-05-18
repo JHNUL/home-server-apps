@@ -4,6 +4,11 @@ This project implements MQTT that listens to certain topics, saves messages to t
 
 ## Running the application in dev mode
 
+Start the environment with docker compose at the root of the project
+```shell
+docker compose -f docker/docker-compose.yml up -d
+```
+
 You can run your application in dev mode that enables live coding using:
 
 ```shell
