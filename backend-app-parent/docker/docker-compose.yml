@@ -1,0 +1,35 @@
+services:
+  database:
+    image: postgres:17
+    container_name: homeserver_db
+    ports:
+      - "54322:5432"
+    environment:
+      POSTGRES_DB: homeserver
+      POSTGRES_PASSWORD: verysecretpassword
+      POSTGRES_USER: verysecretuser
+    volumes:
+      - homeserver-db-data:/var/lib/postgresql/data
+    networks:
+      - homeserver-network
+
+  mqtt_broker:
+    image: eclipse-mosquitto:2.0.21
+    container_name: homeserver_broker
+    ports:
+      - "1883:1883"
+    user: "1000" # preserves ownership of the file
+    volumes:
+      - homeserver-broker-data:/mosquitto/data
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+    networks:
+      - homeserver-network
+
+
+volumes:
+  homeserver-db-data:
+  homeserver-broker-data:
+
+networks:
+  homeserver-network:
+    driver: bridge
