@@ -7,7 +7,9 @@ import io.quarkus.websockets.next.WebSocketConnection;
 import jakarta.inject.Inject;
 import org.jboss.logging.Logger;
 
-@WebSocket(path = "/messages/{user}")
+import static org.juhanir.message_server.Constants.MESSAGE_ENDPOINT_ID;
+
+@WebSocket(path = "/messages/{user}", endpointId = MESSAGE_ENDPOINT_ID)
 public class MessageSocket {
 
     private static final Logger LOG = Logger.getLogger(MessageSocket.class);

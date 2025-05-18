@@ -6,6 +6,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.jboss.logging.Logger;
 
+import static org.juhanir.message_server.Constants.MESSAGE_ENDPOINT_ID;
+
 @ApplicationScoped
 public class Broadcaster {
 
@@ -19,16 +21,18 @@ public class Broadcaster {
 
     @ConsumeEvent("message")
     public void broadcast(String message) {
-        LOG.info("Got message via event bus %s".formatted(message));
-        openConnections.forEach(conn -> {
-            conn
-                    .broadcast()
-                    .sendText(message)
-                    .subscribe()
-                    .with(
-                            result -> LOG.info("Successfully sent message"),
-                            failure -> LOG.error("Failed to send message")
-                    );
-        });
+        LOG.info("Broadcasting message to 'Messages' clients %s".formatted(message));
+        openConnections
+                .findByEndpointId(MESSAGE_ENDPOINT_ID)
+                .forEach(conn -> {
+                    conn
+                            .broadcast()
+                            .sendText(message)
+                            .subscribe()
+                            .with(
+                                    result -> LOG.info("Successfully sent message"),
+                                    failure -> LOG.error("Failed to send message")
+                            );
+                });
     }
 }
