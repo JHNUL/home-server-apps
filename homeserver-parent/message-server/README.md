@@ -8,6 +8,16 @@ Start the environment with docker compose at the root of the project
 ```shell
 docker compose -f docker/docker-compose.yml up -d
 ```
+Which exposes the following services:
+- Postgres database
+- mosquitto MQTT-broker
+
+Check the port numbers and credentials from the docker compose file.
+
+To shut it down cleanly, run
+```shell
+docker compose down --remove-orphans -v
+```
 
 You can run your application in dev mode that enables live coding using:
 
