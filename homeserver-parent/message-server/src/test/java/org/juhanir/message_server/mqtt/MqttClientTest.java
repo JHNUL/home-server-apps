@@ -6,9 +6,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.vertx.mutiny.core.Vertx;
 import io.vertx.mutiny.core.buffer.Buffer;
 import io.vertx.mutiny.mqtt.MqttClient;
-import jakarta.inject.Inject;
 import org.juhanir.message_server.MessageServerTestResource;
-import org.juhanir.message_server.repository.TemperatureRepository;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,9 +20,6 @@ import org.junit.jupiter.api.Test;
 public class MqttClientTest {
 
     private static MqttClient client;
-
-    @Inject
-    TemperatureRepository repository;
 
     @BeforeEach
     void setUp() {
