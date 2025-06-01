@@ -35,12 +35,8 @@ public class MqttClient {
         temp.setTimestamp(null);
         temp.setUnit(TemperatureUnit.CELSIUS);
         temp.setValue(new BigDecimal("-18.3"));
-        return Panache.withTransaction(() -> repository
-                .persist(temp)
-                .onFailure()
-                .invoke(throwable -> {
-                    LOG.error("ERRRRROR", throwable);
-                })
-                .replaceWithVoid());
+        return Panache.withTransaction(() -> repository.persist(temp))
+                .onFailure().invoke(t -> LOG.error("Could not persist temperature %s".formatted(temp), t))
+                .onFailure().recoverWithNull().replaceWithVoid();
     }
 }
