@@ -20,7 +20,7 @@ public class MessageServerTestResource implements QuarkusTestResourceLifecycleMa
                         .forLogMessage(".*database system is ready to accept connections.*\\n", 1)
                 )
                 .withExposedService("broker-1", 1899, Wait
-                        .forLogMessage(".*mosquitto version 2.0.21 running.*\\n", 1)
+                        .forLogMessage(".*mosquitto version [0-9]{0,1}\\.[0-9]{0,1}\\.[0-9]{0,3} running.*\\n", 1)
                 )
                 .withBuild(false);
 
