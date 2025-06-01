@@ -5,13 +5,12 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.juhanir.message_server.rest.dto.TemperatureResponse;
-
-import java.util.List;
 
 @Path("temperatures")
 public interface TemperatureApi {
@@ -28,6 +27,6 @@ public interface TemperatureApi {
                     schema = @Schema(implementation = TemperatureResponse.class)
             )
     )
-    Uni<List<TemperatureResponse>> getTemperatures();
+    Uni<Response> getTemperatures();
 
 }

@@ -11,6 +11,9 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+
 
 @QuarkusTest
 @QuarkusTestResource(
@@ -37,5 +40,17 @@ public class MqttClientTest {
     @Test
     void canSendMessageToTopic() {
         client.publishAndAwait("message", Buffer.buffer("Fooooo"), MqttQoS.EXACTLY_ONCE, false, false);
+    }
+
+    @Test
+    void sentMessageCanBeFetchedViaRestApi() {
+        client.publishAndAwait("message", Buffer.buffer("Fooooo"), MqttQoS.EXACTLY_ONCE, false, false);
+        given()
+                .get("/temperatures")
+                .then()
+                .statusCode(200)
+                .and()
+                .log().body()
+                .body("size()", greaterThanOrEqualTo(1));
     }
 }
