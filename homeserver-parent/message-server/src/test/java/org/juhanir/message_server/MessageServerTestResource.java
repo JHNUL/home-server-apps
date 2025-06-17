@@ -13,9 +13,7 @@ public class MessageServerTestResource implements QuarkusTestResourceLifecycleMa
 
     @Override
     public Map<String, String> start() {
-        containers = new ComposeContainer(
-                new File("src/test/resources/docker-compose-test.yml")
-        )
+        containers = new ComposeContainer(new File("src/test/resources/docker-compose-test.yml"))
                 .withExposedService("db-1", 54333, Wait
                         .forLogMessage(".*database system is ready to accept connections.*\\n", 1)
                 )
