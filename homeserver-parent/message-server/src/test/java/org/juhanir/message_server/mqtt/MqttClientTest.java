@@ -23,6 +23,7 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 public class MqttClientTest {
 
     private static MqttClient client;
+    private static final String TOPIC = "shellyid-123123/events/rpc";
 
     @BeforeEach
     void setUp() {
@@ -39,12 +40,12 @@ public class MqttClientTest {
 
     @Test
     void canSendMessageToTopic() {
-        client.publishAndAwait("message", Buffer.buffer("Fooooo"), MqttQoS.EXACTLY_ONCE, false, false);
+        client.publishAndAwait(TOPIC, Buffer.buffer("Fooooo"), MqttQoS.EXACTLY_ONCE, false, false);
     }
 
     @Test
     void sentMessageCanBeFetchedViaRestApi() {
-        client.publishAndAwait("message", Buffer.buffer("Fooooo"), MqttQoS.EXACTLY_ONCE, false, false);
+        client.publishAndAwait(TOPIC, Buffer.buffer("Fooooo"), MqttQoS.EXACTLY_ONCE, false, false);
         given()
                 .get("/temperatures")
                 .then()

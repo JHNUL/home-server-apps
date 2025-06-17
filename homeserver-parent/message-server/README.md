@@ -1,8 +1,14 @@
-# message-server
+# Message-Server
 
 This project implements MQTT that listens to certain topics, saves messages to the database and publishes the messages via WebSocket to subscribed clients.
 
-## Running the application in dev mode
+## Prerequisites
+
+- JDK 17+
+- Maven 3.9.x
+- Docker and docker-compose
+
+## Developing
 
 Start the environment with docker compose at the root of the project
 ```shell
@@ -16,7 +22,7 @@ Check the port numbers and credentials from the docker compose file.
 
 To shut it down cleanly, run
 ```shell
-docker compose down --remove-orphans -v
+docker compose -f docker/docker-compose.yml down --remove-orphans -v
 ```
 
 You can run your application in dev mode that enables live coding using:
@@ -27,7 +33,7 @@ mvn quarkus:dev
 
 > **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
 
-## Packaging and running the application
+## Packaging the application
 
 The application can be packaged using:
 
@@ -48,10 +54,14 @@ mvn package -Dquarkus.package.jar.type=uber-jar
 
 The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
 
-## Creating a native executable
+### Native executable
 
 You can create a native executable using:
 
 ```shell
 mvn package -Dnative
 ```
+
+## MQTT topics
+
+The application supports the following topics:

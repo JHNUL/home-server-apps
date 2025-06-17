@@ -2,6 +2,7 @@ package org.juhanir.message_server.mqtt;
 
 import io.quarkus.hibernate.reactive.panache.Panache;
 import io.smallrye.mutiny.Uni;
+import io.smallrye.reactive.messaging.mqtt.MqttMessageMetadata;
 import io.vertx.mutiny.core.eventbus.EventBus;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -27,9 +28,18 @@ public class MqttClient {
         this.repository = repository;
     }
 
-    @Incoming("message")
+    private String getDeviceIdFromTopic(Message<String> msg) {
+        String topic = msg
+                .getMetadata(MqttMessageMetadata.class)
+                .map(MqttMessageMetadata::getTopic)
+                .orElse("unknown sender");
+        return topic.split("/")[0];
+    }
+
+    @Incoming("shelly-events")
     public Uni<Void> process(Message<String> msg) {
-        LOG.info("Got incoming MQTT message: %s".formatted(msg.getPayload()));
+        String deviceId = getDeviceIdFromTopic(msg);
+        LOG.info("Got incoming MQTT message from %s: %s".formatted(deviceId, msg.getPayload()));
         bus.send("message", msg.getPayload());
         Temperature temp = new Temperature();
         temp.setTimestamp(null);
