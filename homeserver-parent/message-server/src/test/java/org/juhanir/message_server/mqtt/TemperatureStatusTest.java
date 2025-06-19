@@ -20,10 +20,10 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
         value = MessageServerTestResource.class,
         restrictToAnnotatedClass = true
 )
-public class MqttClientTest {
+public class TemperatureStatusTest {
 
     private static MqttClient client;
-    private static final String TOPIC = "shellyid-123123/events/rpc";
+    private static final String TOPIC = "shellyid-123123/status/temperature:0";
 
     @BeforeEach
     void setUp() {
@@ -39,13 +39,25 @@ public class MqttClientTest {
     }
 
     @Test
-    void canSendMessageToTopic() {
-        client.publishAndAwait(TOPIC, Buffer.buffer("Fooooo"), MqttQoS.EXACTLY_ONCE, false, false);
+    void canSendTemperatureStatusMessageToTopic() {
+        String message = """
+                {
+                  "id": 0,
+                  "tC": 19.6,
+                  "tF": 67.3
+                }""";
+        client.publishAndAwait(TOPIC, Buffer.buffer(message), MqttQoS.EXACTLY_ONCE, false, false);
     }
 
     @Test
-    void sentMessageCanBeFetchedViaRestApi() {
-        client.publishAndAwait(TOPIC, Buffer.buffer("Fooooo"), MqttQoS.EXACTLY_ONCE, false, false);
+    void sentTemperatureStatusMessageCanBeFetchedViaRestApi() {
+        String message = """
+                {
+                  "id": 0,
+                  "tC": 19.6,
+                  "tF": 67.3
+                }""";
+        client.publishAndAwait(TOPIC, Buffer.buffer(message), MqttQoS.EXACTLY_ONCE, false, false);
         given()
                 .get("/temperatures")
                 .then()

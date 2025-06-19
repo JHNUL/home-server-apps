@@ -25,6 +25,22 @@ services:
     networks:
       - homeserver-network
 
+  liquibase:
+    image: liquibase/liquibase:4.32
+    container_name: homeserver_liquibase
+    depends_on:
+      - database
+    volumes:
+      - ../liquibase/changelog:/liquibase/changelog
+    environment:
+      - LIQUIBASE_COMMAND_URL=jdbc:postgresql://database:5432/homeserver
+      - LIQUIBASE_COMMAND_USERNAME=verysecretuser
+      - LIQUIBASE_COMMAND_PASSWORD=verysecretpassword
+      - LIQUIBASE_CLASSPATH=/liquibase/changelog
+    command: >
+      bash -c "sleep 15 && liquibase --changeLogFile=db.changelog.xml update"
+    networks:
+      - homeserver-network
 
 volumes:
   homeserver-db-data:
