@@ -32,13 +32,14 @@ services:
       - database
     volumes:
       - ../liquibase/changelog:/liquibase/changelog
+      - ./wait-for-db.sh:/wait-for-db.sh
     environment:
       - LIQUIBASE_COMMAND_URL=jdbc:postgresql://database:5432/homeserver
       - LIQUIBASE_COMMAND_USERNAME=verysecretuser
       - LIQUIBASE_COMMAND_PASSWORD=verysecretpassword
       - LIQUIBASE_CLASSPATH=/liquibase/changelog
     command: >
-      bash -c "sleep 15 && liquibase --changeLogFile=db.changelog.xml update"
+      bash -c "/wait-for-db.sh && liquibase --changeLogFile=db.changelog.xml update"
     networks:
       - homeserver-network
 
