@@ -3,10 +3,11 @@
 MAX_RETRIES=15
 RETRY_DELAY=1
 COUNT=0
+DATABASE_NAME=$(basename "$LIQUIBASE_COMMAND_URL")
 
 echo "Checking TimescaleDB availability..."
 
-while ! PGUSER="$LIQUIBASE_COMMAND_USERNAME" PGPASSWORD="$LIQUIBASE_COMMAND_PASSWORD" psql -h database -d homeserver -w -c '\q' 2>/dev/null; do
+while ! PGUSER="$LIQUIBASE_COMMAND_USERNAME" PGPASSWORD="$LIQUIBASE_COMMAND_PASSWORD" psql -h database -d "$DATABASE_NAME" -w -c '\q' 2>/dev/null; do
   COUNT=$((COUNT+1))
   echo "Attempt $COUNT/$MAX_RETRIES: TimescaleDB not ready yet..."
 
