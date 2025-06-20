@@ -31,7 +31,7 @@ services:
     depends_on:
       - database
     volumes:
-      - ../liquibase/changelog:/liquibase/changelog
+      - ../homeserver-database/changelog:/liquibase/changelog
     environment:
       - LIQUIBASE_COMMAND_URL=jdbc:postgresql://database:5432/homeserver
       - LIQUIBASE_COMMAND_USERNAME=verysecretuser

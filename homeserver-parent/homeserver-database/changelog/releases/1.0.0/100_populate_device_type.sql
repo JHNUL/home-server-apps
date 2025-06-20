@@ -1,0 +1,1 @@
+INSERT INTO sensor.device_type (name) VALUES ('TEMPERATURE_HUMIDITY_SENSOR');
