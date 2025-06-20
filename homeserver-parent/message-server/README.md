@@ -8,17 +8,22 @@ This project implements MQTT that listens to certain topics, saves messages to t
 - Maven 3.9.x
 - Docker and docker-compose
 
+In `homeserver-parent/docker`:
+- copy the `db.env.example` file as `db.env` and set the database username and password.
+- copy the `liquibase.env.example` file as `liquibase.env` and set the same database username and password as above.
+
 ## Developing
 
 Start the environment with docker compose at the root of the project
 ```shell
 docker compose -f docker/docker-compose.yml up -d
 ```
-Which exposes the following services:
-- Postgres database
-- mosquitto MQTT-broker
 
-Check the port numbers and credentials from the docker compose file.
+This exposes the following services:
+- Postgres database
+- Mosquitto MQTT-broker
+
+Check the port numbers from the docker compose file.
 
 To shut it down cleanly, run
 ```shell
