@@ -2,11 +2,11 @@
 
 Homeserver monorepo including the following components:
 
-| Name                | Type      | Description                                                     |
-|---------------------|-----------|-----------------------------------------------------------------|
-| message-server      | service   | a service that listens to events and provides a rest api        |
-| homeserver-common   | library   | includes common classes that might be used by multiple services |
-| homeserver-database | migration | liquibase database migration scripts                            |
+| Name                | Type      | Description                                                      | Maven module |
+|---------------------|-----------|------------------------------------------------------------------|--------------|
+| message-server      | service   | Service that listens to events and provides a rest api.          | Yes          |
+| homeserver-common   | library   | Includes common classes that might be used by multiple services. | Yes          |
+| homeserver-database | migration | Liquibase database migration scripts. Not a maven module.        | No  |
 
 ## How to?
 
