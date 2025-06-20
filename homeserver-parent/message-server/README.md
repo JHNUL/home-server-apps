@@ -8,7 +8,7 @@ This project implements MQTT that listens to certain topics, saves messages to t
 - Maven 3.9.x
 - Docker and docker-compose
 
-In `homeserver-parent/docker`:
+In `message-server/src/docker`:
 - copy the `db.env.example` file as `db.env` and set the database username and password.
 - copy the `liquibase.env.example` file as `liquibase.env` and set the same database username and password as above.
 
