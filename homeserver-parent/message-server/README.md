@@ -14,9 +14,9 @@ In `message-server/src/docker`:
 
 ## Developing
 
-Start the environment with docker compose at the root of the project
+Start the environment with docker compose
 ```shell
-docker compose -f docker/docker-compose.yml up -d
+docker compose -f src/docker/docker-compose.yml up -d
 ```
 
 This exposes the following services:
@@ -27,7 +27,7 @@ Check the port numbers from the docker compose file.
 
 To shut it down cleanly, run
 ```shell
-docker compose -f docker/docker-compose.yml down --remove-orphans -v
+docker compose -f src/docker/docker-compose.yml down --remove-orphans -v
 ```
 
 You can run your application in dev mode that enables live coding using:
