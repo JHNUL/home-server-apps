@@ -1,7 +1,9 @@
 package org.juhanir.message_server.mqtt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
+import io.smallrye.mutiny.unchecked.Unchecked;
 import io.smallrye.reactive.messaging.mqtt.MqttMessageMetadata;
 import io.vertx.mutiny.core.eventbus.EventBus;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -9,6 +11,12 @@ import jakarta.inject.Inject;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.eclipse.microprofile.reactive.messaging.Message;
 import org.jboss.logging.Logger;
+import org.juhanir.domain.sensordata.dto.incoming.TemperatureStatusMqttPayload;
+import org.juhanir.domain.sensordata.entity.Device;
+import org.juhanir.domain.sensordata.entity.DeviceTypeName;
+import org.juhanir.domain.sensordata.entity.TemperatureStatus;
+import org.juhanir.message_server.repository.DeviceRepository;
+import org.juhanir.message_server.repository.DeviceTypeRepository;
 import org.juhanir.message_server.repository.TemperatureRepository;
 
 @ApplicationScoped
@@ -17,12 +25,21 @@ public class MqttClient {
     private static final Logger LOG = Logger.getLogger(MqttClient.class);
     private final EventBus bus;
     private final TemperatureRepository repository;
+    private final DeviceRepository deviceRepository;
+    private final DeviceTypeRepository deviceTypeRepository;
     private final ObjectMapper mapper;
 
     @Inject
-    public MqttClient(EventBus bus, TemperatureRepository repository, ObjectMapper mapper) {
+    public MqttClient(
+            EventBus bus,
+            TemperatureRepository repository,
+            DeviceRepository deviceRepository,
+            DeviceTypeRepository deviceTypeRepository,
+            ObjectMapper mapper) {
         this.bus = bus;
         this.repository = repository;
+        this.deviceRepository = deviceRepository;
+        this.deviceTypeRepository = deviceTypeRepository;
         this.mapper = mapper;
     }
 
@@ -44,30 +61,61 @@ public class MqttClient {
     }
 
     @Incoming("shelly-status")
+    @WithTransaction
     public Uni<Void> process(Message<String> msg) {
         String topic = getTopicFromMessage(msg);
         String deviceIdentifier = getDeviceIdentifierFromTopic(topic);
         String statusType = getStatusTypeFromTopic(topic);
 
-        return switch (statusType) {
-            case "humidity" -> processHumidity(msg);
-            case "temperature" -> processTemperature(msg);
-            default -> {
-                LOG.warnf("Unsupported status topic %s", statusType);
-                yield Uni.createFrom().voidItem();
-            }
-        };
+        return findOrCreateDevice(deviceIdentifier)
+                .onItem()
+                .transformToUni(device -> switch (statusType) {
+                    case "humidity" -> processHumidity(msg);
+                    case "temperature" -> processTemperature(msg.getPayload(), device);
+                    default -> {
+                        LOG.warnf("Unsupported status topic %s", statusType);
+                        yield Uni.createFrom().voidItem();
+                    }
+                })
+                .onFailure()
+                .invoke(t -> LOG.errorf("Failed to do anything %s", t))
+                .onFailure().recoverWithNull()
+                .replaceWithVoid();
 
-//        LOG.info("Got incoming MQTT message from %s: %s".formatted(deviceIdentifier, msg.getPayload()));
-//        bus.send("message", msg.getPayload());
-//        return Panache.withTransaction(() -> repository.persist(null))
-//                .onFailure().invoke(t -> LOG.error("Could not persist temperature %s".formatted(temp), t))
-//                .onFailure().recoverWithNull().replaceWithVoid();
     }
 
-    private Uni<Void> processTemperature(Message<String> msg) {
-        LOG.infof("Got temperature message %s", msg.getPayload());
-        return Uni.createFrom().voidItem();
+    private Uni<Device> findOrCreateDevice(String deviceIdentifier) {
+        return deviceRepository.findByIdentifier(deviceIdentifier)
+                .onItem().ifNotNull().transform(device -> device)
+                .onItem().ifNull().switchTo(() -> deviceTypeRepository.findByName(DeviceTypeName.TEMPERATURE_HUMIDITY_SENSOR)
+                        .onFailure().invoke(t -> LOG.errorf("Failed to fetch device type %s", t))
+                        .onItem()
+                        .transformToUni(deviceType -> {
+                            Device device = new Device()
+                                    .setDeviceType(deviceType)
+                                    .setIdentifier(deviceIdentifier);
+                            return deviceRepository.persist(device);
+                        }));
+    }
+
+    private Uni<Void> processTemperature(String payload, Device device) {
+        LOG.infof("Got temperature message from %s, payload %s", device.getIdentifier(), payload);
+        return Uni.createFrom()
+                .item(Unchecked.supplier(() -> {
+                    TemperatureStatus ts = TemperatureStatus.fromMqttPayload(mapper.readValue(payload, TemperatureStatusMqttPayload.class));
+                    ts.setDevice(device);
+                    return ts;
+                }))
+                .onFailure().invoke(t -> LOG.errorf("Failed to serialize %s", payload))
+                .onItem()
+                .transformToUni(tempStatus -> repository.persist(tempStatus))
+                .onFailure()
+                .invoke(t -> LOG.errorf("Could not persist temperature %s", t))
+                .onItem().invoke(tempStatus -> bus.send("message", String.valueOf(tempStatus.getId())))
+                .onFailure().invoke(t -> LOG.errorf("Failure %s", t))
+                .onFailure()
+                .recoverWithNull()
+                .replaceWithVoid();
     }
 
     private Uni<Void> processHumidity(Message<String> msg) {

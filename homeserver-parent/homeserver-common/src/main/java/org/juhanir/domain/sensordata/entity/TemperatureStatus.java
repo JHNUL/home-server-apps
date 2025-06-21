@@ -2,6 +2,7 @@ package org.juhanir.domain.sensordata.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import org.juhanir.domain.sensordata.dto.incoming.TemperatureStatusMqttPayload;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -89,6 +90,14 @@ public class TemperatureStatus extends BaseEntity {
     public TemperatureStatus setDevice(Device device) {
         this.device = device;
         return this;
+    }
+
+    public static TemperatureStatus fromMqttPayload(TemperatureStatusMqttPayload payload) {
+        return new TemperatureStatus()
+                .setComponentId(payload.getComponentId())
+                .setMeasurementTime(Instant.now())
+                .setValueCelsius(BigDecimal.valueOf(payload.getValueCelsius()))
+                .setValueFahrenheit(BigDecimal.valueOf(payload.getValueFahrenheit()));
     }
 
     private Long getDeviceId(Device device) {

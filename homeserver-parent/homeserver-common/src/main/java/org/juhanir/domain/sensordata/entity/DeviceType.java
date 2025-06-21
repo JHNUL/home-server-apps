@@ -1,8 +1,6 @@
 package org.juhanir.domain.sensordata.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.util.Objects;
 
@@ -13,6 +11,7 @@ public class DeviceType extends BaseEntity {
     /**
      * The unique name of the device type.
      */
+    @Enumerated(EnumType.STRING)
     @Column(name = "name", unique = true)
     private DeviceTypeName name;
 
