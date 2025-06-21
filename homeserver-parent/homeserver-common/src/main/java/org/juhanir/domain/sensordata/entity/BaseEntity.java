@@ -1,4 +1,4 @@
-package org.juhanir.domain;
+package org.juhanir.domain.sensordata.entity;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

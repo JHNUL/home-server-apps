@@ -1,4 +1,4 @@
-package org.juhanir.domain.sensordata;
+package org.juhanir.domain.sensordata.entity;
 
 public enum DeviceTypeName {
 

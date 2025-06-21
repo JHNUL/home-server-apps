@@ -1,7 +1,6 @@
 package org.juhanir.message_server.rest.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.juhanir.domain.sensordata.TemperatureStatus;
 
 import java.math.BigDecimal;
 import java.time.Instant;

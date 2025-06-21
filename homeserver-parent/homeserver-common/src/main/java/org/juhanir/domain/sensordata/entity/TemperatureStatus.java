@@ -1,8 +1,7 @@
-package org.juhanir.domain.sensordata;
+package org.juhanir.domain.sensordata.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import org.juhanir.domain.BaseEntity;
 
 import java.math.BigDecimal;
 import java.time.Instant;

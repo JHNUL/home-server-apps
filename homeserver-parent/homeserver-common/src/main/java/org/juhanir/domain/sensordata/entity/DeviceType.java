@@ -1,9 +1,8 @@
-package org.juhanir.domain.sensordata;
+package org.juhanir.domain.sensordata.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import org.juhanir.domain.BaseEntity;
 
 import java.util.Objects;
 
