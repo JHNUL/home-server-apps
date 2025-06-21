@@ -7,12 +7,13 @@ import io.vertx.mutiny.core.Vertx;
 import io.vertx.mutiny.core.buffer.Buffer;
 import io.vertx.mutiny.mqtt.MqttClient;
 import org.juhanir.message_server.MessageServerTestResource;
+import org.juhanir.message_server.utils.AwaitUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.equalTo;
 
 
 @QuarkusTest
@@ -58,12 +59,28 @@ public class TemperatureStatusTest {
                   "tF": 67.3
                 }""";
         client.publishAndAwait(TOPIC, Buffer.buffer(message), MqttQoS.EXACTLY_ONCE, false, false);
-        given()
-                .get("/temperatures")
-                .then()
-                .statusCode(200)
-                .and()
-                .log().body()
-                .body("size()", greaterThanOrEqualTo(1));
+
+        AwaitUtils.awaitAssertion(() -> {
+            given()
+                    .get("/temperatures/shellyid-123123")
+                    .then()
+                    .statusCode(200)
+                    .and()
+                    .log().body()
+                    .body("size()", equalTo(1))
+                    .body("[0].valueCelsius", equalTo(19.6f))
+                    .body("[0].valueFahrenheit", equalTo(67.3f))
+                    .body("[0].componentId", equalTo(0));
+        });
+    }
+
+    @Test
+    void temperatureStatusMessagesForNonExistingDeviceReturnsNotFound() {
+        AwaitUtils.awaitAssertionMaintained(() -> {
+            given()
+                    .get("/temperatures/qwerty-asdfg-12345")
+                    .then()
+                    .statusCode(404);
+        });
     }
 }

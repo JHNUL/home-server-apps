@@ -84,10 +84,10 @@ public class MqttClient {
                         yield Uni.createFrom().voidItem();
                     }
                 })
+                .onItem()
+                .transformToUni(none -> Uni.createFrom().completionStage(msg.ack()))
                 .onFailure()
-                .invoke(t -> LOG.errorf("Failed to do anything %s", t))
-                .onFailure().recoverWithNull()
-                .replaceWithVoid();
+                .recoverWithUni(t -> Uni.createFrom().completionStage(msg.nack(t)));
 
     }
 
@@ -116,6 +116,7 @@ public class MqttClient {
                 .onFailure().invoke(t -> LOG.errorf("Failed to serialize %s", payload))
                 .onItem()
                 .transformToUni(tempStatus -> repository.persist(tempStatus))
+                .invoke(() -> LOG.infof("Persisted tempStatus successfully"))
                 .onFailure()
                 .invoke(t -> LOG.errorf("Could not persist temperature %s", t))
                 .onItem().invoke(tempStatus -> bus.send("message", String.valueOf(tempStatus.getId())))
