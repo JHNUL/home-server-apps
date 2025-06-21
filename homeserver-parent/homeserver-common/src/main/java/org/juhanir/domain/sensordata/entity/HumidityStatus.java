@@ -2,6 +2,7 @@ package org.juhanir.domain.sensordata.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import org.juhanir.domain.sensordata.dto.incoming.HumidityStatusMqttPayload;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -73,6 +74,13 @@ public class HumidityStatus extends BaseEntity {
     public HumidityStatus setDevice(Device device) {
         this.device = device;
         return this;
+    }
+
+    public static HumidityStatus fromMqttPayload(HumidityStatusMqttPayload humidityStatusMqttPayload) {
+        return new HumidityStatus()
+                .setComponentId(humidityStatusMqttPayload.getComponentId())
+                .setMeasurementTime(Instant.now())
+                .setValue(BigDecimal.valueOf(humidityStatusMqttPayload.getValue()));
     }
 
     @Override

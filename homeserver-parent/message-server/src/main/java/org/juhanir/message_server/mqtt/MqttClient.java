@@ -11,12 +11,15 @@ import jakarta.inject.Inject;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.eclipse.microprofile.reactive.messaging.Message;
 import org.jboss.logging.Logger;
+import org.juhanir.domain.sensordata.dto.incoming.HumidityStatusMqttPayload;
 import org.juhanir.domain.sensordata.dto.incoming.TemperatureStatusMqttPayload;
 import org.juhanir.domain.sensordata.entity.Device;
 import org.juhanir.domain.sensordata.entity.DeviceTypeName;
+import org.juhanir.domain.sensordata.entity.HumidityStatus;
 import org.juhanir.domain.sensordata.entity.TemperatureStatus;
 import org.juhanir.message_server.repository.DeviceRepository;
 import org.juhanir.message_server.repository.DeviceTypeRepository;
+import org.juhanir.message_server.repository.HumidityRepository;
 import org.juhanir.message_server.repository.TemperatureRepository;
 
 @ApplicationScoped
@@ -27,6 +30,7 @@ public class MqttClient {
     private final TemperatureRepository repository;
     private final DeviceRepository deviceRepository;
     private final DeviceTypeRepository deviceTypeRepository;
+    private final HumidityRepository humidityRepository;
     private final ObjectMapper mapper;
 
     @Inject
@@ -35,11 +39,13 @@ public class MqttClient {
             TemperatureRepository repository,
             DeviceRepository deviceRepository,
             DeviceTypeRepository deviceTypeRepository,
+            HumidityRepository humidityRepository,
             ObjectMapper mapper) {
         this.bus = bus;
         this.repository = repository;
         this.deviceRepository = deviceRepository;
         this.deviceTypeRepository = deviceTypeRepository;
+        this.humidityRepository = humidityRepository;
         this.mapper = mapper;
     }
 
@@ -66,12 +72,13 @@ public class MqttClient {
         String topic = getTopicFromMessage(msg);
         String deviceIdentifier = getDeviceIdentifierFromTopic(topic);
         String statusType = getStatusTypeFromTopic(topic);
+        String messagePayload = msg.getPayload();
 
         return findOrCreateDevice(deviceIdentifier)
                 .onItem()
                 .transformToUni(device -> switch (statusType) {
-                    case "humidity" -> processHumidity(msg);
-                    case "temperature" -> processTemperature(msg.getPayload(), device);
+                    case "humidity" -> processHumidity(messagePayload, device);
+                    case "temperature" -> processTemperature(messagePayload, device);
                     default -> {
                         LOG.warnf("Unsupported status topic %s", statusType);
                         yield Uni.createFrom().voidItem();
@@ -118,8 +125,23 @@ public class MqttClient {
                 .replaceWithVoid();
     }
 
-    private Uni<Void> processHumidity(Message<String> msg) {
-        LOG.infof("Got humidity message %s", msg.getPayload());
-        return Uni.createFrom().voidItem();
+    private Uni<Void> processHumidity(String payload, Device device) {
+        LOG.infof("Got humidity message from %s, payload %s", device.getIdentifier(), payload);
+        return Uni.createFrom()
+                .item(Unchecked.supplier(() -> {
+                    HumidityStatus hs = HumidityStatus.fromMqttPayload(mapper.readValue(payload, HumidityStatusMqttPayload.class));
+                    hs.setDevice(device);
+                    return hs;
+                }))
+                .onFailure().invoke(t -> LOG.errorf("Failed to serialize %s", payload))
+                .onItem()
+                .transformToUni(humidityStatus -> humidityRepository.persist(humidityStatus))
+                .onFailure()
+                .invoke(t -> LOG.errorf("Could not persist temperature %s", t))
+                .onItem().invoke(humidityStatus -> bus.send("message", String.valueOf(humidityStatus.getId())))
+                .onFailure().invoke(t -> LOG.errorf("Failure %s", t))
+                .onFailure()
+                .recoverWithNull()
+                .replaceWithVoid();
     }
 }
