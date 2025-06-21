@@ -28,7 +28,7 @@ public class TemperatureStatusTest {
     @BeforeEach
     void setUp() {
         client = MqttClient.create(Vertx.vertx());
-        client.connectAndAwait(1899, "localhost");
+        client.connectAndAwait(1883, "localhost");
     }
 
     @AfterAll

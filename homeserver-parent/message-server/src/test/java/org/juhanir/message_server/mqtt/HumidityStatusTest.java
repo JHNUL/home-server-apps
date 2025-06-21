@@ -28,7 +28,7 @@ public class HumidityStatusTest {
     @BeforeEach
     void setUp() {
         client = MqttClient.create(Vertx.vertx());
-        client.connectAndAwait(1899, "localhost");
+        client.connectAndAwait(1883, "localhost");
     }
 
     @AfterAll
@@ -49,7 +49,7 @@ public class HumidityStatusTest {
     }
 
     @Test
-    void sentTemperatureStatusMessageCanBeFetchedViaRestApi() {
+    void sentHumidityStatusMessageCanBeFetchedViaRestApi() {
         String message = """
                 {
                   "id": 0,

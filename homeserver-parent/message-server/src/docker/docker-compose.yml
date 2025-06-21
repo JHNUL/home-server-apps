@@ -1,7 +1,6 @@
 services:
   database:
     image: timescale/timescaledb:latest-pg17
-    container_name: homeserver_db
     ports:
       - "54322:5432"
     env_file:
@@ -13,7 +12,6 @@ services:
 
   mqtt_broker:
     image: eclipse-mosquitto:2.0.21
-    container_name: homeserver_broker
     ports:
       - "1883:1883"
     user: "1000" # preserves ownership of the file
@@ -25,7 +23,6 @@ services:
 
   liquibase:
     image: juhanir/liquibase-migrator:1.0.1
-    container_name: homeserver_liquibase
     depends_on:
       - database
     volumes:
