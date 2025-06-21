@@ -2,11 +2,12 @@ package org.juhanir.message_server.mqtt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.smallrye.mutiny.Uni;
-import io.smallrye.reactive.messaging.mqtt.MqttMessage;
+import io.smallrye.reactive.messaging.mqtt.MqttMessageMetadata;
 import io.vertx.mutiny.core.eventbus.EventBus;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
+import org.eclipse.microprofile.reactive.messaging.Message;
 import org.jboss.logging.Logger;
 import org.juhanir.message_server.repository.TemperatureRepository;
 
@@ -35,9 +36,16 @@ public class MqttClient {
         return last.split(":")[0];
     }
 
+    private String getTopicFromMessage(Message<String> msg) {
+        return msg
+                .getMetadata(MqttMessageMetadata.class)
+                .map(MqttMessageMetadata::getTopic)
+                .orElse("unknown_topic");
+    }
+
     @Incoming("shelly-status")
-    public Uni<Void> process(MqttMessage<String> msg) {
-        String topic = msg.getTopic();
+    public Uni<Void> process(Message<String> msg) {
+        String topic = getTopicFromMessage(msg);
         String deviceIdentifier = getDeviceIdentifierFromTopic(topic);
         String statusType = getStatusTypeFromTopic(topic);
 
@@ -57,12 +65,12 @@ public class MqttClient {
 //                .onFailure().recoverWithNull().replaceWithVoid();
     }
 
-    private Uni<Void> processTemperature(MqttMessage<String> msg) {
+    private Uni<Void> processTemperature(Message<String> msg) {
         LOG.infof("Got temperature message %s", msg.getPayload());
         return Uni.createFrom().voidItem();
     }
 
-    private Uni<Void> processHumidity(MqttMessage<String> msg) {
+    private Uni<Void> processHumidity(Message<String> msg) {
         LOG.infof("Got humidity message %s", msg.getPayload());
         return Uni.createFrom().voidItem();
     }
