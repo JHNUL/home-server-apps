@@ -1,8 +1,6 @@
 package org.juhanir.domain.sensordata;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import org.juhanir.domain.BaseEntity;
 
@@ -11,21 +9,42 @@ import java.time.Instant;
 import java.util.Objects;
 
 @Entity
+@Table(name = "temperature_status", schema = "sensor")
 public class TemperatureStatus extends BaseEntity {
 
+    /**
+     * Devices report their component ids per sensor.
+     */
     @NotNull
+    @Column(name = "component_id")
     private Integer componentId;
 
+    /**
+     * The Celsius value of the temperature.
+     */
     @NotNull
-    private BigDecimal temperatureCelsius;
+    @Column(name = "value_celsius")
+    private BigDecimal valueCelsius;
 
+    /**
+     * The Fahrenheit value of the temperature.
+     */
     @NotNull
-    private BigDecimal temperatureFahrenheit;
+    @Column(name = "value_fahrenheit")
+    private BigDecimal valueFahrenheit;
 
+    /**
+     * The measurement time.
+     */
     @NotNull
-    private Instant timestamp;
+    @Column(name = "measurement_time")
+    private Instant measurementTime;
 
+    /**
+     * Reference to the device the reading came from.
+     */
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "device_id", nullable = false)
     private Device device;
 
     public Integer getComponentId() {
@@ -37,52 +56,70 @@ public class TemperatureStatus extends BaseEntity {
         return this;
     }
 
-    public BigDecimal getTemperatureCelsius() {
-        return temperatureCelsius;
+    public BigDecimal getValueCelsius() {
+        return valueCelsius;
     }
 
-    public TemperatureStatus setTemperatureCelsius(BigDecimal temperatureCelsius) {
-        this.temperatureCelsius = temperatureCelsius;
+    public TemperatureStatus setValueCelsius(BigDecimal valueCelsius) {
+        this.valueCelsius = valueCelsius;
         return this;
     }
 
-    public BigDecimal getTemperatureFahrenheit() {
-        return temperatureFahrenheit;
+    public BigDecimal getValueFahrenheit() {
+        return valueFahrenheit;
     }
 
-    public TemperatureStatus setTemperatureFahrenheit(BigDecimal temperatureFahrenheit) {
-        this.temperatureFahrenheit = temperatureFahrenheit;
+    public TemperatureStatus setValueFahrenheit(BigDecimal valueFahrenheit) {
+        this.valueFahrenheit = valueFahrenheit;
         return this;
     }
 
-    public Instant getTimestamp() {
-        return timestamp;
+    public Instant getMeasurementTime() {
+        return measurementTime;
     }
 
-    public TemperatureStatus setTimestamp(Instant timestamp) {
-        this.timestamp = timestamp;
+    public TemperatureStatus setMeasurementTime(Instant measurementTime) {
+        this.measurementTime = measurementTime;
         return this;
+    }
+
+    public Device getDevice() {
+        return device;
+    }
+
+    public TemperatureStatus setDevice(Device device) {
+        this.device = device;
+        return this;
+    }
+
+    private Long getDeviceId(Device device) {
+        return device == null ? null : device.getId();
     }
 
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         TemperatureStatus that = (TemperatureStatus) o;
-        return Objects.equals(componentId, that.componentId) && Objects.equals(temperatureCelsius, that.temperatureCelsius) && Objects.equals(temperatureFahrenheit, that.temperatureFahrenheit) && Objects.equals(timestamp, that.timestamp);
+        return Objects.equals(componentId, that.componentId)
+                && Objects.equals(valueCelsius, that.valueCelsius)
+                && Objects.equals(valueFahrenheit, that.valueFahrenheit)
+                && Objects.equals(measurementTime, that.measurementTime)
+                && Objects.equals(getDeviceId(device), getDeviceId(that.device));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(componentId, temperatureCelsius, temperatureFahrenheit, timestamp);
+        return Objects.hash(componentId, valueCelsius, valueFahrenheit, measurementTime, getDeviceId(device));
     }
 
     @Override
     public String toString() {
         return "TemperatureStatus{" +
                 "componentId=" + componentId +
-                ", temperatureCelsius=" + temperatureCelsius +
-                ", temperatureFahrenheit=" + temperatureFahrenheit +
-                ", timestamp=" + timestamp +
+                ", valueCelsius=" + valueCelsius +
+                ", valueFahrenheit=" + valueFahrenheit +
+                ", measurementTime=" + measurementTime +
+                ", device=" + device +
                 '}';
     }
 }
