@@ -7,7 +7,6 @@ import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.Response;
 import org.jboss.logging.Logger;
 import org.juhanir.domain.sensordata.dto.outgoing.TemperatureStatusResponse;
-import org.juhanir.message_server.mqtt.MqttClient;
 import org.juhanir.message_server.repository.DeviceRepository;
 import org.juhanir.message_server.repository.TemperatureRepository;
 import org.juhanir.message_server.rest.api.TemperatureApi;
@@ -16,7 +15,7 @@ import java.util.List;
 
 public class TemperatureResource implements TemperatureApi {
 
-    private static final Logger LOG = Logger.getLogger(MqttClient.class);
+    private static final Logger LOG = Logger.getLogger(TemperatureResource.class);
 
     private final TemperatureRepository temperatureStorage;
     private final DeviceRepository deviceStorage;

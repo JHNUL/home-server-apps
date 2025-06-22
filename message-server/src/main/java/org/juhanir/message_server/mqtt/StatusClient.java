@@ -23,9 +23,9 @@ import org.juhanir.message_server.repository.HumidityRepository;
 import org.juhanir.message_server.repository.TemperatureRepository;
 
 @ApplicationScoped
-public class MqttClient {
+public class StatusClient {
 
-    private static final Logger LOG = Logger.getLogger(MqttClient.class);
+    private static final Logger LOG = Logger.getLogger(StatusClient.class);
     private final EventBus bus;
     private final TemperatureRepository repository;
     private final DeviceRepository deviceRepository;
@@ -34,7 +34,7 @@ public class MqttClient {
     private final ObjectMapper mapper;
 
     @Inject
-    public MqttClient(
+    public StatusClient(
             EventBus bus,
             TemperatureRepository repository,
             DeviceRepository deviceRepository,
