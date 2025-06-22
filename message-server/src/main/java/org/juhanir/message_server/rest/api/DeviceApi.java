@@ -13,12 +13,12 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.juhanir.domain.sensordata.dto.outgoing.TemperatureStatusResponse;
 
-@Path("temperatures")
-public interface TemperatureApi {
+@Path("devices")
+public interface DeviceApi {
 
 
     @GET
-    @Path("/{deviceIdentifier}")
+    @Path("/{deviceIdentifier}/temperatures")
     @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Get a list of temperatures for a given device.")
     @APIResponse(

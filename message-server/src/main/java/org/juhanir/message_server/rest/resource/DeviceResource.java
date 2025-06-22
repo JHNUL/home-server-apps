@@ -9,19 +9,19 @@ import org.jboss.logging.Logger;
 import org.juhanir.domain.sensordata.dto.outgoing.TemperatureStatusResponse;
 import org.juhanir.message_server.repository.DeviceRepository;
 import org.juhanir.message_server.repository.TemperatureRepository;
-import org.juhanir.message_server.rest.api.TemperatureApi;
+import org.juhanir.message_server.rest.api.DeviceApi;
 
 import java.util.List;
 
-public class TemperatureResource implements TemperatureApi {
+public class DeviceResource implements DeviceApi {
 
-    private static final Logger LOG = Logger.getLogger(TemperatureResource.class);
+    private static final Logger LOG = Logger.getLogger(DeviceResource.class);
 
     private final TemperatureRepository temperatureStorage;
     private final DeviceRepository deviceStorage;
 
     @Inject
-    public TemperatureResource(TemperatureRepository temperatureStorage, DeviceRepository deviceStorage) {
+    public DeviceResource(TemperatureRepository temperatureStorage, DeviceRepository deviceStorage) {
         this.temperatureStorage = temperatureStorage;
         this.deviceStorage = deviceStorage;
     }
