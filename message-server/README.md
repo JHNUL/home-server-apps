@@ -1,6 +1,6 @@
 # Message-Server
 
-This project implements MQTT that listens to certain topics, saves messages to the database and publishes the messages via WebSocket to subscribed clients.
+This project implements an MQTT message listener that listens to certain topics, saves messages to the database and publishes the messages via WebSocket to subscribed clients. It also provides a REST API.
 
 ## Prerequisites
 
@@ -30,13 +30,11 @@ To shut it down cleanly, run
 docker compose -f src/docker/docker-compose.yml down --remove-orphans -v
 ```
 
-You can run your application in dev mode that enables live coding using:
+You can run your application in dev mode:
 
 ```shell
 mvn quarkus:dev
 ```
-
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
 
 ## Packaging the application
 
@@ -70,3 +68,7 @@ mvn package -Dnative
 ## MQTT topics
 
 The application supports the following topics:
+
+### {shelly-device-id}/status/#
+
+The shelly-device-id part is supposed to be unique to each device. The status messages are listed [here](./messages.md). The status messages do not contain any device information so the device part must be extracted from the topic.
