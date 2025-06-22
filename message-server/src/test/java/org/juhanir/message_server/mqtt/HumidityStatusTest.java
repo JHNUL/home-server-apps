@@ -7,6 +7,7 @@ import io.vertx.mutiny.core.Vertx;
 import io.vertx.mutiny.core.buffer.Buffer;
 import io.vertx.mutiny.mqtt.MqttClient;
 import org.juhanir.message_server.MessageServerTestResource;
+import org.juhanir.message_server.utils.AwaitUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -56,13 +57,16 @@ public class HumidityStatusTest {
                   "rh": 57
                 }""";
         client.publishAndAwait(TOPIC, Buffer.buffer(message), MqttQoS.EXACTLY_ONCE, false, false);
-        given()
-                .get("/humidity")
-                .then()
-                .statusCode(200)
-                .and()
-                .log().body()
-                .body("size()", greaterThanOrEqualTo(1));
+
+        AwaitUtils.awaitAssertion(() -> {
+            given()
+                    .get("devices/shellyid-123123/humidity")
+                    .then()
+                    .statusCode(200)
+                    .and()
+                    .log().body()
+                    .body("size()", greaterThanOrEqualTo(1));
+        });
     }
 
 }

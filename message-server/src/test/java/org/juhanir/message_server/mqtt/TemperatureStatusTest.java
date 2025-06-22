@@ -25,6 +25,7 @@ public class TemperatureStatusTest {
 
     private static MqttClient client;
     private static final String TOPIC = "shellyid-123123/status/temperature:0";
+    private static final String TEMPERATURE_URL_TPL = "/devices/%s/temperature";
 
     @BeforeEach
     void setUp() {
@@ -62,7 +63,7 @@ public class TemperatureStatusTest {
 
         AwaitUtils.awaitAssertion(() -> {
             given()
-                    .get("/temperatures/shellyid-123123")
+                    .get(TEMPERATURE_URL_TPL.formatted("shellyid-123123"))
                     .then()
                     .statusCode(200)
                     .and()
@@ -78,7 +79,7 @@ public class TemperatureStatusTest {
     void temperatureStatusMessagesForNonExistingDeviceReturnsNotFound() {
         AwaitUtils.awaitAssertionMaintained(() -> {
             given()
-                    .get("/temperatures/qwerty-asdfg-12345")
+                    .get(TEMPERATURE_URL_TPL.formatted("qwerty123456-foobar"))
                     .then()
                     .statusCode(404);
         });

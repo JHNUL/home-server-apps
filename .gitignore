@@ -3,3 +3,4 @@
 **/mvnw*
 **/target
 **/*.env
+**/*.quarkus
