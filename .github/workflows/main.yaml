@@ -21,9 +21,6 @@ jobs:
           architecture: 'x64'
           cache: maven
 
-      - name: Install parent
-        run: mvn -DskipTests clean install
-
       - name: Create db env file
         working-directory: ./message-server/src/docker
         run: |
@@ -44,4 +41,4 @@ jobs:
           EOF
 
       - name: Run tests
-        run: mvn -f message-server/pom.xml clean test
+        run: mvn -pl message-server -am -DskipTests=false clean test
