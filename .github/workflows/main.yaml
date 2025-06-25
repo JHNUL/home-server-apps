@@ -22,7 +22,7 @@ jobs:
           cache: maven
 
       - name: Install parent
-        run: mvn pom.xml -DskipTests clean install
+        run: mvn -DskipTests clean install
 
       - name: Run tests
         run: mvn -f message-server/pom.xml clean test
