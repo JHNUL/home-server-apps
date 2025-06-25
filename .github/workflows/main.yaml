@@ -21,8 +21,8 @@ jobs:
           architecture: 'x64'
           cache: maven
 
-      - name: Install common lib
-        run: mvn -f homeserver-common/pom.xml clean install
+      - name: Install parent
+        run: mvn pom.xml -DskipTests clean install
 
       - name: Run tests
         run: mvn -f message-server/pom.xml clean test
