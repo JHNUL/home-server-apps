@@ -13,18 +13,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 
 
 @QuarkusTest
-@QuarkusTestResource(
-        value = MessageServerTestResource.class,
-        restrictToAnnotatedClass = true
-)
+@QuarkusTestResource(value = MessageServerTestResource.class)
 public class HumidityStatusTest {
 
     private static MqttClient client;
     private static final String TOPIC = "shellyid-123123/status/humidity:0";
+    private static final String HUMIDITY_URL_TPL = "/devices/%s/temperature";
 
     @BeforeEach
     void setUp() {
@@ -65,7 +64,19 @@ public class HumidityStatusTest {
                     .statusCode(200)
                     .and()
                     .log().body()
-                    .body("size()", greaterThanOrEqualTo(1));
+                    .body("size()", equalTo(1))
+                    .body("[0].value", equalTo(57.0f))
+                    .body("[0].componentId", equalTo(0));
+        });
+    }
+
+    @Test
+    void humidityStatusMessagesForNonExistingDeviceReturnsNotFound() {
+        AwaitUtils.awaitAssertionMaintained(() -> {
+            given()
+                    .get(HUMIDITY_URL_TPL.formatted("qwerty123456-foobar"))
+                    .then()
+                    .statusCode(404);
         });
     }
 

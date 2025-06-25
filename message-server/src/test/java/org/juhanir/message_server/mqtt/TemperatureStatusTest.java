@@ -17,10 +17,7 @@ import static org.hamcrest.Matchers.equalTo;
 
 
 @QuarkusTest
-@QuarkusTestResource(
-        value = MessageServerTestResource.class,
-        restrictToAnnotatedClass = true
-)
+@QuarkusTestResource(value = MessageServerTestResource.class)
 public class TemperatureStatusTest {
 
     private static MqttClient client;
