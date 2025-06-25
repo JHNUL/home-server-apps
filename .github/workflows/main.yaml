@@ -1,0 +1,44 @@
+name: Java CI with Maven
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          architecture: 'x64'
+          cache: maven
+
+      - name: Create db env file
+        working-directory: ./message-server/src/docker
+        run: |
+          cat << EOF >> db.env
+          POSTGRES_USER=verysecretuser
+          POSTGRES_PASSWORD=verysecretpassword
+          POSTGRES_DB=homeserver
+          EOF
+
+      - name: Create liquibase env file
+        working-directory: ./message-server/src/docker
+        run: |
+          cat << EOF >> liquibase.env
+          LIQUIBASE_COMMAND_URL=jdbc:postgresql://database:5432/homeserver
+          LIQUIBASE_CLASSPATH=/liquibase/changelog
+          LIQUIBASE_COMMAND_USERNAME=verysecretuser
+          LIQUIBASE_COMMAND_PASSWORD=verysecretpassword
+          EOF
+
+      - name: Run tests
+        run: mvn -pl message-server -am -DskipTests=false clean test
