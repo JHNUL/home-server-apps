@@ -14,4 +14,8 @@ public class TemperatureRepository implements PanacheRepository<TemperatureStatu
         return find("device.id", deviceId).list();
     }
 
+    public Uni<TemperatureStatus> persistTemperature(TemperatureStatus temperatureStatus) {
+        return persist(temperatureStatus);
+    }
+
 }
