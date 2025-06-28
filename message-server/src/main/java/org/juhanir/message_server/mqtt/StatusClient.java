@@ -87,8 +87,11 @@ public class StatusClient {
                         yield Uni.createFrom().voidItem();
                     }
                 })
-                .onFailure().invoke(throwable -> LOG.errorf("Failed to process message from %s", deviceIdentifier))
-                .replaceWithVoid();
+                .onFailure().invoke(throwable -> {
+                    String errorMsg = "Failed to process message from %s: %s".formatted(deviceIdentifier, throwable.getMessage());
+                    LOG.error(errorMsg, throwable);
+                })
+                .onFailure().recoverWithUni(err -> Uni.createFrom().voidItem());
     }
 
     private Uni<Device> findOrCreateDevice(String deviceIdentifier) {

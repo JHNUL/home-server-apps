@@ -1,5 +1,6 @@
 package org.juhanir.domain.sensordata.dto.incoming;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -8,27 +9,24 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class HumidityStatusMqttPayload {
 
-    @JsonProperty("id")
     public int componentId;
-
-    @JsonProperty("rh")
     public double value;
+
+    @JsonCreator
+    public HumidityStatusMqttPayload(
+            @JsonProperty(value = "id", required = true) Integer componentId,
+            @JsonProperty(value = "rh", required = true) Double value
+    ) {
+        this.componentId = componentId;
+        this.value = value;
+    }
 
     public int getComponentId() {
         return componentId;
-    }
-
-    public HumidityStatusMqttPayload setComponentId(int componentId) {
-        this.componentId = componentId;
-        return this;
     }
 
     public double getValue() {
         return value;
     }
 
-    public HumidityStatusMqttPayload setValue(double value) {
-        this.value = value;
-        return this;
-    }
 }
