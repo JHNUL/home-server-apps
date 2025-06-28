@@ -9,9 +9,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class TemperatureStatusMqttPayload {
 
-    public int componentId;
-    public double valueCelsius;
-    public double valueFahrenheit;
+    private int componentId;
+    private double valueCelsius;
+    private double valueFahrenheit;
 
     @JsonCreator
     public TemperatureStatusMqttPayload(
