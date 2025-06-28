@@ -8,6 +8,7 @@ import io.smallrye.reactive.messaging.mqtt.MqttMessageMetadata;
 import io.vertx.mutiny.core.eventbus.EventBus;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.NotFoundException;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.eclipse.microprofile.reactive.messaging.Message;
 import org.jboss.logging.Logger;
@@ -74,6 +75,8 @@ public class StatusClient {
         String statusType = getStatusTypeFromTopic(topic);
         String messagePayload = msg.getPayload();
 
+        LOG.infof("Message from %s, to topic %s, payload %s", deviceIdentifier, topic, messagePayload);
+
         return findOrCreateDevice(deviceIdentifier)
                 .onItem()
                 .transformToUni(device -> switch (statusType) {
@@ -84,20 +87,19 @@ public class StatusClient {
                         yield Uni.createFrom().voidItem();
                     }
                 })
-                .onItem()
-                .transformToUni(none -> Uni.createFrom().completionStage(msg.ack()))
-                .onFailure()
-                .recoverWithUni(t -> Uni.createFrom().completionStage(msg.nack(t)));
-
+                .onFailure().invoke(throwable -> {
+                    String errorMsg = "Failed to process message from %s: %s".formatted(deviceIdentifier, throwable.getMessage());
+                    LOG.error(errorMsg, throwable);
+                })
+                .onFailure().recoverWithUni(err -> Uni.createFrom().voidItem());
     }
 
     private Uni<Device> findOrCreateDevice(String deviceIdentifier) {
         return deviceRepository.findByIdentifier(deviceIdentifier)
                 .onItem().ifNotNull().transform(device -> device)
                 .onItem().ifNull().switchTo(() -> deviceTypeRepository.findByName(DeviceTypeName.TEMPERATURE_HUMIDITY_SENSOR)
-                        .onFailure().invoke(t -> LOG.errorf("Failed to fetch device type %s", t))
-                        .onItem()
-                        .transformToUni(deviceType -> {
+                        .onItem().ifNull().failWith(() -> new NotFoundException("Device type " + DeviceTypeName.TEMPERATURE_HUMIDITY_SENSOR + " not found."))
+                        .onItem().transformToUni(deviceType -> {
                             Device device = new Device()
                                     .setDeviceType(deviceType)
                                     .setIdentifier(deviceIdentifier);
@@ -106,43 +108,22 @@ public class StatusClient {
     }
 
     private Uni<Void> processTemperature(String payload, Device device) {
-        LOG.infof("Got temperature message from %s, payload %s", device.getIdentifier(), payload);
-        return Uni.createFrom()
-                .item(Unchecked.supplier(() -> {
-                    TemperatureStatus ts = TemperatureStatus.fromMqttPayload(mapper.readValue(payload, TemperatureStatusMqttPayload.class));
-                    ts.setDevice(device);
-                    return ts;
-                }))
-                .onFailure().invoke(t -> LOG.errorf("Failed to serialize %s", payload))
-                .onItem()
-                .transformToUni(tempStatus -> repository.persist(tempStatus))
-                .invoke(() -> LOG.infof("Persisted tempStatus successfully"))
-                .onFailure()
-                .invoke(t -> LOG.errorf("Could not persist temperature %s", t))
-                .onItem().invoke(tempStatus -> bus.send("message", String.valueOf(tempStatus.getId())))
-                .onFailure().invoke(t -> LOG.errorf("Failure %s", t))
-                .onFailure()
-                .recoverWithNull()
+        return Uni.createFrom().item(Unchecked.supplier(() ->
+                        TemperatureStatus.fromMqttPayload(mapper.readValue(payload, TemperatureStatusMqttPayload.class))
+                ))
+                .onItem().invoke(ts -> ts.setDevice(device))
+                .onItem().transformToUni(repository::persistTemperature)
+                .onItem().transform(ts -> bus.send("message", String.valueOf(ts.getId())))
                 .replaceWithVoid();
     }
 
     private Uni<Void> processHumidity(String payload, Device device) {
-        LOG.infof("Got humidity message from %s, payload %s", device.getIdentifier(), payload);
-        return Uni.createFrom()
-                .item(Unchecked.supplier(() -> {
-                    HumidityStatus hs = HumidityStatus.fromMqttPayload(mapper.readValue(payload, HumidityStatusMqttPayload.class));
-                    hs.setDevice(device);
-                    return hs;
-                }))
-                .onFailure().invoke(t -> LOG.errorf("Failed to serialize %s", payload))
-                .onItem()
-                .transformToUni(humidityStatus -> humidityRepository.persist(humidityStatus))
-                .onFailure()
-                .invoke(t -> LOG.errorf("Could not persist temperature %s", t))
-                .onItem().invoke(humidityStatus -> bus.send("message", String.valueOf(humidityStatus.getId())))
-                .onFailure().invoke(t -> LOG.errorf("Failure %s", t))
-                .onFailure()
-                .recoverWithNull()
+        return Uni.createFrom().item(Unchecked.supplier(() ->
+                        HumidityStatus.fromMqttPayload(mapper.readValue(payload, HumidityStatusMqttPayload.class))
+                ))
+                .onItem().invoke(hs -> hs.setDevice(device))
+                .onItem().transformToUni(humidityRepository::persistHumidity)
+                .onItem().transform(ts -> bus.send("message", String.valueOf(ts.getId())))
                 .replaceWithVoid();
     }
 }
