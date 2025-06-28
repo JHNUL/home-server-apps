@@ -9,8 +9,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class HumidityStatusMqttPayload {
 
-    public int componentId;
-    public double value;
+    private int componentId;
+    private double value;
 
     @JsonCreator
     public HumidityStatusMqttPayload(
