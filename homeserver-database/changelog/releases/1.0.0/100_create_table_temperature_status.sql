@@ -7,8 +7,10 @@ CREATE TABLE sensor.temperature_status (
     value_fahrenheit DOUBLE PRECISION NOT NULL
 );
 
--- device_id is a foreign key reference
+-- device_id is a foreign key reference, if a device is deleted
+-- its measurements are also deleted
 ALTER TABLE sensor.temperature_status
     ADD CONSTRAINT device_id_fkey
     FOREIGN KEY (device_id)
-    REFERENCES sensor.device(id);
+    REFERENCES sensor.device(id)
+    ON DELETE CASCADE;
