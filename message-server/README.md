@@ -1,6 +1,7 @@
 # Message-Server
 
-This project implements an MQTT message listener that listens to certain topics, saves messages to the database and publishes the messages via WebSocket to subscribed clients. It also provides a REST API.
+This project implements an MQTT message listener that listens to certain topics, saves messages to the database and publishes the messages
+via WebSocket to subscribed clients. It also provides a REST API.
 
 ## Prerequisites
 
@@ -9,23 +10,27 @@ This project implements an MQTT message listener that listens to certain topics,
 - Docker and docker-compose
 
 In `message-server/src/docker`:
+
 - copy the `db.env.example` file as `db.env` and set the database username and password.
 - copy the `liquibase.env.example` file as `liquibase.env` and set the same database username and password as above.
 
 ## Developing
 
 Start the environment with docker compose
+
 ```shell
 docker compose -f src/docker/docker-compose.yml up -d
 ```
 
 This exposes the following services:
+
 - Postgres database
 - Mosquitto MQTT-broker
 
 Check the port numbers from the docker compose file.
 
 To shut it down cleanly, run
+
 ```shell
 docker compose -f src/docker/docker-compose.yml down --remove-orphans -v
 ```
@@ -39,11 +44,23 @@ mvn quarkus:dev
 ## Testing
 
 Integration tests can be run from project root with;
+
 ```shell
 mvn --projects message-server --also-make clean test
 ```
 
 This way the homeserver-common library, which is a dependency of message-server, is also compiled.
+
+## Health check
+
+Health endpoint is exposed at `/q/health` and it has the following paths in addition to just health:
+
+- `/live`
+- `/ready`
+- `/started`
+
+The root `/q/health` path shows all the above-mentioned info. Health check implemented
+by [smallrye health](https://quarkus.io/guides/smallrye-health).
 
 ## Packaging the application
 
@@ -80,4 +97,5 @@ The application supports the following topics:
 
 ### {shelly-device-id}/status/#
 
-The shelly-device-id part is supposed to be unique to each device. The status messages are listed [here](./messages.md). The status messages do not contain any device information so the device part must be extracted from the topic.
+The shelly-device-id part is supposed to be unique to each device. The status messages are listed [here](./messages.md). The status messages
+do not contain any device information so the device part must be extracted from the topic.
