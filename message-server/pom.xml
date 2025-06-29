@@ -49,6 +49,12 @@
             <artifactId>quarkus-reactive-pg-client</artifactId>
         </dependency>
         <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-smallrye-health</artifactId>
+        </dependency>
+
+        <!-- PROJECT MODULES-->
+        <dependency>
             <groupId>org.juhanir</groupId>
             <artifactId>homeserver-common</artifactId>
             <version>${project.version}</version>
