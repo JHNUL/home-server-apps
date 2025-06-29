@@ -24,14 +24,16 @@ public class DeviceService {
     public Uni<Device> findOrCreateDevice(String deviceIdentifier) {
         return deviceRepository.findByIdentifier(deviceIdentifier)
                 .onItem().ifNotNull().transform(device -> device)
-                .onItem().ifNull().switchTo(() -> deviceTypeRepository.findByName(DeviceTypeName.TEMPERATURE_HUMIDITY_SENSOR)
-                        .onItem().ifNull().failWith(() -> new NotFoundException("Device type " + DeviceTypeName.TEMPERATURE_HUMIDITY_SENSOR + " not found."))
-                        .onItem().transformToUni(deviceType -> {
-                            Device device = new Device()
-                                    .setDeviceType(deviceType)
-                                    .setIdentifier(deviceIdentifier);
-                            return deviceRepository.persist(device);
-                        }));
+                .onItem().ifNull().switchTo(() ->
+                        // Right now only one type of device exists
+                        deviceTypeRepository.findByName(DeviceTypeName.TEMPERATURE_HUMIDITY_SENSOR)
+                                .onItem().ifNull().failWith(() -> new NotFoundException("Device type " + DeviceTypeName.TEMPERATURE_HUMIDITY_SENSOR + " not found."))
+                                .onItem().transformToUni(deviceType -> {
+                                    Device device = new Device()
+                                            .setDeviceType(deviceType)
+                                            .setIdentifier(deviceIdentifier);
+                                    return deviceRepository.persist(device);
+                                }));
     }
 
 }

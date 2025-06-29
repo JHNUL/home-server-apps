@@ -6,6 +6,7 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.Response;
 import org.jboss.logging.Logger;
+import org.juhanir.domain.sensordata.dto.outgoing.DeviceResponse;
 import org.juhanir.domain.sensordata.dto.outgoing.HumidityStatusResponse;
 import org.juhanir.domain.sensordata.dto.outgoing.TemperatureStatusResponse;
 import org.juhanir.message_server.repository.DeviceRepository;
@@ -31,6 +32,16 @@ public class DeviceResource implements DeviceApi {
         this.temperatureStorage = temperatureStorage;
         this.humidityStorage = humidityStorage;
         this.deviceStorage = deviceStorage;
+    }
+
+    @Override
+    @WithSession
+    public Uni<Response> getDevice(String deviceIdentifier) {
+        return deviceStorage.findByIdentifierWithType(deviceIdentifier)
+                .onItem().ifNull()
+                .failWith(new NotFoundException("No device found with identifier %s".formatted(deviceIdentifier)))
+                .onItem()
+                .transform(device -> Response.ok(DeviceResponse.fromDevice(device)).build());
     }
 
     @Override

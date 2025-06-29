@@ -11,12 +11,26 @@ import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.juhanir.domain.sensordata.dto.outgoing.DeviceResponse;
 import org.juhanir.domain.sensordata.dto.outgoing.HumidityStatusResponse;
 import org.juhanir.domain.sensordata.dto.outgoing.TemperatureStatusResponse;
 
 @Path("devices")
 public interface DeviceApi {
 
+    @GET
+    @Path("/{deviceIdentifier}")
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Fetch one device.")
+    @APIResponse(
+            responseCode = "200",
+            description = "Device fetched successfully",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON,
+                    schema = @Schema(implementation = DeviceResponse.class)
+            )
+    )
+    Uni<Response> getDevice(@PathParam("deviceIdentifier") String deviceIdentifier);
 
     @GET
     @Path("/{deviceIdentifier}/temperature")
