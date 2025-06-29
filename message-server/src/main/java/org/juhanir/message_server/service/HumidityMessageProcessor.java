@@ -19,12 +19,18 @@ public class HumidityMessageProcessor implements StatusMessageProcessor {
     private final ObjectMapper mapper;
     private final HumidityRepository humidityRepository;
     private final EventBus eventBus;
+    private final DeviceService deviceService;
 
     @Inject
-    public HumidityMessageProcessor(ObjectMapper mapper, HumidityRepository humidityRepository, EventBus eventBus) {
+    public HumidityMessageProcessor(
+            ObjectMapper mapper,
+            HumidityRepository humidityRepository,
+            EventBus eventBus,
+            DeviceService deviceService) {
         this.mapper = mapper;
         this.humidityRepository = humidityRepository;
         this.eventBus = eventBus;
+        this.deviceService = deviceService;
     }
 
     @Override
@@ -33,12 +39,19 @@ public class HumidityMessageProcessor implements StatusMessageProcessor {
     }
 
     @Override
-    public Uni<Void> process(String payload, Device device) {
-        return Uni.createFrom().item(Unchecked.supplier(() ->
-                        HumidityStatus.fromMqttPayload(mapper.readValue(payload, HumidityStatusMqttPayload.class))
-                ))
-                .onItem().invoke(hs -> hs.setDevice(device))
-                .onItem().transformToUni(humidityRepository::persistHumidity)
+    public Uni<Void> process(String payload, String deviceIdentifier) {
+        Uni<HumidityStatus> hStatus = Uni.createFrom().item(Unchecked.supplier(() ->
+                HumidityStatus.fromMqttPayload(mapper.readValue(payload, HumidityStatusMqttPayload.class))
+        ));
+        Uni<Device> deviceUni = deviceService.findOrCreateDevice(deviceIdentifier);
+        return Uni.combine()
+                .all()
+                .unis(hStatus, deviceUni)
+                .asTuple()
+                .onItem().transformToUni(tuple -> {
+                    tuple.getItem1().setDevice(tuple.getItem2());
+                    return humidityRepository.persist(tuple.getItem1());
+                })
                 .onItem().transform(ts -> eventBus.send("message", String.valueOf(ts.getId())))
                 .replaceWithVoid();
     }

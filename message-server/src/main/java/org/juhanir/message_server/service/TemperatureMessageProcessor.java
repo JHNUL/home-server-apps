@@ -19,12 +19,18 @@ public class TemperatureMessageProcessor implements StatusMessageProcessor {
     private final ObjectMapper mapper;
     private final TemperatureRepository temperatureRepository;
     private final EventBus eventBus;
+    private final DeviceService deviceService;
 
     @Inject
-    public TemperatureMessageProcessor(ObjectMapper mapper, TemperatureRepository temperatureRepository, EventBus eventBus) {
+    public TemperatureMessageProcessor(
+            ObjectMapper mapper,
+            TemperatureRepository temperatureRepository,
+            EventBus eventBus,
+            DeviceService deviceService) {
         this.mapper = mapper;
         this.temperatureRepository = temperatureRepository;
         this.eventBus = eventBus;
+        this.deviceService = deviceService;
     }
 
     @Override
@@ -32,12 +38,20 @@ public class TemperatureMessageProcessor implements StatusMessageProcessor {
         return StatusMessageType.TEMPERATURE;
     }
 
-    public Uni<Void> process(String payload, Device device) {
-        return Uni.createFrom().item(Unchecked.supplier(() ->
-                        TemperatureStatus.fromMqttPayload(mapper.readValue(payload, TemperatureStatusMqttPayload.class))
-                ))
-                .onItem().invoke(ts -> ts.setDevice(device))
-                .onItem().transformToUni(temperatureRepository::persistTemperature)
+    @Override
+    public Uni<Void> process(String payload, String deviceIdentifier) {
+        Uni<TemperatureStatus> hStatus = Uni.createFrom().item(Unchecked.supplier(() ->
+                TemperatureStatus.fromMqttPayload(mapper.readValue(payload, TemperatureStatusMqttPayload.class))
+        ));
+        Uni<Device> deviceUni = deviceService.findOrCreateDevice(deviceIdentifier);
+        return Uni.combine()
+                .all()
+                .unis(hStatus, deviceUni)
+                .asTuple()
+                .onItem().transformToUni(tuple -> {
+                    tuple.getItem1().setDevice(tuple.getItem2());
+                    return temperatureRepository.persist(tuple.getItem1());
+                })
                 .onItem().transform(ts -> eventBus.send("message", String.valueOf(ts.getId())))
                 .replaceWithVoid();
     }

@@ -8,20 +8,17 @@ import jakarta.inject.Inject;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.eclipse.microprofile.reactive.messaging.Message;
 import org.jboss.logging.Logger;
-import org.juhanir.message_server.service.DeviceService;
 
 @ApplicationScoped
 public class StatusClient {
 
     private static final Logger LOG = Logger.getLogger(StatusClient.class);
 
-    private final DeviceService deviceService;
     private final StatusMessageProcessorFactory processorFactory;
 
 
     @Inject
-    public StatusClient(DeviceService deviceService, StatusMessageProcessorFactory processorFactory) {
-        this.deviceService = deviceService;
+    public StatusClient(StatusMessageProcessorFactory processorFactory) {
         this.processorFactory = processorFactory;
     }
 
@@ -52,9 +49,9 @@ public class StatusClient {
 
         LOG.infof("Message from %s, to topic %s, payload %s", deviceIdentifier, topic, messagePayload);
 
-        return deviceService.findOrCreateDevice(deviceIdentifier)
-                .onItem()
-                .transformToUni(device -> processorFactory.get(statusType).process(messagePayload, device))
+        return processorFactory
+                .get(statusType)
+                .process(messagePayload, deviceIdentifier)
                 .onFailure().invoke(throwable -> {
                     String errorMsg = "Failed to process message from %s: %s".formatted(deviceIdentifier, throwable.getMessage());
                     LOG.error(errorMsg, throwable);
