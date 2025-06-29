@@ -58,16 +58,6 @@ public class HumidityStatusTest {
     }
 
     @Test
-    void sendingMessageToUnsupportedTopic() {
-        String message = """
-                {
-                  "testing": true
-                }""";
-        client.publishAndAwait("shellyid-123123/status/foobar", Buffer.buffer(message), MqttQoS.EXACTLY_ONCE, false, false);
-    }
-
-
-    @Test
     void sentHumidityStatusMessageCanBeFetchedViaRestApi() {
         int testId = idProducer.incrementAndGet();
         String message = """

@@ -10,7 +10,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "temperature_status", schema = "sensor")
-public class TemperatureStatus extends BaseEntity {
+public class TemperatureStatus extends BaseEntity implements DeviceStatusMeasurement {
 
     /**
      * Devices report their component ids per sensor.

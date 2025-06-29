@@ -36,6 +36,15 @@ You can run your application in dev mode:
 mvn quarkus:dev
 ```
 
+## Testing
+
+Integration tests can be run from project root with;
+```shell
+mvn --projects message-server --also-make clean test
+```
+
+This way the homeserver-common library, which is a dependency of message-server, is also compiled.
+
 ## Packaging the application
 
 The application can be packaged using:
