@@ -53,7 +53,6 @@ public class DeviceResourceTest {
                   "id": 11,
                   "rh": 99
                 }""";
-        System.out.println(DeviceTypeName.TEMPERATURE_HUMIDITY_SENSOR);
         client.publishAndAwait("%s/status/humidity:0".formatted(identifier), Buffer.buffer(message), MqttQoS.EXACTLY_ONCE, false, false);
         AwaitUtils.awaitAssertion(() -> {
             given()
