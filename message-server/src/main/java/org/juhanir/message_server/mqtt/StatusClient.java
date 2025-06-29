@@ -2,6 +2,7 @@ package org.juhanir.message_server.mqtt;
 
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
+import io.smallrye.mutiny.unchecked.Unchecked;
 import io.smallrye.reactive.messaging.mqtt.MqttMessageMetadata;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -15,11 +16,13 @@ public class StatusClient {
     private static final Logger LOG = Logger.getLogger(StatusClient.class);
 
     private final StatusMessageProcessorFactory processorFactory;
+    private final StatusMessageMapperFactory mapperFactory;
 
 
     @Inject
-    public StatusClient(StatusMessageProcessorFactory processorFactory) {
+    public StatusClient(StatusMessageProcessorFactory processorFactory, StatusMessageMapperFactory mapperFactory) {
         this.processorFactory = processorFactory;
+        this.mapperFactory = mapperFactory;
     }
 
     private String getDeviceIdentifierFromTopic(String topic) {
@@ -48,10 +51,10 @@ public class StatusClient {
         String messagePayload = msg.getPayload();
 
         LOG.infof("Message from %s, to topic %s, payload %s", deviceIdentifier, topic, messagePayload);
-
-        return processorFactory
-                .get(statusType)
-                .process(messagePayload, deviceIdentifier)
+        return Uni.createFrom()
+                .item(Unchecked.supplier(() -> mapperFactory.get(statusType).mapFromMqtt(messagePayload)))
+                .onItem()
+                .transformToUni(measurement -> processorFactory.get(statusType).process(measurement, deviceIdentifier))
                 .onFailure().invoke(throwable -> {
                     String errorMsg = "Failed to process message from %s: %s".formatted(deviceIdentifier, throwable.getMessage());
                     LOG.error(errorMsg, throwable);
