@@ -20,7 +20,6 @@ public class StatusClient {
     private final StatusMessageProcessorFactory processorFactory;
     private final StatusMessageMapperFactory mapperFactory;
 
-
     @Inject
     public StatusClient(StatusMessageProcessorFactory processorFactory, StatusMessageMapperFactory mapperFactory) {
         this.processorFactory = processorFactory;
