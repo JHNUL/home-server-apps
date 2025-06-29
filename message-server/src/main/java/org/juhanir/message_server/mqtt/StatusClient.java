@@ -1,53 +1,34 @@
 package org.juhanir.message_server.mqtt;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
-import io.smallrye.mutiny.unchecked.Unchecked;
 import io.smallrye.reactive.messaging.mqtt.MqttMessageMetadata;
-import io.vertx.mutiny.core.eventbus.EventBus;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.NotFoundException;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.eclipse.microprofile.reactive.messaging.Message;
 import org.jboss.logging.Logger;
-import org.juhanir.domain.sensordata.dto.incoming.HumidityStatusMqttPayload;
-import org.juhanir.domain.sensordata.dto.incoming.TemperatureStatusMqttPayload;
-import org.juhanir.domain.sensordata.entity.Device;
-import org.juhanir.domain.sensordata.entity.DeviceTypeName;
-import org.juhanir.domain.sensordata.entity.HumidityStatus;
-import org.juhanir.domain.sensordata.entity.TemperatureStatus;
-import org.juhanir.message_server.repository.DeviceRepository;
-import org.juhanir.message_server.repository.DeviceTypeRepository;
-import org.juhanir.message_server.repository.HumidityRepository;
-import org.juhanir.message_server.repository.TemperatureRepository;
+import org.juhanir.message_server.service.DeviceService;
+import org.juhanir.message_server.service.HumidityService;
+import org.juhanir.message_server.service.TemperatureService;
 
 @ApplicationScoped
 public class StatusClient {
 
     private static final Logger LOG = Logger.getLogger(StatusClient.class);
-    private final EventBus bus;
-    private final TemperatureRepository repository;
-    private final DeviceRepository deviceRepository;
-    private final DeviceTypeRepository deviceTypeRepository;
-    private final HumidityRepository humidityRepository;
-    private final ObjectMapper mapper;
+    private static final String STATUS_TOPIC_HUMIDITY = "humidity";
+    private static final String STATUS_TOPIC_TEMPERATURE = "temperature";
+
+    private final TemperatureService temperatureService;
+    private final HumidityService humidityService;
+    private final DeviceService deviceService;
+
 
     @Inject
-    public StatusClient(
-            EventBus bus,
-            TemperatureRepository repository,
-            DeviceRepository deviceRepository,
-            DeviceTypeRepository deviceTypeRepository,
-            HumidityRepository humidityRepository,
-            ObjectMapper mapper) {
-        this.bus = bus;
-        this.repository = repository;
-        this.deviceRepository = deviceRepository;
-        this.deviceTypeRepository = deviceTypeRepository;
-        this.humidityRepository = humidityRepository;
-        this.mapper = mapper;
+    public StatusClient(TemperatureService temperatureService, HumidityService humidityService, DeviceService deviceService) {
+        this.temperatureService = temperatureService;
+        this.humidityService = humidityService;
+        this.deviceService = deviceService;
     }
 
     private String getDeviceIdentifierFromTopic(String topic) {
@@ -77,11 +58,11 @@ public class StatusClient {
 
         LOG.infof("Message from %s, to topic %s, payload %s", deviceIdentifier, topic, messagePayload);
 
-        return findOrCreateDevice(deviceIdentifier)
+        return deviceService.findOrCreateDevice(deviceIdentifier)
                 .onItem()
                 .transformToUni(device -> switch (statusType) {
-                    case "humidity" -> processHumidity(messagePayload, device);
-                    case "temperature" -> processTemperature(messagePayload, device);
+                    case STATUS_TOPIC_HUMIDITY -> humidityService.processHumidity(messagePayload, device);
+                    case STATUS_TOPIC_TEMPERATURE -> temperatureService.processTemperature(messagePayload, device);
                     default -> {
                         LOG.warnf("Unsupported status topic %s", statusType);
                         yield Uni.createFrom().voidItem();
@@ -94,36 +75,4 @@ public class StatusClient {
                 .onFailure().recoverWithUni(err -> Uni.createFrom().voidItem());
     }
 
-    private Uni<Device> findOrCreateDevice(String deviceIdentifier) {
-        return deviceRepository.findByIdentifier(deviceIdentifier)
-                .onItem().ifNotNull().transform(device -> device)
-                .onItem().ifNull().switchTo(() -> deviceTypeRepository.findByName(DeviceTypeName.TEMPERATURE_HUMIDITY_SENSOR)
-                        .onItem().ifNull().failWith(() -> new NotFoundException("Device type " + DeviceTypeName.TEMPERATURE_HUMIDITY_SENSOR + " not found."))
-                        .onItem().transformToUni(deviceType -> {
-                            Device device = new Device()
-                                    .setDeviceType(deviceType)
-                                    .setIdentifier(deviceIdentifier);
-                            return deviceRepository.persist(device);
-                        }));
-    }
-
-    private Uni<Void> processTemperature(String payload, Device device) {
-        return Uni.createFrom().item(Unchecked.supplier(() ->
-                        TemperatureStatus.fromMqttPayload(mapper.readValue(payload, TemperatureStatusMqttPayload.class))
-                ))
-                .onItem().invoke(ts -> ts.setDevice(device))
-                .onItem().transformToUni(repository::persistTemperature)
-                .onItem().transform(ts -> bus.send("message", String.valueOf(ts.getId())))
-                .replaceWithVoid();
-    }
-
-    private Uni<Void> processHumidity(String payload, Device device) {
-        return Uni.createFrom().item(Unchecked.supplier(() ->
-                        HumidityStatus.fromMqttPayload(mapper.readValue(payload, HumidityStatusMqttPayload.class))
-                ))
-                .onItem().invoke(hs -> hs.setDevice(device))
-                .onItem().transformToUni(humidityRepository::persistHumidity)
-                .onItem().transform(ts -> bus.send("message", String.valueOf(ts.getId())))
-                .replaceWithVoid();
-    }
 }
