@@ -9,6 +9,8 @@ import jakarta.inject.Inject;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.eclipse.microprofile.reactive.messaging.Message;
 import org.jboss.logging.Logger;
+import org.juhanir.message_server.message.mapper.StatusMessageMapperFactory;
+import org.juhanir.message_server.message.processor.StatusMessageProcessorFactory;
 
 @ApplicationScoped
 public class StatusClient {

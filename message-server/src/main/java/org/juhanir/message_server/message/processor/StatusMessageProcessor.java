@@ -1,7 +1,8 @@
-package org.juhanir.message_server.mqtt;
+package org.juhanir.message_server.message.processor;
 
 import io.smallrye.mutiny.Uni;
 import org.juhanir.domain.sensordata.entity.DeviceStatusMeasurement;
+import org.juhanir.message_server.mqtt.StatusMessageType;
 
 public interface StatusMessageProcessor {
 

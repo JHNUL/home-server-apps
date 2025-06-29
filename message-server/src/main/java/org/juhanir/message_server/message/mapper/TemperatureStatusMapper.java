@@ -1,4 +1,4 @@
-package org.juhanir.message_server.mqtt;
+package org.juhanir.message_server.message.mapper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -7,6 +7,7 @@ import jakarta.inject.Inject;
 import org.juhanir.domain.sensordata.dto.incoming.TemperatureStatusMqttPayload;
 import org.juhanir.domain.sensordata.entity.DeviceStatusMeasurement;
 import org.juhanir.domain.sensordata.entity.TemperatureStatus;
+import org.juhanir.message_server.mqtt.StatusMessageType;
 
 @ApplicationScoped
 public class TemperatureStatusMapper implements StatusMessageMapper {

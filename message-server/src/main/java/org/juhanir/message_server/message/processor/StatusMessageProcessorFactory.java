@@ -1,9 +1,10 @@
-package org.juhanir.message_server.mqtt;
+package org.juhanir.message_server.message.processor;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.NotSupportedException;
+import org.juhanir.message_server.mqtt.StatusMessageType;
 
 import java.util.Map;
 import java.util.Optional;

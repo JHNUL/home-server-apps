@@ -1,35 +1,35 @@
-package org.juhanir.message_server.service;
+package org.juhanir.message_server.message.processor;
 
 import io.smallrye.mutiny.Uni;
 import io.vertx.mutiny.core.eventbus.EventBus;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.juhanir.domain.sensordata.entity.DeviceStatusMeasurement;
-import org.juhanir.domain.sensordata.entity.TemperatureStatus;
-import org.juhanir.message_server.mqtt.StatusMessageProcessor;
+import org.juhanir.domain.sensordata.entity.HumidityStatus;
 import org.juhanir.message_server.mqtt.StatusMessageType;
-import org.juhanir.message_server.repository.TemperatureRepository;
+import org.juhanir.message_server.repository.HumidityRepository;
+import org.juhanir.message_server.service.DeviceService;
 
 @ApplicationScoped
-public class TemperatureMessageProcessor implements StatusMessageProcessor {
+public class HumidityMessageProcessor implements StatusMessageProcessor {
 
-    private final TemperatureRepository temperatureRepository;
+    private final HumidityRepository humidityRepository;
     private final EventBus eventBus;
     private final DeviceService deviceService;
 
     @Inject
-    public TemperatureMessageProcessor(
-            TemperatureRepository temperatureRepository,
+    public HumidityMessageProcessor(
+            HumidityRepository humidityRepository,
             EventBus eventBus,
             DeviceService deviceService) {
-        this.temperatureRepository = temperatureRepository;
+        this.humidityRepository = humidityRepository;
         this.eventBus = eventBus;
         this.deviceService = deviceService;
     }
 
     @Override
     public StatusMessageType getType() {
-        return StatusMessageType.TEMPERATURE;
+        return StatusMessageType.HUMIDITY;
     }
 
     @Override
@@ -37,7 +37,7 @@ public class TemperatureMessageProcessor implements StatusMessageProcessor {
         return deviceService.findOrCreateDevice(deviceIdentifier)
                 .onItem().transformToUni(device -> {
                     measurement.setDevice(device);
-                    return temperatureRepository.persist((TemperatureStatus) measurement);
+                    return humidityRepository.persist((HumidityStatus) measurement);
                 })
                 .onItem().transform(ts -> eventBus.send("message", String.valueOf(ts.getId())))
                 .replaceWithVoid();
