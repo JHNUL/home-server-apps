@@ -12,4 +12,8 @@ public class DeviceRepository implements PanacheRepository<Device> {
         return find("identifier", identifier).firstResult();
     }
 
+    public Uni<Device> findByIdentifierWithType(String identifier) {
+        return find("select d from Device d join fetch d.deviceType where d.identifier = ?1", identifier).firstResult();
+    }
+
 }
