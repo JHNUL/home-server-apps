@@ -9,24 +9,30 @@ import jakarta.inject.Inject;
 import org.juhanir.domain.sensordata.dto.incoming.TemperatureStatusMqttPayload;
 import org.juhanir.domain.sensordata.entity.Device;
 import org.juhanir.domain.sensordata.entity.TemperatureStatus;
+import org.juhanir.message_server.mqtt.StatusMessageProcessor;
+import org.juhanir.message_server.mqtt.StatusMessageType;
 import org.juhanir.message_server.repository.TemperatureRepository;
 
 @ApplicationScoped
-public class TemperatureService {
+public class TemperatureMessageProcessor implements StatusMessageProcessor {
 
     private final ObjectMapper mapper;
     private final TemperatureRepository temperatureRepository;
     private final EventBus eventBus;
 
-
     @Inject
-    public TemperatureService(ObjectMapper mapper, TemperatureRepository temperatureRepository, EventBus eventBus) {
+    public TemperatureMessageProcessor(ObjectMapper mapper, TemperatureRepository temperatureRepository, EventBus eventBus) {
         this.mapper = mapper;
         this.temperatureRepository = temperatureRepository;
         this.eventBus = eventBus;
     }
 
-    public Uni<Void> processTemperature(String payload, Device device) {
+    @Override
+    public StatusMessageType getType() {
+        return StatusMessageType.TEMPERATURE;
+    }
+
+    public Uni<Void> process(String payload, Device device) {
         return Uni.createFrom().item(Unchecked.supplier(() ->
                         TemperatureStatus.fromMqttPayload(mapper.readValue(payload, TemperatureStatusMqttPayload.class))
                 ))

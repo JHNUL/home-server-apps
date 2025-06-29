@@ -9,26 +9,20 @@ import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.eclipse.microprofile.reactive.messaging.Message;
 import org.jboss.logging.Logger;
 import org.juhanir.message_server.service.DeviceService;
-import org.juhanir.message_server.service.HumidityService;
-import org.juhanir.message_server.service.TemperatureService;
 
 @ApplicationScoped
 public class StatusClient {
 
     private static final Logger LOG = Logger.getLogger(StatusClient.class);
-    private static final String STATUS_TOPIC_HUMIDITY = "humidity";
-    private static final String STATUS_TOPIC_TEMPERATURE = "temperature";
 
-    private final TemperatureService temperatureService;
-    private final HumidityService humidityService;
     private final DeviceService deviceService;
+    private final StatusMessageProcessorFactory processorFactory;
 
 
     @Inject
-    public StatusClient(TemperatureService temperatureService, HumidityService humidityService, DeviceService deviceService) {
-        this.temperatureService = temperatureService;
-        this.humidityService = humidityService;
+    public StatusClient(DeviceService deviceService, StatusMessageProcessorFactory processorFactory) {
         this.deviceService = deviceService;
+        this.processorFactory = processorFactory;
     }
 
     private String getDeviceIdentifierFromTopic(String topic) {
@@ -60,14 +54,7 @@ public class StatusClient {
 
         return deviceService.findOrCreateDevice(deviceIdentifier)
                 .onItem()
-                .transformToUni(device -> switch (statusType) {
-                    case STATUS_TOPIC_HUMIDITY -> humidityService.processHumidity(messagePayload, device);
-                    case STATUS_TOPIC_TEMPERATURE -> temperatureService.processTemperature(messagePayload, device);
-                    default -> {
-                        LOG.warnf("Unsupported status topic %s", statusType);
-                        yield Uni.createFrom().voidItem();
-                    }
-                })
+                .transformToUni(device -> processorFactory.get(statusType).process(messagePayload, device))
                 .onFailure().invoke(throwable -> {
                     String errorMsg = "Failed to process message from %s: %s".formatted(deviceIdentifier, throwable.getMessage());
                     LOG.error(errorMsg, throwable);
