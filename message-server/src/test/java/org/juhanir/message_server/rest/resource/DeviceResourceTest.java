@@ -19,7 +19,7 @@ import static org.hamcrest.Matchers.instanceOf;
 public class DeviceResourceTest {
 
     @Inject
-    Mutiny.SessionFactory sessionFactory;
+    private Mutiny.SessionFactory sessionFactory;
 
     @Test
     void fetchingNonExistingDeviceResultIsNotFound() {
