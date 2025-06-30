@@ -1,10 +1,7 @@
 package org.juhanir.message_server.rest.api;
 
 import io.smallrye.mutiny.Uni;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.openapi.annotations.Operation;
@@ -38,13 +35,16 @@ public interface DeviceApi {
     @Operation(summary = "Get a list of temperatures for a given device.")
     @APIResponse(
             responseCode = "200",
-            description = "Temperatures fetched succesfully",
+            description = "Temperatures fetched successfully",
             content = @Content(
                     mediaType = MediaType.APPLICATION_JSON,
                     schema = @Schema(implementation = TemperatureStatusResponse.class)
             )
     )
-    Uni<Response> getTemperatures(@PathParam("deviceIdentifier") String deviceIdentifier);
+    Uni<Response> getTemperatures(
+            @PathParam("deviceIdentifier") String deviceIdentifier,
+            @BeanParam TimeSeriesQueryParams queryParams
+    );
 
     @GET
     @Path("/{deviceIdentifier}/humidity")
@@ -52,12 +52,15 @@ public interface DeviceApi {
     @Operation(summary = "Get a list of humidity readings for a given device.")
     @APIResponse(
             responseCode = "200",
-            description = "Humidity readings fetched succesfully",
+            description = "Humidity readings fetched successfully",
             content = @Content(
                     mediaType = MediaType.APPLICATION_JSON,
                     schema = @Schema(implementation = HumidityStatusResponse.class)
             )
     )
-    Uni<Response> getHumidity(@PathParam("deviceIdentifier") String deviceIdentifier);
+    Uni<Response> getHumidity(
+            @PathParam("deviceIdentifier") String deviceIdentifier,
+            @BeanParam TimeSeriesQueryParams queryParams
+    );
 
 }

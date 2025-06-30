@@ -13,6 +13,7 @@ import org.juhanir.message_server.repository.DeviceRepository;
 import org.juhanir.message_server.repository.HumidityRepository;
 import org.juhanir.message_server.repository.TemperatureRepository;
 import org.juhanir.message_server.rest.api.DeviceApi;
+import org.juhanir.message_server.rest.api.TimeSeriesQueryParams;
 
 import java.util.List;
 
@@ -46,7 +47,7 @@ public class DeviceResource implements DeviceApi {
 
     @Override
     @WithSession
-    public Uni<Response> getTemperatures(String deviceIdentifier) {
+    public Uni<Response> getTemperatures(String deviceIdentifier, TimeSeriesQueryParams queryParams) {
         return deviceStorage.findByIdentifier(deviceIdentifier)
                 .onItem()
                 .ifNull()
@@ -65,7 +66,7 @@ public class DeviceResource implements DeviceApi {
 
     @Override
     @WithSession
-    public Uni<Response> getHumidity(String deviceIdentifier) {
+    public Uni<Response> getHumidity(String deviceIdentifier, TimeSeriesQueryParams queryParams) {
         return deviceStorage.findByIdentifier(deviceIdentifier)
                 .onItem()
                 .ifNull()
