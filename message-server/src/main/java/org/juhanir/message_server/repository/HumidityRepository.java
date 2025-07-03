@@ -14,7 +14,4 @@ public class HumidityRepository implements PanacheRepository<HumidityStatus> {
         return find("device.id", deviceId).list();
     }
 
-    public Uni<HumidityStatus> persistHumidity(HumidityStatus hs) {
-        return persist(hs);
-    }
 }

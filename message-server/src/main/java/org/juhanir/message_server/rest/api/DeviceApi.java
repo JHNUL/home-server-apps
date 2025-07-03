@@ -1,6 +1,7 @@
 package org.juhanir.message_server.rest.api;
 
 import io.smallrye.mutiny.Uni;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -56,7 +57,7 @@ public interface DeviceApi {
     )
     Uni<Response> getTemperatures(
             @PathParam("deviceIdentifier") String deviceIdentifier,
-            @BeanParam TimeSeriesQueryParams queryParams
+            @BeanParam @Valid TimeSeriesQueryParams queryParams
     );
 
     @GET
@@ -73,7 +74,7 @@ public interface DeviceApi {
     )
     Uni<Response> getHumidity(
             @PathParam("deviceIdentifier") String deviceIdentifier,
-            @BeanParam TimeSeriesQueryParams queryParams
+            @BeanParam @Valid TimeSeriesQueryParams queryParams
     );
 
 }

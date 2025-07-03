@@ -68,7 +68,7 @@ public class DeviceResource implements DeviceApi {
                 .failWith(new NotFoundException("No device found with identifier %s".formatted(deviceIdentifier)))
                 .onItem()
                 .transformToUni(device -> temperatureStorage
-                        .findByDeviceId(device.getId())
+                        .findByDeviceId(device.getId(), queryParams)
                         .map(temps -> {
                             List<TemperatureStatusResponse> body = temps
                                     .stream()
