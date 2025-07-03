@@ -16,6 +16,19 @@ import org.juhanir.domain.sensordata.dto.outgoing.TemperatureStatusResponse;
 public interface DeviceApi {
 
     @GET
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Fetch all devices.")
+    @APIResponse(
+            responseCode = "200",
+            description = "Devices fetched successfully",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON,
+                    schema = @Schema(implementation = DeviceResponse.class)
+            )
+    )
+    Uni<Response> getDevices();
+
+    @GET
     @Path("/{deviceIdentifier}")
     @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Fetch one device.")

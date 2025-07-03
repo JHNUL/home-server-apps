@@ -1,6 +1,7 @@
 package org.juhanir.message_server.rest.resource;
 
 import io.quarkus.hibernate.reactive.panache.common.WithSession;
+import io.quarkus.panache.common.Sort;
 import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.NotFoundException;
@@ -33,6 +34,19 @@ public class DeviceResource implements DeviceApi {
         this.temperatureStorage = temperatureStorage;
         this.humidityStorage = humidityStorage;
         this.deviceStorage = deviceStorage;
+    }
+
+    @Override
+    @WithSession
+    public Uni<Response> getDevices() {
+        return deviceStorage.findAllWithType(Sort.ascending("createdAt"))
+                .map(devices -> {
+                    List<DeviceResponse> body = devices
+                            .stream()
+                            .map(DeviceResponse::fromDevice)
+                            .toList();
+                    return Response.ok(body).build();
+                });
     }
 
     @Override

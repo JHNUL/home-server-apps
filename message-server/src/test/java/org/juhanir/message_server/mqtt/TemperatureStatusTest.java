@@ -75,7 +75,7 @@ public class TemperatureStatusTest {
                     .body("[0].componentId", equalTo(2))
                     .body("[0].valueCelsius", equalTo(19.6f))
                     .body("[0].valueFahrenheit", equalTo(67.3f))
-                    .body("[0].measurementTime", matchesPattern(DT_PATTERN));
+                    .body("[0].measurementTime", matchesPattern(DATETIME_PATTERN));
         });
     }
 
@@ -100,7 +100,7 @@ public class TemperatureStatusTest {
                     .body("[0].componentId", equalTo(1))
                     .body("[0].valueCelsius", equalTo(29.6f))
                     .body("[0].valueFahrenheit", equalTo(71.3f))
-                    .body("[0].measurementTime", matchesPattern(DT_PATTERN));
+                    .body("[0].measurementTime", matchesPattern(DATETIME_PATTERN));
         });
     }
 

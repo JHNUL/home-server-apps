@@ -3,6 +3,7 @@ package org.juhanir.domain.sensordata.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 
@@ -23,6 +24,20 @@ public class Device extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "device_type", nullable = false)
     private DeviceType deviceType;
+
+    /**
+     * When the device was created.
+     */
+    @NotNull
+    @Column(name = "created_at", nullable = false)
+    private Instant createdAt;
+
+    /**
+     * When the device last sent some message.
+     */
+    @NotNull
+    @Column(name = "latest_communication")
+    private Instant latestCommunication;
 
     /**
      * The temperature readings belonging to this device.
@@ -69,6 +84,24 @@ public class Device extends BaseEntity {
 
     public Device setHumidityStatuses(List<HumidityStatus> humidityStatuses) {
         this.humidityStatuses = humidityStatuses;
+        return this;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public Device setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+        return this;
+    }
+
+    public Instant getLatestCommunication() {
+        return latestCommunication;
+    }
+
+    public Device setLatestCommunication(Instant latestCommunication) {
+        this.latestCommunication = latestCommunication;
         return this;
     }
 
