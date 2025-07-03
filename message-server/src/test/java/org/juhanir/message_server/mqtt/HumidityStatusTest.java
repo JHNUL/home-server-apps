@@ -6,40 +6,32 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.vertx.mutiny.core.Vertx;
 import io.vertx.mutiny.core.buffer.Buffer;
 import io.vertx.mutiny.mqtt.MqttClient;
-import jakarta.inject.Inject;
-import org.hibernate.reactive.mutiny.Mutiny;
 import org.juhanir.message_server.MessageServerTestResource;
 import org.juhanir.message_server.utils.AwaitUtils;
+import org.juhanir.message_server.utils.DatabaseUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
-import static org.juhanir.message_server.utils.TestConstants.*;
+import static org.juhanir.message_server.utils.TestConstants.DATETIME_PATTERN;
+import static org.juhanir.message_server.utils.TestConstants.HUMIDITY_URL_TPL;
 
 
 @QuarkusTest
 @QuarkusTestResource(value = MessageServerTestResource.class)
-public class HumidityStatusTest {
+public class HumidityStatusTest extends DatabaseUtils {
 
     private static MqttClient client;
     private static final String SENDER = "shellyid-123123";
     private static final String TOPIC = "%s/status/humidity:0".formatted(SENDER);
 
-    @Inject
-    private Mutiny.SessionFactory sessionFactory;
-
     @BeforeEach
     void setUp() {
         client = MqttClient.create(Vertx.vertx());
         client.connectAndAwait(1883, "localhost");
-        sessionFactory
-                .withTransaction((session, tx) ->
-                        session.createNativeQuery(EMPTY_HUMIDITY_MEASUREMENTS).executeUpdate()
-                )
-                .await()
-                .indefinitely();
+        deleteAllHumidityMeasurements();
     }
 
     @AfterAll
@@ -59,7 +51,7 @@ public class HumidityStatusTest {
         client.publishAndAwait(TOPIC, Buffer.buffer(message), MqttQoS.EXACTLY_ONCE, false, false);
         AwaitUtils.awaitAssertion(() -> {
             given()
-                    .get(HUMIDITY_URL_TPL.formatted(SENDER))
+                    .get(HUMIDITY_URL_TPL.formatted(SENDER, ""))
                     .then()
                     .statusCode(200)
                     .and()
@@ -87,7 +79,7 @@ public class HumidityStatusTest {
         client.publishAndAwait(TOPIC, Buffer.buffer(validMessage), MqttQoS.EXACTLY_ONCE, false, false);
         AwaitUtils.awaitAssertion(() -> {
             given()
-                    .get(HUMIDITY_URL_TPL.formatted(SENDER))
+                    .get(HUMIDITY_URL_TPL.formatted(SENDER, ""))
                     .then()
                     .statusCode(200)
                     .and()
@@ -104,7 +96,7 @@ public class HumidityStatusTest {
     void humidityStatusMessagesForNonExistingDeviceReturnsNotFound() {
         AwaitUtils.awaitAssertionMaintained(() -> {
             given()
-                    .get(HUMIDITY_URL_TPL.formatted("qwerty123456-foobar"))
+                    .get(HUMIDITY_URL_TPL.formatted("qwerty123456-foobar", ""))
                     .then()
                     .statusCode(404);
         });
