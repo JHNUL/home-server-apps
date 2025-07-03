@@ -68,7 +68,7 @@ public class HumidityStatusTest {
                     .body("[0].deviceId", instanceOf(Number.class))
                     .body("[0].value", equalTo(99.0f))
                     .body("[0].componentId", equalTo(1))
-                    .body("[0].measurementTime", matchesPattern(DT_PATTERN));
+                    .body("[0].measurementTime", matchesPattern(DATETIME_PATTERN));
         });
     }
 
@@ -96,7 +96,7 @@ public class HumidityStatusTest {
                     .body("[0].deviceId", instanceOf(Number.class))
                     .body("[0].value", equalTo(57.6f))
                     .body("[0].componentId", equalTo(1))
-                    .body("[0].measurementTime", matchesPattern(DT_PATTERN));
+                    .body("[0].measurementTime", matchesPattern(DATETIME_PATTERN));
         });
     }
 

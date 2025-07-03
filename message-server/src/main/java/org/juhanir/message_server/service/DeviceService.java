@@ -9,6 +9,8 @@ import org.juhanir.domain.sensordata.entity.DeviceTypeName;
 import org.juhanir.message_server.repository.DeviceRepository;
 import org.juhanir.message_server.repository.DeviceTypeRepository;
 
+import java.time.Instant;
+
 @ApplicationScoped
 public class DeviceService {
 
@@ -29,11 +31,19 @@ public class DeviceService {
                         deviceTypeRepository.findByName(DeviceTypeName.TEMPERATURE_HUMIDITY_SENSOR)
                                 .onItem().ifNull().failWith(() -> new NotFoundException("Device type " + DeviceTypeName.TEMPERATURE_HUMIDITY_SENSOR + " not found."))
                                 .onItem().transformToUni(deviceType -> {
+                                    var now = Instant.now();
                                     Device device = new Device()
                                             .setDeviceType(deviceType)
-                                            .setIdentifier(deviceIdentifier);
+                                            .setIdentifier(deviceIdentifier)
+                                            .setCreatedAt(now)
+                                            .setLatestCommunication(now);
                                     return deviceRepository.persist(device);
                                 }));
+    }
+
+    public Uni<Void> updateDeviceCommunication(Device device) {
+        device.setLatestCommunication(Instant.now());
+        return deviceRepository.persist(device).replaceWithVoid();
     }
 
 }

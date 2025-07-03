@@ -10,6 +10,8 @@ import org.juhanir.message_server.mqtt.StatusMessageType;
 import org.juhanir.message_server.repository.TemperatureRepository;
 import org.juhanir.message_server.service.DeviceService;
 
+import java.time.Instant;
+
 @ApplicationScoped
 public class TemperatureMessageProcessor implements StatusMessageProcessor {
 
@@ -37,7 +39,10 @@ public class TemperatureMessageProcessor implements StatusMessageProcessor {
         return deviceService.findOrCreateDevice(deviceIdentifier)
                 .onItem().transformToUni(device -> {
                     measurement.setDevice(device);
-                    return temperatureRepository.persist((TemperatureStatus) measurement);
+                    return deviceService.updateDeviceCommunication(device)
+                            .onItem()
+                            .ignore()
+                            .andSwitchTo(() -> temperatureRepository.persist((TemperatureStatus) measurement));
                 })
                 .onItem().transform(ts -> eventBus.send("message", String.valueOf(ts.getId())))
                 .replaceWithVoid();

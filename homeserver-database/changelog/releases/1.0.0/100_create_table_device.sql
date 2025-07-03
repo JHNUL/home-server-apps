@@ -1,7 +1,9 @@
 CREATE TABLE sensor.device (
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     identifier VARCHAR(255),
-    device_type INTEGER NOT NULL
+    device_type INTEGER NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    latest_communication TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- identifier is unique
