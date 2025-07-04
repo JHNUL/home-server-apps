@@ -1,5 +1,7 @@
 # Homeserver
 
+[![Java CI with Maven](https://github.com/JHNUL/home-server-apps/actions/workflows/main.yaml/badge.svg?branch=main&event=push)](https://github.com/JHNUL/home-server-apps/actions/workflows/main.yaml)
+
 Homeserver monorepo including the following components.
 
 | Name                | Type      | Description                                                     | Maven module |

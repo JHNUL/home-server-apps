@@ -6,6 +6,7 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
@@ -24,7 +25,7 @@ public interface DeviceApi {
             description = "Devices fetched successfully",
             content = @Content(
                     mediaType = MediaType.APPLICATION_JSON,
-                    schema = @Schema(implementation = DeviceResponse.class)
+                    schema = @Schema(implementation = DeviceResponse.class, type = SchemaType.ARRAY)
             )
     )
     Uni<Response> getDevices();
@@ -52,7 +53,7 @@ public interface DeviceApi {
             description = "Temperatures fetched successfully",
             content = @Content(
                     mediaType = MediaType.APPLICATION_JSON,
-                    schema = @Schema(implementation = TemperatureStatusResponse.class)
+                    schema = @Schema(implementation = TemperatureStatusResponse.class, type = SchemaType.ARRAY)
             )
     )
     Uni<Response> getTemperatures(
@@ -69,7 +70,7 @@ public interface DeviceApi {
             description = "Humidity readings fetched successfully",
             content = @Content(
                     mediaType = MediaType.APPLICATION_JSON,
-                    schema = @Schema(implementation = HumidityStatusResponse.class)
+                    schema = @Schema(implementation = HumidityStatusResponse.class, type = SchemaType.ARRAY)
             )
     )
     Uni<Response> getHumidity(

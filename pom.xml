@@ -20,6 +20,7 @@
         <awaitility.version>4.3.0</awaitility.version>
         <skipITs>true</skipITs>
         <surefire-plugin.version>3.5.3</surefire-plugin.version>
+        <smallrye-open-api-maven-plugin.version>4.1.1</smallrye-open-api-maven-plugin.version>
     </properties>
 
     <modules>
