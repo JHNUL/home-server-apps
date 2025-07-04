@@ -6,12 +6,16 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.vertx.mutiny.core.Vertx;
 import io.vertx.mutiny.core.buffer.Buffer;
 import io.vertx.mutiny.mqtt.MqttClient;
+import org.juhanir.domain.sensordata.dto.outgoing.DeviceResponse;
 import org.juhanir.message_server.MessageServerTestResource;
 import org.juhanir.message_server.utils.AwaitUtils;
 import org.juhanir.message_server.utils.DatabaseUtils;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.time.Instant;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
@@ -103,6 +107,41 @@ public class TemperatureStatusTest extends DatabaseUtils {
                     .get(TEMPERATURE_URL_TPL.formatted("qwerty123456-foobar", ""))
                     .then()
                     .statusCode(404);
+        });
+    }
+
+    @Test
+    void deviceLatestCommunicationTimeIsUpdated() {
+        String identifier = createDeviceToDatabase();
+        String message = """
+                {
+                  "id": 2,
+                  "tC": 19.6,
+                  "tF": 67.3
+                }""";
+        Instant latestCommTime = given()
+                .get("/devices/%s".formatted(identifier))
+                .then()
+                .statusCode(200)
+                .and()
+                .log().body()
+                .extract()
+                .body()
+                .as(DeviceResponse.class)
+                .latestCommunication();
+        client.publishAndAwait(identifier + "/status/temperature:0", Buffer.buffer(message), MqttQoS.EXACTLY_ONCE, false, false);
+        AwaitUtils.awaitAssertion(() -> {
+            Instant newTime = given()
+                    .get("/devices/%s".formatted(identifier))
+                    .then()
+                    .statusCode(200)
+                    .and()
+                    .log().body()
+                    .extract()
+                    .body()
+                    .as(DeviceResponse.class)
+                    .latestCommunication();
+            Assertions.assertTrue(newTime.isAfter(latestCommTime));
         });
     }
 }

@@ -37,7 +37,10 @@ public class HumidityMessageProcessor implements StatusMessageProcessor {
         return deviceService.findOrCreateDevice(deviceIdentifier)
                 .onItem().transformToUni(device -> {
                     measurement.setDevice(device);
-                    return humidityRepository.persist((HumidityStatus) measurement);
+                    return deviceService.updateDeviceCommunication(device)
+                            .onItem()
+                            .ignore()
+                            .andSwitchTo(() -> humidityRepository.persist((HumidityStatus) measurement));
                 })
                 .onItem().transform(ts -> eventBus.send("message", String.valueOf(ts.getId())))
                 .replaceWithVoid();
