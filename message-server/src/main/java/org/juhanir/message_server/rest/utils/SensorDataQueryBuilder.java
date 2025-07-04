@@ -20,11 +20,6 @@ public final class SensorDataQueryBuilder {
         return new SensorDataQueryBuilder();
     }
 
-    private void doAppend(String key, String operator, String paramName) {
-        query.add(key);
-        query.add(operator);
-        query.add(":%s".formatted(paramName));
-    }
 
     public SensorDataQueryBuilder and() {
         if (!query.isEmpty() && !OPERATORS.contains(query.getLast())) {
@@ -47,7 +42,7 @@ public final class SensorDataQueryBuilder {
     }
 
     public SensorDataQueryBuilder afterTime(String from, boolean inclusive) {
-        if (from == null) return this;
+        if (from == null) return handleNullParam();
         String op = inclusive ? ">=" : ">";
         doAppend("measurementTime", op, "from");
         parameters.putIfAbsent("from", Instant.parse(from));
@@ -55,17 +50,41 @@ public final class SensorDataQueryBuilder {
     }
 
     public SensorDataQueryBuilder beforeTime(String to, boolean inclusive) {
-        if (to == null) return this;
+        if (to == null) return handleNullParam();
         String op = inclusive ? "<=" : "<";
         doAppend("measurementTime", op, "to");
         parameters.putIfAbsent("to", Instant.parse(to));
         return this;
     }
 
-    public QueryAndParams build() {
+    public QueryAndParams build() throws IllegalArgumentException {
         String queryString = String.join(" ", query);
         LOG.infof("Building query string: %s", queryString);
+        int counter = 3;
+        for (String piece : query) {
+            if (OPERATORS.contains(piece)) {
+                counter = 3;
+            } else {
+                counter -= 1;
+            }
+        }
+        if (counter != 0) {
+            throw new IllegalArgumentException("Invalid query string: " + queryString);
+        }
         return new QueryAndParams(queryString, parameters);
+    }
+
+    private void doAppend(String key, String operator, String paramName) {
+        query.add(key);
+        query.add(operator);
+        query.add(":%s".formatted(paramName));
+    }
+
+    private SensorDataQueryBuilder handleNullParam() {
+        if (!query.isEmpty() && OPERATORS.contains(query.getLast())) {
+            query.removeLast();
+        }
+        return this;
     }
 
     public record QueryAndParams(String query, Map<String, Object> params) {
