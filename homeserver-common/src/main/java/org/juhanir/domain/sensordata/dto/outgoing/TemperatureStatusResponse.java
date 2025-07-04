@@ -13,7 +13,7 @@ public record TemperatureStatusResponse(
         double valueCelsius,
         double valueFahrenheit,
         Instant measurementTime,
-        long deviceId) {
+        String deviceIdentifier) {
 
     public static TemperatureStatusResponse fromTemperatureStatus(TemperatureStatus tempStatus) {
         return new TemperatureStatusResponse(
@@ -22,7 +22,7 @@ public record TemperatureStatusResponse(
                 tempStatus.getValueCelsius().doubleValue(),
                 tempStatus.getValueFahrenheit().doubleValue(),
                 tempStatus.getMeasurementTime(),
-                tempStatus.getDevice().getId()
+                tempStatus.getDevice().getIdentifier()
         );
     }
 }

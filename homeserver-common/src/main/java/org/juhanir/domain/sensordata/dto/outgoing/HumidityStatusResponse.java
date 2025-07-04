@@ -12,7 +12,7 @@ public record HumidityStatusResponse(
         int componentId,
         double value,
         Instant measurementTime,
-        long deviceId) {
+        String deviceIdentifier) {
 
     public static HumidityStatusResponse fromHumidityStatus(HumidityStatus humidStatus) {
         return new HumidityStatusResponse(
@@ -20,7 +20,7 @@ public record HumidityStatusResponse(
                 humidStatus.getComponentId(),
                 humidStatus.getValue().doubleValue(),
                 humidStatus.getMeasurementTime(),
-                humidStatus.getDevice().getId()
+                humidStatus.getDevice().getIdentifier()
         );
     }
 }

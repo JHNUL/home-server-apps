@@ -57,7 +57,7 @@ public class HumidityStatusTest extends DatabaseUtils {
                     .and()
                     .log().body()
                     .body("size()", equalTo(1))
-                    .body("[0].deviceId", instanceOf(Number.class))
+                    .body("[0].deviceIdentifier", equalTo(SENDER))
                     .body("[0].value", equalTo(99.0f))
                     .body("[0].componentId", equalTo(1))
                     .body("[0].measurementTime", matchesPattern(DATETIME_PATTERN));
@@ -85,7 +85,7 @@ public class HumidityStatusTest extends DatabaseUtils {
                     .and()
                     .log().body()
                     .body("size()", equalTo(1))
-                    .body("[0].deviceId", instanceOf(Number.class))
+                    .body("[0].deviceIdentifier", equalTo(SENDER))
                     .body("[0].value", equalTo(57.6f))
                     .body("[0].componentId", equalTo(1))
                     .body("[0].measurementTime", matchesPattern(DATETIME_PATTERN));
