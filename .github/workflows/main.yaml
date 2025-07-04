@@ -41,4 +41,4 @@ jobs:
           EOF
 
       - name: Run tests
-        run: mvn -pl message-server -am -DskipTests=false clean test
+        run: mvn --projects message-server --also-make -DskipTests=false clean test

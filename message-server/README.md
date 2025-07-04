@@ -67,7 +67,7 @@ by [smallrye health](https://quarkus.io/guides/smallrye-health).
 The application can be packaged using:
 
 ```shell
-mvn package
+mvn --projects message-server --also-make clean package
 ```
 
 It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
@@ -78,10 +78,15 @@ The application is now runnable using `java -jar target/quarkus-app/quarkus-run.
 If you want to build an _über-jar_, execute the following command:
 
 ```shell
-mvn package -Dquarkus.package.jar.type=uber-jar
+mvn --projects message-server --also-make clean package -Dquarkus.package.jar.type=uber-jar
 ```
 
 The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
+
+## OpenAPI specification
+
+Packaging the application also creates the OpenAPI specifications from the API interface. Generated specs are
+placed in the `target/generated` directory.
 
 ### Native executable
 
