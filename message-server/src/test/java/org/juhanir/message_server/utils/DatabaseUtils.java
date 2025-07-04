@@ -3,6 +3,7 @@ package org.juhanir.message_server.utils;
 import jakarta.inject.Inject;
 import org.hibernate.reactive.mutiny.Mutiny;
 import org.juhanir.domain.sensordata.entity.Device;
+import org.juhanir.domain.sensordata.entity.HumidityStatus;
 import org.juhanir.domain.sensordata.entity.TemperatureStatus;
 
 import java.util.ArrayList;
@@ -109,6 +110,43 @@ public abstract class DatabaseUtils {
             params.add(temp.getComponentId());
             params.add(temp.getValueCelsius());
             params.add(temp.getValueFahrenheit());
+
+            index++;
+        }
+
+        String sql = sb.toString();
+
+        sessionFactory.withTransaction((session, tx) -> {
+            var query = session.createNativeQuery(sql);
+            for (int i = 0; i < params.size(); i++) {
+                query.setParameter(i + 1, params.get(i));
+            }
+            return query.executeUpdate();
+        }).await().indefinitely();
+    }
+
+    /**
+     * Create humidity measurements to database.
+     */
+    public void createHumidityMeasurements(Iterable<HumidityStatus> humids) {
+        if (!humids.iterator().hasNext()) return;
+
+        StringBuilder sb = new StringBuilder();
+        List<Object> params = new ArrayList<>();
+
+        sb.append("""
+                INSERT INTO sensor.humidity_status (device_id, measurement_time, component_id, value) VALUES
+                """);
+
+        int index = 0;
+        for (HumidityStatus hum : humids) {
+            if (index > 0) sb.append(", ");
+            sb.append("(?, ?, ?, ?)");
+
+            params.add(hum.getDevice().getId());
+            params.add(hum.getMeasurementTime());
+            params.add(hum.getComponentId());
+            params.add(hum.getValue());
 
             index++;
         }
