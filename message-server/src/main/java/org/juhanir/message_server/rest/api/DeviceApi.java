@@ -77,4 +77,13 @@ public interface DeviceApi {
             @BeanParam @Valid TimeSeriesQueryParams queryParams
     );
 
+    @DELETE
+    @Path("/{deviceIdentifier}")
+    @Operation(summary = "Delete a device (and all its measurements)")
+    @APIResponse(
+            responseCode = "204",
+            description = "Device deleted successfully."
+    )
+    Uni<Response> deleteDevice(@PathParam("deviceIdentifier") String deviceIdentifier);
+
 }

@@ -1,6 +1,7 @@
 package org.juhanir.message_server.rest.resource;
 
 import io.quarkus.hibernate.reactive.panache.common.WithSession;
+import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.quarkus.panache.common.Sort;
 import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
@@ -96,4 +97,13 @@ public class DeviceResource implements DeviceApi {
                             return Response.ok(body).build();
                         }));
     }
+
+    @Override
+    @WithTransaction
+    public Uni<Response> deleteDevice(String identifier) {
+        return deviceStorage.delete("identifier", identifier)
+                .onItem()
+                .transform((id) -> Response.noContent().build());
+    }
+
 }
