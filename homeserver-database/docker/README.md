@@ -13,3 +13,11 @@ Initial release using base image liquibase/liquibase:4.32.
 ### 1.0.1
 
 Read database name from command url.
+
+### 1.0.2
+
+Read hostname from environment.
+
+### 1.0.3
+
+Not using LIQUIBASE_ as prefix for custom env variables.

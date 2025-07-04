@@ -38,6 +38,7 @@ jobs:
           LIQUIBASE_CLASSPATH=/liquibase/changelog
           LIQUIBASE_COMMAND_USERNAME=verysecretuser
           LIQUIBASE_COMMAND_PASSWORD=verysecretpassword
+          HOST=database
           EOF
 
       - name: Run tests
