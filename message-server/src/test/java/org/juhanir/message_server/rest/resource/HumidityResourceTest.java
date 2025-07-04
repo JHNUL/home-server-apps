@@ -4,7 +4,7 @@ package org.juhanir.message_server.rest.resource;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import org.juhanir.domain.sensordata.entity.Device;
-import org.juhanir.domain.sensordata.entity.TemperatureStatus;
+import org.juhanir.domain.sensordata.entity.HumidityStatus;
 import org.juhanir.message_server.MessageServerTestResource;
 import org.juhanir.message_server.utils.DatabaseUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,19 +17,19 @@ import java.util.stream.IntStream;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
-import static org.juhanir.message_server.utils.TestConstants.TEMPERATURE_URL_TPL;
+import static org.juhanir.message_server.utils.TestConstants.HUMIDITY_URL_TPL;
 
 @QuarkusTest
 @QuarkusTestResource(value = MessageServerTestResource.class)
-public class TemperatureResourceTest extends DatabaseUtils {
+public class HumidityResourceTest extends DatabaseUtils {
 
     @BeforeEach
     void setUp() {
-        deleteAllTemperatureMeasurements();
+        deleteAllHumidityMeasurements();
     }
 
     @Test
-    void canFetchTemperatureMeasurementsFilteredByTime() {
+    void canFetchHumidityMeasurementsFilteredByTime() {
         String deviceIdentifier = createDeviceToDatabase();
         createMeasurementsCountingDownFromBaseTime(
                 deviceIdentifier,
@@ -39,7 +39,7 @@ public class TemperatureResourceTest extends DatabaseUtils {
 
         // All results = 10
         given()
-                .get(TEMPERATURE_URL_TPL.formatted(deviceIdentifier, ""))
+                .get(HUMIDITY_URL_TPL.formatted(deviceIdentifier, ""))
                 .then()
                 .statusCode(200)
                 .and()
@@ -48,7 +48,7 @@ public class TemperatureResourceTest extends DatabaseUtils {
 
         // At minutes 15,16,17,18 (=4)
         given()
-                .get(TEMPERATURE_URL_TPL.formatted(deviceIdentifier, "?from=2025-06-30T18:15:18Z&to=2025-06-30T18:18:18Z"))
+                .get(HUMIDITY_URL_TPL.formatted(deviceIdentifier, "?from=2025-06-30T18:15:18Z&to=2025-06-30T18:18:18Z"))
                 .then()
                 .statusCode(200)
                 .and()
@@ -57,7 +57,7 @@ public class TemperatureResourceTest extends DatabaseUtils {
 
         // At minutes 15,16 (=2)
         given()
-                .get(TEMPERATURE_URL_TPL.formatted(deviceIdentifier, "?from=2025-06-30T18:15:18Z&to=2025-06-30T18:16:18Z"))
+                .get(HUMIDITY_URL_TPL.formatted(deviceIdentifier, "?from=2025-06-30T18:15:18Z&to=2025-06-30T18:16:18Z"))
                 .then()
                 .statusCode(200)
                 .and()
@@ -75,23 +75,22 @@ public class TemperatureResourceTest extends DatabaseUtils {
         );
 
         given()
-                .get(TEMPERATURE_URL_TPL.formatted(deviceIdentifier, "?from=thebeginningoftime"))
+                .get(HUMIDITY_URL_TPL.formatted(deviceIdentifier, "?from=thebeginningoftime"))
                 .then()
                 .statusCode(400);
     }
 
     private void createMeasurementsCountingDownFromBaseTime(String deviceIdentifier, Instant baseTime, int numberOfMinutes) {
         Device device = getDevice(deviceIdentifier);
-        List<TemperatureStatus> temps = IntStream
+        List<HumidityStatus> hums = IntStream
                 .range(0, numberOfMinutes)
-                .mapToObj(i -> new TemperatureStatus()
+                .mapToObj(i -> new HumidityStatus()
                         .setDevice(device)
                         .setComponentId(0)
                         .setMeasurementTime(baseTime.minusSeconds(i * 60L))
-                        .setValueCelsius(new BigDecimal(10))
-                        .setValueFahrenheit(new BigDecimal(50)))
+                        .setValue(new BigDecimal(24)))
                 .toList();
-        createTemperatureMeasurements(temps);
+        createHumidityMeasurements(hums);
     }
 
 }

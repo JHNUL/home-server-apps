@@ -68,7 +68,7 @@ public class DeviceResource implements DeviceApi {
                 .failWith(new NotFoundException("No device found with identifier %s".formatted(deviceIdentifier)))
                 .onItem()
                 .transformToUni(device -> temperatureStorage
-                        .findByDeviceId(device.getId(), queryParams)
+                        .getMeasurementsFromDevice(device.getId(), queryParams)
                         .map(temps -> {
                             List<TemperatureStatusResponse> body = temps
                                     .stream()
@@ -87,7 +87,7 @@ public class DeviceResource implements DeviceApi {
                 .failWith(new NotFoundException("No device found with identifier %s".formatted(deviceIdentifier)))
                 .onItem()
                 .transformToUni(device -> humidityStorage
-                        .findByDeviceId(device.getId())
+                        .getMeasurementsFromDevice(device.getId(), queryParams)
                         .map(humids -> {
                             List<HumidityStatusResponse> body = humids
                                     .stream()
