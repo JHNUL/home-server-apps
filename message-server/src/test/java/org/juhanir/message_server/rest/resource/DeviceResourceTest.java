@@ -115,6 +115,14 @@ public class DeviceResourceTest extends DatabaseUtils {
 
     }
 
+    @Test
+    void deletingNonExistingDevice() {
+        given()
+                .delete("devices/___notadevice!!!!")
+                .then()
+                .statusCode(204);
+    }
+
     private void createMeasurementsForDevice(String identifier) {
         Device device = getDevice(identifier);
         var hm = new HumidityStatus()
