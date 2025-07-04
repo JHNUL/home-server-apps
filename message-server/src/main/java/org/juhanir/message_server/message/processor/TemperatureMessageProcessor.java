@@ -10,8 +10,6 @@ import org.juhanir.message_server.mqtt.StatusMessageType;
 import org.juhanir.message_server.repository.TemperatureRepository;
 import org.juhanir.message_server.service.DeviceService;
 
-import java.time.Instant;
-
 @ApplicationScoped
 public class TemperatureMessageProcessor implements StatusMessageProcessor {
 

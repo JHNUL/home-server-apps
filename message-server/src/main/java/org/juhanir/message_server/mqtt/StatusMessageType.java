@@ -6,7 +6,6 @@ public enum StatusMessageType {
     HUMIDITY,
     TEMPERATURE;
 
-
     public static Optional<StatusMessageType> fromString(String input) {
         try {
             return Optional.of(StatusMessageType.valueOf(input.toUpperCase()));
