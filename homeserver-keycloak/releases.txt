@@ -1,0 +1,2 @@
+1.0.0
+Initial release using base image quay.io/keycloak/keycloak:26.3.0.
