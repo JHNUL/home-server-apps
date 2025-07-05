@@ -10,6 +10,17 @@ services:
     networks:
       - homeserver-network
 
+  kc-database:
+    image: postgres:17.5-bookworm
+    ports:
+      - "54321:5431"
+    env_file:
+      - kc-db.env
+    volumes:
+      - homeserver-kc-db-data:/var/lib/postgresql/data
+    networks:
+      - homeserver-network
+
   mqtt_broker:
     image: eclipse-mosquitto:2.0.21
     ports:
@@ -34,8 +45,22 @@ services:
     networks:
       - homeserver-network
 
+  keycloak:
+    image: juhanir/homeserver-keycloak:1.0.0
+    depends_on:
+      - kc-database
+    ports:
+      - "8443:8443"
+      - "9000:9000"
+    env_file:
+      - keycloak.env
+    command: start --optimized
+    networks:
+      - homeserver-network
+
 volumes:
   homeserver-db-data:
+  homeserver-kc-db-data:
   homeserver-broker-data:
 
 networks:

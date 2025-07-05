@@ -41,5 +41,28 @@ jobs:
           HOST=database
           EOF
 
+      - name: Create keycloak db env file
+        working-directory: ./message-server/src/docker
+        run: |
+          cat << EOF >> kc-db.env
+          POSTGRES_DB=keycloak
+          POSTGRES_PASSWORD=verysecretpassword
+          POSTGRES_USER=verysecretuser
+          PGPORT=5431
+          EOF
+
+      - name: Create keycloak env file
+        working-directory: ./message-server/src/docker
+        run: |
+          cat << EOF >> kc-db.env
+          KC_DB=postgres
+          KC_HOSTNAME=localhost
+          KC_DB_URL=jdbc:postgresql://kc-database:5431/keycloak
+          KC_DB_USERNAME=verysecretuser
+          KC_DB_PASSWORD=verysecretpassword
+          KC_BOOTSTRAP_ADMIN_USERNAME=verysecretuser
+          KC_BOOTSTRAP_ADMIN_PASSWORD=verysecretpassword
+          EOF
+
       - name: Run tests
         run: mvn --projects message-server --also-make -DskipTests=false clean test
