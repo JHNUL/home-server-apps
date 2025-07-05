@@ -54,7 +54,7 @@ jobs:
       - name: Create keycloak env file
         working-directory: ./message-server/src/docker
         run: |
-          cat << EOF >> kc-db.env
+          cat << EOF >> keycloak.env
           KC_DB=postgres
           KC_HOSTNAME=localhost
           KC_DB_URL=jdbc:postgresql://kc-database:5431/keycloak
