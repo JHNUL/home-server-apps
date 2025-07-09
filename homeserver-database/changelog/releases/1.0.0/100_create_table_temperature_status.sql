@@ -1,11 +1,13 @@
 CREATE TABLE sensor.temperature_status (
-    id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     device_id INTEGER NOT NULL,
     measurement_time TIMESTAMPTZ,
     component_id INTEGER NOT NULL,
     value_celsius DOUBLE PRECISION NOT NULL,
     value_fahrenheit DOUBLE PRECISION NOT NULL
 );
+
+-- composite primary key
+ALTER TABLE sensor.temperature_status ADD PRIMARY KEY (device_id, measurement_time);
 
 -- device_id is a foreign key reference, if a device is deleted
 -- its measurements are also deleted

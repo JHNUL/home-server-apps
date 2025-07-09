@@ -10,7 +10,13 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "temperature_status", schema = "sensor")
-public class TemperatureStatus extends BaseEntity implements DeviceStatusMeasurement {
+public class TemperatureStatus implements DeviceStatusMeasurement {
+
+    /**
+     * Composite primary key
+     */
+    @EmbeddedId
+    private DeviceTimeSeriesDataId id;
 
     /**
      * Devices report their component ids per sensor.
@@ -35,16 +41,20 @@ public class TemperatureStatus extends BaseEntity implements DeviceStatusMeasure
 
     /**
      * The measurement time.
+     * Hibernate requires insertable and updatable false
+     * because this field is part of composite primary key.
      */
     @NotNull
-    @Column(name = "measurement_time")
+    @Column(name = "measurement_time", nullable = false, insertable = false, updatable = false)
     private Instant measurementTime;
 
     /**
      * Reference to the device the reading came from.
+     * Hibernate requires insertable and updatable false
+     * because this field is part of composite primary key.
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "device_id", nullable = false)
+    @JoinColumn(name = "device_id", nullable = false, insertable = false, updatable = false)
     private Device device;
 
     public Integer getComponentId() {
@@ -89,6 +99,11 @@ public class TemperatureStatus extends BaseEntity implements DeviceStatusMeasure
 
     public TemperatureStatus setDevice(Device device) {
         this.device = device;
+        return this;
+    }
+
+    public TemperatureStatus setId(DeviceTimeSeriesDataId id) {
+        this.id = id;
         return this;
     }
 

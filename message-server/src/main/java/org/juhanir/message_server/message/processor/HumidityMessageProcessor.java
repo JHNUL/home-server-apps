@@ -5,6 +5,7 @@ import io.vertx.mutiny.core.eventbus.EventBus;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.juhanir.domain.sensordata.entity.DeviceStatusMeasurement;
+import org.juhanir.domain.sensordata.entity.DeviceTimeSeriesDataId;
 import org.juhanir.domain.sensordata.entity.HumidityStatus;
 import org.juhanir.message_server.mqtt.StatusMessageType;
 import org.juhanir.message_server.repository.HumidityRepository;
@@ -36,13 +37,18 @@ public class HumidityMessageProcessor implements StatusMessageProcessor {
     public Uni<Void> process(DeviceStatusMeasurement measurement, String deviceIdentifier) {
         return deviceService.findOrCreateDevice(deviceIdentifier)
                 .onItem().transformToUni(device -> {
-                    measurement.setDevice(device);
+                    HumidityStatus hStatus = (HumidityStatus) measurement;
+                    hStatus.setDevice(device);
+                    DeviceTimeSeriesDataId dId = new DeviceTimeSeriesDataId()
+                            .setDeviceId(device.getId())
+                            .setMeasurementTime(hStatus.getMeasurementTime());
+                    hStatus.setId(dId);
                     return deviceService.updateDeviceCommunication(device)
                             .onItem()
                             .ignore()
-                            .andSwitchTo(() -> humidityRepository.persist((HumidityStatus) measurement));
+                            .andSwitchTo(() -> humidityRepository.persist(hStatus));
                 })
-                .onItem().transform(ts -> eventBus.send("message", String.valueOf(ts.getId())))
+                .onItem().transform(ts -> eventBus.send("message", String.valueOf(ts.getMeasurementTime())))
                 .replaceWithVoid();
     }
 }

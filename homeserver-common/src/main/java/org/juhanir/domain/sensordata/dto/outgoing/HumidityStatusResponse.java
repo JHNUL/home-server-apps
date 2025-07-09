@@ -8,7 +8,6 @@ import java.time.Instant;
  * Data transfer object for outgoing humidity readings via Websocket or REST API.
  */
 public record HumidityStatusResponse(
-        long id,
         int componentId,
         double value,
         Instant measurementTime,
@@ -16,7 +15,6 @@ public record HumidityStatusResponse(
 
     public static HumidityStatusResponse fromHumidityStatus(HumidityStatus humidStatus) {
         return new HumidityStatusResponse(
-                humidStatus.getId(),
                 humidStatus.getComponentId(),
                 humidStatus.getValue().doubleValue(),
                 humidStatus.getMeasurementTime(),
