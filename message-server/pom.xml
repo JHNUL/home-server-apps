@@ -57,6 +57,7 @@
             <artifactId>quarkus-hibernate-validator</artifactId>
         </dependency>
 
+
         <!-- PROJECT MODULES-->
         <dependency>
             <groupId>org.juhanir</groupId>
@@ -83,6 +84,11 @@
         <dependency>
             <groupId>org.awaitility</groupId>
             <artifactId>awaitility</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

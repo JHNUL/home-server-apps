@@ -41,15 +41,22 @@ You can run your application in dev mode:
 mvn quarkus:dev
 ```
 
-## Testing
+## Running tests
 
-Integration tests can be run from project root with;
+Quarkus tests spin up the same containers defined in the docker-compose.yml for development. Liquibase runs the migrations to an empty database and the tests wait until migration is ready.
 
+To run all integration and unit tests, exclude the `performance` tag with the command below:
 ```shell
-mvn --projects message-server --also-make clean test
+mvn --projects message-server --also-make clean test -DexcludedGroups=performance
 ```
 
-This way the homeserver-common library, which is a dependency of message-server, is also compiled.
+Performance tests are run by including the group, this runs only the tests tagged `performance`:
+```shell
+mvn --projects message-server --also-make clean test -Dgroups=performance
+```
+
+Performance tests require that the database is seeded with measurements. Currently, this can be done with a script
+in `src/test/scripts/generate_csv.sh`.
 
 ## Health check
 
