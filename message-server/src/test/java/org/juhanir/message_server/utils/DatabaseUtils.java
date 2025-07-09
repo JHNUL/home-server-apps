@@ -16,7 +16,7 @@ public abstract class DatabaseUtils {
     public static final String EMPTY_TEMPERATURE_MEASUREMENTS = "TRUNCATE TABLE sensor.temperature_status;";
 
     @Inject
-    private Mutiny.SessionFactory sessionFactory;
+    protected Mutiny.SessionFactory sessionFactory;
 
     /**
      * Creates a device to database with type TEMPERATURE_HUMIDITY_SENSOR

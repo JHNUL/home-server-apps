@@ -16,3 +16,10 @@ ALTER TABLE sensor.temperature_status
     FOREIGN KEY (device_id)
     REFERENCES sensor.device(id)
     ON DELETE CASCADE;
+
+
+-- compound index on device id and measurement time
+CREATE INDEX ts_device_measurement_time_idx ON sensor.temperature_status (device_id, measurement_time);
+
+-- convert to hypertable
+SELECT create_hypertable('sensor.temperature_status', by_range('measurement_time'));
