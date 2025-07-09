@@ -8,7 +8,6 @@ import java.time.Instant;
  * Data transfer object for outgoing temperature readings via Websocket or REST API.
  */
 public record TemperatureStatusResponse(
-        long id,
         int componentId,
         double valueCelsius,
         double valueFahrenheit,
@@ -17,7 +16,6 @@ public record TemperatureStatusResponse(
 
     public static TemperatureStatusResponse fromTemperatureStatus(TemperatureStatus tempStatus) {
         return new TemperatureStatusResponse(
-                tempStatus.getId(),
                 tempStatus.getComponentId(),
                 tempStatus.getValueCelsius().doubleValue(),
                 tempStatus.getValueFahrenheit().doubleValue(),
