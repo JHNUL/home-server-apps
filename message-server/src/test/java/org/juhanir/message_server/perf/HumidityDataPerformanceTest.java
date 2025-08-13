@@ -2,69 +2,61 @@ package org.juhanir.message_server.perf;
 
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
-import jakarta.inject.Inject;
 import org.juhanir.message_server.MessageServerTestResource;
-import org.juhanir.message_server.utils.PerfTestSeeder;
-import org.juhanir.message_server.utils.TestConfiguration;
-import org.junit.jupiter.api.*;
+import org.juhanir.message_server.utils.DatabaseUtils;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import java.util.function.Supplier;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.equalTo;
 import static org.juhanir.message_server.utils.TestConstants.HUMIDITY_URL_TPL;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Tag("performance")
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @QuarkusTest
 @QuarkusTestResource(value = MessageServerTestResource.class)
-public class HumidityDataPerformanceTest {
+public class HumidityDataPerformanceTest extends DatabaseUtils {
 
     private static final int QUERY_NFR_TIME_LIMIT_MS = 150;
-
-    @Inject
-    TestConfiguration config;
-
-    @BeforeAll
-    void setUp() {
-        String dbUrl = config.getDbUrl().startsWith("jdbc")
-                ? config.getDbUrl()
-                : "jdbc:" + config.getDbUrl();
-        PerfTestSeeder seeder = new PerfTestSeeder(
-                dbUrl,
-                config.getDbUsername(),
-                config.getDbPassword()
-        );
-        seeder.seedData();
-
-    }
+    private static String identifier;
 
     @BeforeEach
-    void warmUp() {
-        // Not sure if needed before every test
-        // but as the actual need is to exclude all
-        // bootstrapping from the measured time...
-        given().get(HUMIDITY_URL_TPL.formatted("shelly-123123", "?limit=1")); // Triggers classloading, etc.
+    void setUp() {
+        identifier = createDeviceToDatabase();
+        long deviceId = getDevice(identifier).getId();
+        // 365*24*60=525600 measurements
+        seedRandomHumidityData(deviceId, "2024-01-01", "2024-12-31", "1 minute");
+        given().get("devices/%s".formatted(identifier)); // Triggers classloading, etc.
     }
 
     /**
-     * Query from the beginning of dataset
+     * OK this is silly AF, but for now keep just one @Test-annotated method and run all the perf tests inside it.
+     * Why? Until a better way to seed data is implemented, must do it in @BeforeEach, because that's where
+     * Vert.x considers it OK. @BeforeAll is no good.
      */
     @Test
     void performanceTest() {
-        perfTestAssert(QUERY_NFR_TIME_LIMIT_MS, () ->
+        perfTestAssert("Query from the beginning of dataset", QUERY_NFR_TIME_LIMIT_MS, () ->
                 given()
-                        .get(HUMIDITY_URL_TPL.formatted("shelly-123123", "?from=2025-06-06T06:06:06Z&to=2025-06-06T06:26:06Z"))
+                        .get(HUMIDITY_URL_TPL.formatted(identifier, "?from=2024-01-01T06:06:06Z&to=2024-01-01T06:26:06Z"))
+                        .then()
+                        .statusCode(200)
+        );
+
+        perfTestAssert("Query from the end of dataset", QUERY_NFR_TIME_LIMIT_MS, () ->
+                given()
+                        .get(HUMIDITY_URL_TPL.formatted(identifier, "?from=2024-12-31T06:06:06Z&to=2024-12-31T06:26:06Z"))
                         .then()
                         .statusCode(200)
         );
     }
 
-    private void perfTestAssert(int ms, Supplier<?> restCall) {
+    private void perfTestAssert(String perfTestCase, int ms, Supplier<?> restCall) {
         long start = System.nanoTime();
         restCall.get();
         double durationMs = (System.nanoTime() - start) * 1.0 / 1_000_000;
-        assertTrue(durationMs < ms, "Required time %s, but took %s".formatted(ms, durationMs));
+        assertTrue(durationMs < ms, "%s: Required time %s, but took %s".formatted(perfTestCase, ms, durationMs));
     }
 }
