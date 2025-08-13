@@ -65,4 +65,4 @@ jobs:
           EOF
 
       - name: Run tests
-        run: mvn --projects message-server --also-make clean test -DexcludedGroups=performance
+        run: mvn --projects message-server --also-make clean test
