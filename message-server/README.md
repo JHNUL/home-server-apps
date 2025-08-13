@@ -45,9 +45,9 @@ mvn quarkus:dev
 
 Quarkus tests spin up the same containers defined in the docker-compose.yml for development. Liquibase runs the migrations to an empty database and the tests wait until migration is ready.
 
-To run all integration and unit tests, exclude the `performance` tag with the command below:
+To run all integration and unit tests:
 ```shell
-mvn --projects message-server --also-make clean test -DexcludedGroups=performance
+mvn --projects message-server --also-make clean test
 ```
 
 Performance tests are run by including the group, this runs only the tests tagged `performance`:

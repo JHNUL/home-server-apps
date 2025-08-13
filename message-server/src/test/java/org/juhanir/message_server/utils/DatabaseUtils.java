@@ -29,10 +29,7 @@ public abstract class DatabaseUtils {
         String nativeQuery = """
                 INSERT INTO sensor.device(identifier, device_type) VALUES('%s', 1);
                 """.formatted(identifier);
-        sessionFactory
-                .withTransaction((session, tx) -> session.createNativeQuery(nativeQuery).executeUpdate())
-                .await()
-                .indefinitely();
+        executeTransactionalNativeQuery(nativeQuery);
         return identifier;
     }
 
@@ -57,34 +54,21 @@ public abstract class DatabaseUtils {
      */
     public void deleteAllDevices() {
         String nativeQuery = "DELETE FROM sensor.device;";
-        sessionFactory
-                .withTransaction((session, tx) -> session.createNativeQuery(nativeQuery).executeUpdate())
-                .await()
-                .indefinitely();
+        executeTransactionalNativeQuery(nativeQuery);
     }
 
     /**
      * Delete all measurements from sensor.humidity table.
      */
     public void deleteAllHumidityMeasurements() {
-        sessionFactory
-                .withTransaction((session, tx) ->
-                        session.createNativeQuery(EMPTY_HUMIDITY_MEASUREMENTS).executeUpdate()
-                )
-                .await()
-                .indefinitely();
+        executeTransactionalNativeQuery(EMPTY_HUMIDITY_MEASUREMENTS);
     }
 
     /**
      * Delete all measurements from sensor.temperature table.
      */
     public void deleteAllTemperatureMeasurements() {
-        sessionFactory
-                .withTransaction((session, tx) ->
-                        session.createNativeQuery(EMPTY_TEMPERATURE_MEASUREMENTS).executeUpdate()
-                )
-                .await()
-                .indefinitely();
+        executeTransactionalNativeQuery(EMPTY_TEMPERATURE_MEASUREMENTS);
     }
 
     /**
@@ -160,6 +144,32 @@ public abstract class DatabaseUtils {
             }
             return query.executeUpdate();
         }).await().indefinitely();
+    }
+
+    /**
+     * Create rows of humidity data with random values
+     *
+     * @param deviceId device id for the measurements
+     * @param startDate timestamp for start data, e.g. '2025-01-01'
+     * @param endDate timestamp for start data, e.g. '2025-01-10'
+     * @param interval time interval, e.g. '1 hour'
+     */
+    public void seedRandomHumidityData(long deviceId, String startDate, String endDate, String interval) {
+        String nativeQuery = """
+                SELECT %s as device_id,
+                    measurement_time,
+                    0 as component_id,
+                    random()*50 as value
+                FROM generate_series('%s', '%s', interval '%s') as measurement_time;
+                """.formatted(deviceId, startDate, endDate, interval);
+        executeTransactionalNativeQuery(nativeQuery);
+    }
+
+    private void executeTransactionalNativeQuery(String query) {
+        sessionFactory
+                .withTransaction((session, tx) -> session.createNativeQuery(query).executeUpdate())
+                .await()
+                .indefinitely();
     }
 
 }
