@@ -25,10 +25,9 @@ services:
     image: eclipse-mosquitto:2.0.21
     ports:
       - "1883:1883"
-    user: "1000" # preserves ownership of the file
     volumes:
       - homeserver-broker-data:/mosquitto/data
-      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
     networks:
       - homeserver-network
 
@@ -37,7 +36,7 @@ services:
     depends_on:
       - database
     volumes:
-      - ../../../homeserver-database/changelog:/liquibase/changelog
+      - ../homeserver-database/changelog:/liquibase/changelog
     env_file:
       - liquibase.env
     command: >

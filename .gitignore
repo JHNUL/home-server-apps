@@ -4,4 +4,4 @@
 **/target
 **/*.env
 **/*.quarkus
-**/*.sql
+docker/*.sql

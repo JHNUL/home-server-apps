@@ -4,6 +4,8 @@ Provides Identity and Access Management (IAM) services.
 
 Done based on https://www.keycloak.org/server/containers.
 
+Port for health and metrics endpoint is 9000 and the admin console port is 8443.
+
 ## Building the image
 
 Run the following command:

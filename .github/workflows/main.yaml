@@ -22,7 +22,7 @@ jobs:
           cache: maven
 
       - name: Create db env file
-        working-directory: ./message-server/src/docker
+        working-directory: ./docker
         run: |
           cat << EOF >> db.env
           POSTGRES_USER=verysecretuser
@@ -31,7 +31,7 @@ jobs:
           EOF
 
       - name: Create liquibase env file
-        working-directory: ./message-server/src/docker
+        working-directory: ./docker
         run: |
           cat << EOF >> liquibase.env
           LIQUIBASE_COMMAND_URL=jdbc:postgresql://database:5432/homeserver
@@ -42,7 +42,7 @@ jobs:
           EOF
 
       - name: Create keycloak db env file
-        working-directory: ./message-server/src/docker
+        working-directory: ./docker
         run: |
           cat << EOF >> kc-db.env
           POSTGRES_DB=keycloak
@@ -52,7 +52,7 @@ jobs:
           EOF
 
       - name: Create keycloak env file
-        working-directory: ./message-server/src/docker
+        working-directory: ./docker
         run: |
           cat << EOF >> keycloak.env
           KC_DB=postgres
