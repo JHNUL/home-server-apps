@@ -5,21 +5,34 @@ import org.testcontainers.containers.ComposeContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Map;
 
 public class MessageServerTestResource implements QuarkusTestResourceLifecycleManager {
 
     private static ComposeContainer containers;
 
+    private static final Duration timeout = Duration.of(30, ChronoUnit.SECONDS);
+    private static final String MQTT_CONTAINER = "mqtt_broker";
+    private static final String LIQUIBASE_CONTAINER = "liquibase";
+
     @Override
     public Map<String, String> start() {
         var mosquittoWaitStrategy = Wait
-                .forLogMessage(".*mosquitto version [0-9]{0,1}\\.[0-9]{0,1}\\.[0-9]{0,3} running.*\\n", 1);
+                .forLogMessage(".*mosquitto version [0-9]{0,1}\\.[0-9]{0,1}\\.[0-9]{0,3} running.*\\n", 1)
+                .withStartupTimeout(timeout);
         var liquibaseWaitStrategy = Wait
-                .forLogMessage(".*Liquibase command 'update' was executed successfully.*\\n", 1);
-        containers = new ComposeContainer(new File("src/docker/docker-compose.yml"))
-                .waitingFor("mqtt_broker", mosquittoWaitStrategy)
-                .waitingFor("liquibase", liquibaseWaitStrategy)
+                .forLogMessage(".*Liquibase command 'update' was executed successfully.*\\n", 1)
+                .withStartupTimeout(timeout);
+        containers = new ComposeContainer(MessageServerTestResource.getComposeFile())
+                .waitingFor(MQTT_CONTAINER, mosquittoWaitStrategy)
+                .waitingFor(LIQUIBASE_CONTAINER, liquibaseWaitStrategy)
                 .withBuild(false);
 
         containers.start();
@@ -30,5 +43,26 @@ public class MessageServerTestResource implements QuarkusTestResourceLifecycleMa
     @Override
     public void stop() {
         containers.stop();
+    }
+
+    /**
+     * Tests can be run from 'message-server' or parent.
+     *
+     * @return the compose file
+     */
+    private static File getComposeFile() {
+        Path here = Paths.get("").toAbsolutePath();
+        Path messageServerPath = here.getParent().resolve("docker/docker-compose.yml");
+        boolean messageServerWd = Files.isReadable(messageServerPath);
+        if (messageServerWd) {
+            return new File(messageServerPath.toUri());
+        }
+
+        Path rootPath = here.resolve("docker/docker-compose.yml");
+        boolean rootWd = Files.isReadable(rootPath);
+        if (rootWd) {
+            return new File(rootPath.toUri());
+        }
+        throw new UncheckedIOException(new IOException("Could not resolve docker compose file"));
     }
 }
