@@ -24,8 +24,9 @@ docker compose -f src/docker/docker-compose.yml up -d
 
 This exposes the following services:
 
-- Postgres database
+- Timescale database
 - Mosquitto MQTT-broker
+- Keycloak server (with own Postgres database)
 
 Check the port numbers from the docker compose file.
 
