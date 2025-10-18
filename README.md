@@ -48,3 +48,11 @@ docker compose -f docker/docker-compose.yml down --remove-orphans -v
 ```
 
 See [message-server](./message-server/README.md) to get going.
+
+## Dependencies
+
+Keep track of updates with
+```shell
+mvn versions:display-dependency-updates
+mvn versions:display-plugin-updates
+```

@@ -8,18 +8,23 @@
     <packaging>pom</packaging>
 
     <properties>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
-        <compiler-plugin.version>3.14.0</compiler-plugin.version>
-        <maven.compiler.release>21</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <skipITs>true</skipITs>
+
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <maven.compiler.release>21</maven.compiler.release>
+        <compiler-plugin.version>3.14.0</compiler-plugin.version>
+        <versions-plugin.version>2.19.1</versions-plugin.version>
+        <surefire-plugin.version>3.5.3</surefire-plugin.version>
+        <enforcer-plugin.version>3.6.2</enforcer-plugin.version>
+
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
         <quarkus.platform.version>3.24.1</quarkus.platform.version>
+
         <awaitility.version>4.3.0</awaitility.version>
-        <skipITs>true</skipITs>
-        <surefire-plugin.version>3.5.3</surefire-plugin.version>
         <smallrye-open-api-maven-plugin.version>4.1.1</smallrye-open-api-maven-plugin.version>
     </properties>
 
@@ -39,5 +44,40 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>${versions-plugin.version}</version>
+                <configuration>
+                    <!--no release candidates please-->
+                    <ignoredVersions>(?i).*(rc|cr).*</ignoredVersions>
+                    <processDependencyManagement>false</processDependencyManagement>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>${enforcer-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>enforce-maven</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireMavenVersion>
+                                    <version>[3.9,)</version>
+                                </requireMavenVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
