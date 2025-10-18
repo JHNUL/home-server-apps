@@ -2,6 +2,14 @@
 
 This project contains the database schema and liquibase changelogs to create it.
 
+## Docker image
+
+A custom image for database migration. It contains the liquibase base image and some customization to enable waiting for TimescaleDB to be ready.
+
+## Releases
+
+Image is pushed to docker hub repository `juhanir/liquibase-migrator`.
+
 ## Conventions
 
 For sensor data, the timestamp should be consistently named `measurement_time`.

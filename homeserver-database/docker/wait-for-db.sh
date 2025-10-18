@@ -12,7 +12,7 @@ while ! PGUSER="$LIQUIBASE_COMMAND_USERNAME" PGPASSWORD="$LIQUIBASE_COMMAND_PASS
   echo "Attempt $COUNT/$MAX_RETRIES: TimescaleDB not ready yet..."
 
   if [ "$COUNT" -ge "$MAX_RETRIES" ]; then
-    echo "Retries exhausted, giving up 💀."
+    echo "Retries exhausted, giving up."
     exit 1
   fi
 
