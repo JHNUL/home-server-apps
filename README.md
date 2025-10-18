@@ -13,4 +13,4 @@ Homeserver monorepo including the following components.
 
 ## How to?
 
-See `message-server` to get going.
+See [message-server](./message-server/README.md) to get going.
