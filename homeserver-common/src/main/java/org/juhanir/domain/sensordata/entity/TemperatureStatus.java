@@ -30,14 +30,14 @@ public class TemperatureStatus implements DeviceStatusMeasurement {
      */
     @NotNull
     @Column(name = "value_celsius")
-    private BigDecimal valueCelsius;
+    private Double valueCelsius;
 
     /**
      * The Fahrenheit value of the temperature.
      */
     @NotNull
     @Column(name = "value_fahrenheit")
-    private BigDecimal valueFahrenheit;
+    private Double valueFahrenheit;
 
     /**
      * The measurement time.
@@ -66,20 +66,20 @@ public class TemperatureStatus implements DeviceStatusMeasurement {
         return this;
     }
 
-    public BigDecimal getValueCelsius() {
+    public Double getValueCelsius() {
         return valueCelsius;
     }
 
-    public TemperatureStatus setValueCelsius(BigDecimal valueCelsius) {
+    public TemperatureStatus setValueCelsius(Double valueCelsius) {
         this.valueCelsius = valueCelsius;
         return this;
     }
 
-    public BigDecimal getValueFahrenheit() {
+    public Double getValueFahrenheit() {
         return valueFahrenheit;
     }
 
-    public TemperatureStatus setValueFahrenheit(BigDecimal valueFahrenheit) {
+    public TemperatureStatus setValueFahrenheit(Double valueFahrenheit) {
         this.valueFahrenheit = valueFahrenheit;
         return this;
     }
@@ -111,11 +111,11 @@ public class TemperatureStatus implements DeviceStatusMeasurement {
         return new TemperatureStatus()
                 .setComponentId(payload.getComponentId())
                 .setMeasurementTime(Instant.now())
-                .setValueCelsius(BigDecimal.valueOf(payload.getValueCelsius()))
-                .setValueFahrenheit(BigDecimal.valueOf(payload.getValueFahrenheit()));
+                .setValueCelsius(payload.getValueCelsius())
+                .setValueFahrenheit(payload.getValueFahrenheit());
     }
 
-    private Long getDeviceId(Device device) {
+    private Integer getDeviceId(Device device) {
         return device == null ? null : device.getId();
     }
 

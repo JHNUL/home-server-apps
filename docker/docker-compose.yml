@@ -45,7 +45,7 @@ services:
       - homeserver-network
 
   keycloak:
-    image: juhanir/homeserver-keycloak:1.0.0
+    image: juhanir/homeserver-keycloak:1.0.1
     depends_on:
       - kc-database
     ports:

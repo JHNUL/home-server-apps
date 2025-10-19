@@ -168,7 +168,7 @@ public class HumidityResourceTest extends DatabaseUtils {
                         .setDevice(device)
                         .setComponentId(0)
                         .setMeasurementTime(baseTime.minusSeconds(i * 60L))
-                        .setValue(new BigDecimal(24)))
+                        .setValue(24.0))
                 .toList();
         createHumidityMeasurements(hums);
     }

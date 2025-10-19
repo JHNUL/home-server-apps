@@ -30,7 +30,7 @@ public class HumidityStatus implements DeviceStatusMeasurement {
      */
     @NotNull
     @Column(name = "value")
-    private BigDecimal value;
+    private Double value;
 
     /**
      * The measurement time.
@@ -59,11 +59,11 @@ public class HumidityStatus implements DeviceStatusMeasurement {
         return this;
     }
 
-    public BigDecimal getValue() {
+    public Double getValue() {
         return value;
     }
 
-    public HumidityStatus setValue(BigDecimal value) {
+    public HumidityStatus setValue(Double value) {
         this.value = value;
         return this;
     }
@@ -95,7 +95,7 @@ public class HumidityStatus implements DeviceStatusMeasurement {
         return new HumidityStatus()
                 .setComponentId(humidityStatusMqttPayload.getComponentId())
                 .setMeasurementTime(Instant.now())
-                .setValue(BigDecimal.valueOf(humidityStatusMqttPayload.getValue()));
+                .setValue(humidityStatusMqttPayload.getValue());
     }
 
     @Override
