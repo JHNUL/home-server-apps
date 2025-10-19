@@ -43,3 +43,12 @@ Execution Time: 0.029 ms
 ```
 
 The previous example is legit. It shows that indices are being used and the correct chunk is being accessed, and no others.
+
+## Schema diagram
+
+Prerequisites:
+- docker compose stack running (from root, run `docker compose -f docker/docker-compose.yml up -d`)
+
+Generate the schema diagram running the script `./create_diagram.sh`. It will produce a png image to `schema/diagrams/summary/relationships.real.large.png`.
+
+![Diagram](./schema/diagrams/summary/relationships.real.large.png)
