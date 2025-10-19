@@ -45,15 +45,17 @@ services:
       - homeserver-network
 
   keycloak:
-    image: juhanir/homeserver-keycloak:1.0.0
+    image: juhanir/homeserver-keycloak:1.0.1
     depends_on:
       - kc-database
     ports:
       - "8443:8443"
       - "9000:9000"
+    volumes:
+      - ./homeserver-realm.json:/opt/keycloak/data/import/realm-import.json
     env_file:
       - keycloak.env
-    command: start --optimized
+    command: start --import-realm
     networks:
       - homeserver-network
 

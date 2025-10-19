@@ -18,7 +18,7 @@ public class DeviceTimeSeriesDataId implements Serializable {
      */
     @NotNull
     @Column(name = "device_id")
-    private Long deviceId;
+    private Integer deviceId;
 
     /**
      * Temporal component of the composite primary key of a time-series data record.
@@ -27,7 +27,7 @@ public class DeviceTimeSeriesDataId implements Serializable {
     @Column(name = "measurement_time")
     private Instant measurementTime;
 
-    public DeviceTimeSeriesDataId setDeviceId(Long deviceId) {
+    public DeviceTimeSeriesDataId setDeviceId(Integer deviceId) {
         this.deviceId = deviceId;
         return this;
     }

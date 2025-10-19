@@ -168,8 +168,8 @@ public class TemperatureResourceTest extends DatabaseUtils {
                         .setDevice(device)
                         .setComponentId(0)
                         .setMeasurementTime(baseTime.minusSeconds(i * 60L))
-                        .setValueCelsius(new BigDecimal(10))
-                        .setValueFahrenheit(new BigDecimal(50)))
+                        .setValueCelsius(10.0)
+                        .setValueFahrenheit(50.0))
                 .toList();
         createTemperatureMeasurements(temps);
     }

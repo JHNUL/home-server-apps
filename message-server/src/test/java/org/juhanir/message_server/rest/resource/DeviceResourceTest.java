@@ -129,13 +129,13 @@ public class DeviceResourceTest extends DatabaseUtils {
                 .setDevice(device)
                 .setComponentId(0)
                 .setMeasurementTime(Instant.now())
-                .setValue(new BigDecimal(24));
+                .setValue(24.0);
         var tm = new TemperatureStatus()
                 .setDevice(device)
                 .setComponentId(0)
                 .setMeasurementTime(Instant.now())
-                .setValueCelsius(new BigDecimal(10))
-                .setValueFahrenheit(new BigDecimal(50));
+                .setValueCelsius(10.0)
+                .setValueFahrenheit(50.0);
         createHumidityMeasurements(List.of(hm));
         createTemperatureMeasurements(List.of(tm));
     }
