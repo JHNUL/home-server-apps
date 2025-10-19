@@ -51,9 +51,11 @@ services:
     ports:
       - "8443:8443"
       - "9000:9000"
+    volumes:
+      - ./homeserver-realm.json:/opt/keycloak/data/import/realm-import.json
     env_file:
       - keycloak.env
-    command: start --optimized
+    command: start --import-realm
     networks:
       - homeserver-network
 
