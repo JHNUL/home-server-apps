@@ -28,3 +28,12 @@ KC_BOOTSTRAP_ADMIN_PASSWORD=<ADMIN PASSWORD>
 ## Releases
 
 Image is pushed to docker hub repository `juhanir/homeserver-keycloak`.
+
+## Initial realm import
+
+After exporting the realm from Keycloak the ids can be cleaned by running:
+```shell
+jq 'del(.. | .id?, .containerId?)' realm-export.json > homeserver-realm.json
+```
+
+Also delete the `secret` and `client secret creation time` from message-server client.

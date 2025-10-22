@@ -7,6 +7,12 @@ via WebSocket to subscribed clients. It also provides a REST API.
 
 Start the environment with docker compose as explained in the [repo root](../README.md).
 
+Log into keycloak (https://localhost:8443) with the admin credentials from the compose file.
+Get the client secret for the message-server client from Keycloak and copy it to application.properties
+```properties
+quarkus.oidc.credentials.secret={here}
+```
+
 You can run your application in dev mode:
 
 ```shell
