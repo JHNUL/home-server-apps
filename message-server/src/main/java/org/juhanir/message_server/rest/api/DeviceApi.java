@@ -1,5 +1,6 @@
 package org.juhanir.message_server.rest.api;
 
+import io.quarkus.security.Authenticated;
 import io.smallrye.mutiny.Uni;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
@@ -15,6 +16,7 @@ import org.juhanir.domain.sensordata.dto.outgoing.HumidityStatusResponse;
 import org.juhanir.domain.sensordata.dto.outgoing.TemperatureStatusResponse;
 
 @Path("devices")
+@Authenticated
 public interface DeviceApi {
 
     @GET

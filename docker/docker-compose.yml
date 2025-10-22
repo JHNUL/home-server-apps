@@ -55,7 +55,7 @@ services:
       - ./homeserver-realm.json:/opt/keycloak/data/import/realm-import.json
     env_file:
       - keycloak.env
-    command: start --import-realm
+    command: start --import-realm --verbose
     networks:
       - homeserver-network
 

@@ -37,3 +37,4 @@ jq 'del(.. | .id?, .containerId?)' realm-export.json > homeserver-realm.json
 ```
 
 Also delete the `secret` and `client secret creation time` from message-server client.
+And default permission and policy under authorizationSettings.
