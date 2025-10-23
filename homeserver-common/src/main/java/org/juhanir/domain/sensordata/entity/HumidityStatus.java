@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import org.juhanir.domain.sensordata.dto.incoming.HumidityStatusMqttPayload;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Objects;
 

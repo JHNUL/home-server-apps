@@ -17,7 +17,6 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 
-import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.matchesPattern;
 import static org.juhanir.message_server.utils.TestConstants.DATETIME_PATTERN;
