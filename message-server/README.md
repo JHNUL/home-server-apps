@@ -7,6 +7,12 @@ via WebSocket to subscribed clients. It also provides a REST API.
 
 Start the environment with docker compose as explained in the [repo root](../README.md).
 
+Log into keycloak (https://localhost:8443) with the admin credentials from the compose file.
+Get the client secret for the message-server client from Keycloak and copy it to application.properties
+```properties
+quarkus.oidc.credentials.secret={here}
+```
+
 You can run your application in dev mode:
 
 ```shell
@@ -17,6 +23,10 @@ mvn quarkus:dev
 
 Quarkus tests spin up the same containers defined in the docker-compose.yml for development. Liquibase runs the migrations to an empty database and the tests wait until migration is ready.
 
+Since the application uses authentication, in _dev and test_ modes direct grant is enabled to enable testing
+authenticated endpoints with less hassle. In production environment there is no need for this and it should be
+disabled.
+
 To run all integration and unit tests:
 ```shell
 mvn --projects message-server --also-make clean test
@@ -26,9 +36,6 @@ Performance tests are run by including the group, this runs only the tests tagge
 ```shell
 mvn --projects message-server --also-make clean test -Dgroups=performance
 ```
-
-Performance tests require that the database is seeded with measurements. Currently, this can be done with a script
-in `src/test/scripts/generate_csv.sh`.
 
 ## Health check
 

@@ -1,22 +1,53 @@
 package org.juhanir.message_server.utils;
 
+import io.restassured.specification.RequestSpecification;
 import jakarta.inject.Inject;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.hibernate.reactive.mutiny.Mutiny;
 import org.juhanir.domain.sensordata.entity.Device;
 import org.juhanir.domain.sensordata.entity.HumidityStatus;
 import org.juhanir.domain.sensordata.entity.TemperatureStatus;
+import org.juhanir.message_server.rest.api.Role;
+import org.juhanir.message_server.rest.utils.AccessTokenResponse;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
-public abstract class DatabaseUtils {
+import static io.restassured.RestAssured.given;
+
+public abstract class QuarkusTestUtils {
 
     public static final String EMPTY_HUMIDITY_MEASUREMENTS = "TRUNCATE TABLE sensor.humidity_status;";
     public static final String EMPTY_TEMPERATURE_MEASUREMENTS = "TRUNCATE TABLE sensor.temperature_status;";
+    /**
+     * Test users are created by default by importing a dev/test realm via docker compose.
+     */
+    public static final Map<String, String> TEST_USERS = Map.of(
+            Role.USER, "testuser",
+            Role.ADMIN, "testadmin"
+    );
+
+    @ConfigProperty(name = "quarkus.oidc.auth-server-url")
+    String keycloakUrl;
+
+    @ConfigProperty(name = "quarkus.oidc.client-id")
+    String oidcClientId;
 
     @Inject
     protected Mutiny.SessionFactory sessionFactory;
+
+    /**
+     * Authenticate as a user with the given role to test RBAC-protected
+     * endpoints.
+     * @return {@link  io.restassured.specification.RequestSpecification} for chaining
+     */
+    public RequestSpecification authenticateUsingRole(String role) {
+        return given()
+                .auth()
+                .oauth2(getToken(TEST_USERS.get(role)));
+    }
 
     /**
      * Creates a device to database with type TEMPERATURE_HUMIDITY_SENSOR
@@ -149,10 +180,10 @@ public abstract class DatabaseUtils {
     /**
      * Create rows of humidity data with random values
      *
-     * @param deviceId device id for the measurements
+     * @param deviceId  device id for the measurements
      * @param startDate timestamp for start data, e.g. '2025-01-01'
-     * @param endDate timestamp for start data, e.g. '2025-01-10'
-     * @param interval time interval, e.g. '1 hour'
+     * @param endDate   timestamp for start data, e.g. '2025-01-10'
+     * @param interval  time interval, e.g. '1 hour'
      */
     public void seedRandomHumidityData(long deviceId, String startDate, String endDate, String interval) {
         String nativeQuery = """
@@ -170,6 +201,19 @@ public abstract class DatabaseUtils {
                 .withTransaction((session, tx) -> session.createNativeQuery(query).executeUpdate())
                 .await()
                 .indefinitely();
+    }
+
+    private String getToken(String user) {
+        return given()
+                .relaxedHTTPSValidation()
+                .param("grant_type", "password")
+                .param("username", user)
+                .param("password", "%s123".formatted(user))
+                .param("client_id", oidcClientId)
+                .when()
+                .post("%s/protocol/openid-connect/token".formatted(keycloakUrl))
+                .as(AccessTokenResponse.class)
+                .accessToken();
     }
 
 }

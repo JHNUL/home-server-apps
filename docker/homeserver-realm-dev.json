@@ -1,0 +1,87 @@
+{
+  "realm": "homeserver",
+  "enabled": true,
+  "sslRequired": "external",
+  "roles": {
+    "realm": [
+      {
+        "name": "admin",
+        "description": "Administrator role",
+        "composite": false,
+        "clientRole": false,
+        "attributes": {}
+      },
+      {
+        "name": "user",
+        "description": "Regular user role",
+        "composite": false,
+        "clientRole": false,
+        "attributes": {}
+      }
+    ],
+    "client": {
+      "message-server": []
+    }
+  },
+  "clients": [
+    {
+      "clientId": "message-server",
+      "name": "Message server",
+      "description": "",
+      "surrogateAuthRequired": false,
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "redirectUris": [
+        "http://localhost:8080/*",
+        "http://localhost:3030/*"
+      ],
+      "webOrigins": [
+        "*"
+      ],
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "publicClient": true,
+      "frontchannelLogout": true,
+      "protocol": "openid-connect",
+      "attributes": {
+        "login_theme": "keycloak.v2"
+      }
+    }
+  ],
+  "users": [
+    {
+      "username": "testuser",
+      "email": "testuser@test.user",
+      "emailVerified": true,
+      "enabled": true,
+      "firstName": "Testy",
+      "lastName": "Tester",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "testuser123"
+        }
+      ],
+      "realmRoles": [
+        "user"
+      ]
+    },
+    {
+      "username": "testadmin",
+      "email": "testadmin@test.admin",
+      "emailVerified": true,
+      "enabled": true,
+      "firstName": "Admin",
+      "lastName": "Tester",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "testadmin123"
+        }
+      ],
+      "realmRoles": [
+        "admin"
+      ]
+    }
+  ]
+}

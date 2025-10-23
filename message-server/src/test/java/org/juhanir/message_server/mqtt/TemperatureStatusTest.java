@@ -9,7 +9,7 @@ import io.vertx.mutiny.mqtt.MqttClient;
 import org.juhanir.domain.sensordata.dto.outgoing.DeviceResponse;
 import org.juhanir.message_server.MessageServerTestResource;
 import org.juhanir.message_server.utils.AwaitUtils;
-import org.juhanir.message_server.utils.DatabaseUtils;
+import org.juhanir.message_server.utils.QuarkusTestUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,7 +25,7 @@ import static org.juhanir.message_server.utils.TestConstants.TEMPERATURE_URL_TPL
 
 @QuarkusTest
 @QuarkusTestResource(value = MessageServerTestResource.class)
-public class TemperatureStatusTest extends DatabaseUtils {
+public class TemperatureStatusTest extends QuarkusTestUtils {
 
     private static MqttClient client;
     private static final String SENDER = "shellyid-123123";
@@ -60,12 +60,10 @@ public class TemperatureStatusTest extends DatabaseUtils {
         client.publishAndAwait(TOPIC, Buffer.buffer(invalidMessage), MqttQoS.EXACTLY_ONCE, false, false);
         client.publishAndAwait(TOPIC, Buffer.buffer(validMessage), MqttQoS.EXACTLY_ONCE, false, false);
         AwaitUtils.awaitAssertion(() -> {
-            given()
+            authenticateUsingRole("user")
                     .get(TEMPERATURE_URL_TPL.formatted(SENDER, ""))
                     .then()
                     .statusCode(200)
-                    .and()
-                    .log().body()
                     .body("size()", equalTo(1))
                     .body("[0].deviceIdentifier", equalTo(SENDER))
                     .body("[0].componentId", equalTo(2))
@@ -85,12 +83,10 @@ public class TemperatureStatusTest extends DatabaseUtils {
                 }""";
         client.publishAndAwait(TOPIC, Buffer.buffer(message), MqttQoS.EXACTLY_ONCE, false, false);
         AwaitUtils.awaitAssertion(() -> {
-            given()
+            authenticateUsingRole("user")
                     .get(TEMPERATURE_URL_TPL.formatted(SENDER, ""))
                     .then()
                     .statusCode(200)
-                    .and()
-                    .log().body()
                     .body("size()", equalTo(1))
                     .body("[0].deviceIdentifier", equalTo(SENDER))
                     .body("[0].componentId", equalTo(1))
@@ -103,7 +99,7 @@ public class TemperatureStatusTest extends DatabaseUtils {
     @Test
     void temperatureStatusMessagesForNonExistingDeviceReturnsNotFound() {
         AwaitUtils.awaitAssertionMaintained(() -> {
-            given()
+            authenticateUsingRole("user")
                     .get(TEMPERATURE_URL_TPL.formatted("qwerty123456-foobar", ""))
                     .then()
                     .statusCode(404);
@@ -119,24 +115,20 @@ public class TemperatureStatusTest extends DatabaseUtils {
                   "tC": 19.6,
                   "tF": 67.3
                 }""";
-        Instant latestCommTime = given()
+        Instant latestCommTime = authenticateUsingRole("user")
                 .get("/devices/%s".formatted(identifier))
                 .then()
                 .statusCode(200)
-                .and()
-                .log().body()
                 .extract()
                 .body()
                 .as(DeviceResponse.class)
                 .latestCommunication();
         client.publishAndAwait(identifier + "/status/temperature:0", Buffer.buffer(message), MqttQoS.EXACTLY_ONCE, false, false);
         AwaitUtils.awaitAssertion(() -> {
-            Instant newTime = given()
+            Instant newTime = authenticateUsingRole("user")
                     .get("/devices/%s".formatted(identifier))
                     .then()
                     .statusCode(200)
-                    .and()
-                    .log().body()
                     .extract()
                     .body()
                     .as(DeviceResponse.class)

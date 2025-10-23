@@ -1,6 +1,7 @@
 package org.juhanir.message_server.rest.api;
 
 import io.smallrye.mutiny.Uni;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -15,6 +16,7 @@ import org.juhanir.domain.sensordata.dto.outgoing.HumidityStatusResponse;
 import org.juhanir.domain.sensordata.dto.outgoing.TemperatureStatusResponse;
 
 @Path("devices")
+@RolesAllowed({Role.USER, Role.ADMIN})
 public interface DeviceApi {
 
     @GET
@@ -85,6 +87,7 @@ public interface DeviceApi {
             responseCode = "204",
             description = "Device deleted successfully."
     )
+    @RolesAllowed({Role.ADMIN})
     Uni<Response> deleteDevice(@PathParam("deviceIdentifier") String deviceIdentifier);
 
 }
