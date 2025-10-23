@@ -66,3 +66,18 @@ jobs:
 
       - name: Run tests
         run: mvn -B -q --projects message-server --also-make clean test
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22.x'
+          architecture: 'x64'
+          package-manager-cache: true
+
+      - name: Install dependencies
+        working-directory: ./homeserver-ui
+        run: npm ci
+
+      - name: Run frontend tests
+        working-directory: ./homeserver-ui
+        run: npm run test
