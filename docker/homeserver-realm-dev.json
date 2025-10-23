@@ -20,7 +20,8 @@
       }
     ],
     "client": {
-      "message-server": []
+      "message-server": [],
+      "homeserver-ui": []
     }
   },
   "clients": [
@@ -45,6 +46,31 @@
       "protocol": "openid-connect",
       "attributes": {
         "login_theme": "keycloak.v2"
+      }
+    },
+    {
+      "clientId": "homeserver-ui",
+      "name": "Homeserver UI",
+      "description": "Homeserver user interface",
+      "surrogateAuthRequired": false,
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "redirectUris": [
+        "http://localhost:8080/*",
+        "http://localhost:5173/*"
+      ],
+      "webOrigins": [
+        "*"
+      ],
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "publicClient": true,
+      "frontchannelLogout": true,
+      "protocol": "openid-connect",
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
       }
     }
   ],

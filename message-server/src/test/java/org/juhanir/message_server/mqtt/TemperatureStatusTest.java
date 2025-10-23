@@ -17,7 +17,6 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 
-import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 import static org.juhanir.message_server.utils.TestConstants.DATETIME_PATTERN;
 import static org.juhanir.message_server.utils.TestConstants.TEMPERATURE_URL_TPL;
