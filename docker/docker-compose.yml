@@ -52,10 +52,10 @@ services:
       - "8443:8443"
       - "9000:9000"
     volumes:
-      - ./homeserver-realm.json:/opt/keycloak/data/import/realm-import.json
+      - ./homeserver-realm-dev.json:/opt/keycloak/data/import/realm-import.json
     env_file:
       - keycloak.env
-    command: start --import-realm --verbose
+    command: start --verbose --import-realm --optimized
     networks:
       - homeserver-network
 

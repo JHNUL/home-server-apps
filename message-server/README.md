@@ -23,6 +23,10 @@ mvn quarkus:dev
 
 Quarkus tests spin up the same containers defined in the docker-compose.yml for development. Liquibase runs the migrations to an empty database and the tests wait until migration is ready.
 
+Since the application uses authentication, in _dev and test_ modes direct grant is enabled to enable testing
+authenticated endpoints with less hassle. In production environment there is no need for this and it should be
+disabled.
+
 To run all integration and unit tests:
 ```shell
 mvn --projects message-server --also-make clean test
@@ -32,9 +36,6 @@ Performance tests are run by including the group, this runs only the tests tagge
 ```shell
 mvn --projects message-server --also-make clean test -Dgroups=performance
 ```
-
-Performance tests require that the database is seeded with measurements. Currently, this can be done with a script
-in `src/test/scripts/generate_csv.sh`.
 
 ## Health check
 
