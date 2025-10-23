@@ -25,8 +25,8 @@ jobs:
         working-directory: ./docker
         run: |
           cat << EOF >> db.env
-          POSTGRES_USER=verysecretuser
-          POSTGRES_PASSWORD=verysecretpassword
+          POSTGRES_USER=${{ secrets.VERY_SECRET_USER }}
+          POSTGRES_PASSWORD=${{ secrets.VERY_SECRET_PW }}
           POSTGRES_DB=homeserver
           EOF
 
@@ -36,8 +36,8 @@ jobs:
           cat << EOF >> liquibase.env
           LIQUIBASE_COMMAND_URL=jdbc:postgresql://database:5432/homeserver
           LIQUIBASE_CLASSPATH=/liquibase/changelog
-          LIQUIBASE_COMMAND_USERNAME=verysecretuser
-          LIQUIBASE_COMMAND_PASSWORD=verysecretpassword
+          LIQUIBASE_COMMAND_USERNAME=${{ secrets.VERY_SECRET_USER }}
+          LIQUIBASE_COMMAND_PASSWORD=${{ secrets.VERY_SECRET_PW }}
           HOST=database
           EOF
 
@@ -46,8 +46,8 @@ jobs:
         run: |
           cat << EOF >> kc-db.env
           POSTGRES_DB=keycloak
-          POSTGRES_PASSWORD=verysecretpassword
-          POSTGRES_USER=verysecretuser
+          POSTGRES_USER=${{ secrets.VERY_SECRET_USER }}
+          POSTGRES_PASSWORD=${{ secrets.VERY_SECRET_PW }}
           PGPORT=5431
           EOF
 
@@ -58,11 +58,11 @@ jobs:
           KC_DB=postgres
           KC_HOSTNAME=localhost
           KC_DB_URL=jdbc:postgresql://kc-database:5431/keycloak
-          KC_DB_USERNAME=verysecretuser
-          KC_DB_PASSWORD=verysecretpassword
-          KC_BOOTSTRAP_ADMIN_USERNAME=verysecretuser
-          KC_BOOTSTRAP_ADMIN_PASSWORD=verysecretpassword
+          KC_DB_USERNAME=${{ secrets.VERY_SECRET_USER }}
+          KC_DB_PASSWORD=${{ secrets.VERY_SECRET_PW }}
+          KC_BOOTSTRAP_ADMIN_USERNAME=${{ secrets.VERY_SECRET_USER }}
+          KC_BOOTSTRAP_ADMIN_PASSWORD=${{ secrets.VERY_SECRET_PW }}
           EOF
 
       - name: Run tests
-        run: mvn --projects message-server --also-make clean test
+        run: mvn -B -q --projects message-server --also-make clean test
