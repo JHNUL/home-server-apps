@@ -61,6 +61,9 @@
           "type": "password",
           "value": "testuser123"
         }
+      ],
+      "realmRoles": [
+        "user"
       ]
     },
     {
@@ -75,6 +78,9 @@
           "type": "password",
           "value": "testadmin123"
         }
+      ],
+      "realmRoles": [
+        "admin"
       ]
     }
   ]

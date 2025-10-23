@@ -1,6 +1,5 @@
 package org.juhanir.message_server.rest.api;
 
-import io.quarkus.security.Authenticated;
 import io.smallrye.mutiny.Uni;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
@@ -17,7 +16,7 @@ import org.juhanir.domain.sensordata.dto.outgoing.HumidityStatusResponse;
 import org.juhanir.domain.sensordata.dto.outgoing.TemperatureStatusResponse;
 
 @Path("devices")
-@Authenticated
+@RolesAllowed({Role.USER, Role.ADMIN})
 public interface DeviceApi {
 
     @GET
@@ -31,7 +30,6 @@ public interface DeviceApi {
                     schema = @Schema(implementation = DeviceResponse.class, type = SchemaType.ARRAY)
             )
     )
-    @RolesAllowed({ "user" })
     Uni<Response> getDevices();
 
     @GET
@@ -46,7 +44,6 @@ public interface DeviceApi {
                     schema = @Schema(implementation = DeviceResponse.class)
             )
     )
-    @RolesAllowed({ "user" })
     Uni<Response> getDevice(@PathParam("deviceIdentifier") String deviceIdentifier);
 
     @GET
@@ -61,7 +58,6 @@ public interface DeviceApi {
                     schema = @Schema(implementation = TemperatureStatusResponse.class, type = SchemaType.ARRAY)
             )
     )
-    @RolesAllowed({ "user" })
     Uni<Response> getTemperatures(
             @PathParam("deviceIdentifier") String deviceIdentifier,
             @BeanParam @Valid TimeSeriesQueryParams queryParams
@@ -79,7 +75,6 @@ public interface DeviceApi {
                     schema = @Schema(implementation = HumidityStatusResponse.class, type = SchemaType.ARRAY)
             )
     )
-    @RolesAllowed({ "user" })
     Uni<Response> getHumidity(
             @PathParam("deviceIdentifier") String deviceIdentifier,
             @BeanParam @Valid TimeSeriesQueryParams queryParams
@@ -92,7 +87,7 @@ public interface DeviceApi {
             responseCode = "204",
             description = "Device deleted successfully."
     )
-    @RolesAllowed({ "admin" })
+    @RolesAllowed({Role.ADMIN})
     Uni<Response> deleteDevice(@PathParam("deviceIdentifier") String deviceIdentifier);
 
 }

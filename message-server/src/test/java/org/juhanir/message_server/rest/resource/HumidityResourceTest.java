@@ -7,31 +7,32 @@ import org.juhanir.domain.sensordata.dto.outgoing.HumidityStatusResponse;
 import org.juhanir.domain.sensordata.entity.Device;
 import org.juhanir.domain.sensordata.entity.HumidityStatus;
 import org.juhanir.message_server.MessageServerTestResource;
-import org.juhanir.message_server.utils.DatabaseUtils;
+import org.juhanir.message_server.rest.api.Role;
+import org.juhanir.message_server.utils.QuarkusTestUtils;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.juhanir.message_server.utils.TestConstants.HUMIDITY_URL_TPL;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @QuarkusTest
 @QuarkusTestResource(value = MessageServerTestResource.class)
-public class HumidityResourceTest extends DatabaseUtils {
+public class HumidityResourceTest extends QuarkusTestUtils {
 
     @BeforeEach
     void setUp() {
         deleteAllHumidityMeasurements();
     }
 
-    @Test
-    void canFetchHumidityMeasurementsFilteredByTime() {
+    @ParameterizedTest()
+    @ValueSource(strings = {Role.USER, Role.ADMIN})
+    void canFetchHumidityMeasurementsFilteredByTime(String role) {
         String deviceIdentifier = createDeviceToDatabase();
         createMeasurementsCountingDownFromBaseTime(
                 deviceIdentifier,
@@ -40,35 +41,30 @@ public class HumidityResourceTest extends DatabaseUtils {
         );
 
         // All results = 10
-        given()
+        authenticateUsingRole(role)
                 .get(HUMIDITY_URL_TPL.formatted(deviceIdentifier, ""))
                 .then()
                 .statusCode(200)
-                .and()
-                .log().body()
                 .body("size()", equalTo(10));
 
         // At minutes 15,16,17,18
-        given()
+        authenticateUsingRole(role)
                 .get(HUMIDITY_URL_TPL.formatted(deviceIdentifier, "?from=2025-06-30T18:15:18Z&to=2025-06-30T18:18:18Z"))
                 .then()
                 .statusCode(200)
-                .and()
-                .log().body()
                 .body("size()", equalTo(4));
 
         // At minutes 15,16
-        given()
+        authenticateUsingRole(role)
                 .get(HUMIDITY_URL_TPL.formatted(deviceIdentifier, "?from=2025-06-30T18:15:18Z&to=2025-06-30T18:16:18Z"))
                 .then()
                 .statusCode(200)
-                .and()
-                .log().body()
                 .body("size()", equalTo(2));
     }
 
-    @Test
-    void testInvalidDatetimeQueryParam() {
+    @ParameterizedTest()
+    @ValueSource(strings = {Role.USER, Role.ADMIN})
+    void testInvalidDatetimeQueryParam(String role) {
         String deviceIdentifier = createDeviceToDatabase();
         createMeasurementsCountingDownFromBaseTime(
                 deviceIdentifier,
@@ -76,14 +72,15 @@ public class HumidityResourceTest extends DatabaseUtils {
                 10
         );
 
-        given()
+        authenticateUsingRole(role)
                 .get(HUMIDITY_URL_TPL.formatted(deviceIdentifier, "?from=thebeginningoftime"))
                 .then()
                 .statusCode(400);
     }
 
-    @Test
-    void canLimitMaximumNumberOfResults() {
+    @ParameterizedTest()
+    @ValueSource(strings = {Role.USER, Role.ADMIN})
+    void canLimitMaximumNumberOfResults(String role) {
         String deviceIdentifier = createDeviceToDatabase();
         createMeasurementsCountingDownFromBaseTime(
                 deviceIdentifier,
@@ -92,7 +89,7 @@ public class HumidityResourceTest extends DatabaseUtils {
         );
 
         // Default max at 100
-        given()
+        authenticateUsingRole(role)
                 .get(HUMIDITY_URL_TPL.formatted(deviceIdentifier, ""))
                 .then()
                 .statusCode(200)
@@ -100,7 +97,7 @@ public class HumidityResourceTest extends DatabaseUtils {
                 .body("size()", equalTo(100));
 
         // Limit to 10
-        given()
+        authenticateUsingRole(role)
                 .get(HUMIDITY_URL_TPL.formatted(deviceIdentifier, "?limit=10"))
                 .then()
                 .statusCode(200)
@@ -108,7 +105,7 @@ public class HumidityResourceTest extends DatabaseUtils {
                 .body("size()", equalTo(10));
 
         // Fetch all
-        given()
+        authenticateUsingRole(role)
                 .get(HUMIDITY_URL_TPL.formatted(deviceIdentifier, "?limit=1000"))
                 .then()
                 .statusCode(200)
@@ -116,8 +113,9 @@ public class HumidityResourceTest extends DatabaseUtils {
                 .body("size()", equalTo(160));
     }
 
-    @Test
-    void canSortResultsDescendingByMeasurementTime() {
+    @ParameterizedTest()
+    @ValueSource(strings = {Role.USER, Role.ADMIN})
+    void canSortResultsDescendingByMeasurementTime(String role) {
         String deviceIdentifier = createDeviceToDatabase();
         createMeasurementsCountingDownFromBaseTime(
                 deviceIdentifier,
@@ -126,7 +124,7 @@ public class HumidityResourceTest extends DatabaseUtils {
         );
 
         // Default ascending
-        var resultsAsc = given()
+        var resultsAsc = authenticateUsingRole(role)
                 .get(HUMIDITY_URL_TPL.formatted(deviceIdentifier, ""))
                 .then()
                 .statusCode(200)
@@ -143,7 +141,7 @@ public class HumidityResourceTest extends DatabaseUtils {
         }
 
         // Query descending
-        var resultsDesc = given()
+        var resultsDesc = authenticateUsingRole(role)
                 .get(HUMIDITY_URL_TPL.formatted(deviceIdentifier, "?sort=desc"))
                 .then()
                 .statusCode(200)
