@@ -12,7 +12,6 @@ const keycloakVariables: string[] = [
 
 type KeycloakContextValue = {
     keycloak: Keycloak | null;
-    authenticated: boolean;
     token?: string;
     username?: string;
     logout: () => Promise<void> | undefined;
@@ -29,12 +28,10 @@ export const useKeycloak = (): KeycloakContextValue => {
 };
 
 export const KeycloakProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const [authenticated, setAuthenticated] = useState(false);
     const [keycloak, setKeycloak] = useState<Keycloak | null>(null);
     const { showBoundary } = useErrorBoundary();
 
     useEffect(() => {
-
         // Do this here to throw inside ErrorBoundary
         keycloakVariables.forEach(kcVar => {
             if (typeof import.meta.env[kcVar] !== "string") {
@@ -48,7 +45,7 @@ export const KeycloakProvider: React.FC<{ children: ReactNode }> = ({ children }
                 realm: import.meta.env.VITE_KEYCLOAK_REALM as string,
                 clientId: import.meta.env.VITE_KEYCLOAK_CLIENT_ID as string,
             });
-            const res = await client.init({
+            await client.init({
                 flow: "standard",
                 pkceMethod: "S256",
                 checkLoginIframe: true,
@@ -56,7 +53,6 @@ export const KeycloakProvider: React.FC<{ children: ReactNode }> = ({ children }
                 enableLogging: true,
                 onLoad: "login-required",
             });
-            setAuthenticated(res);
             setKeycloak(client);
         };
 
@@ -68,13 +64,12 @@ export const KeycloakProvider: React.FC<{ children: ReactNode }> = ({ children }
 
     const contextValue: KeycloakContextValue = {
         keycloak: keycloak,
-        authenticated,
         token: keycloak?.token,
         username: keycloak?.tokenParsed?.preferred_username as string,
         logout: () => keycloak?.logout(),
     };
 
-    if (!authenticated) return <div>Authenticating...</div>;
+    if (!keycloak?.authenticated) return <div>Authenticating...</div>;
 
     return <KeycloakContext.Provider value={contextValue}>{children}</KeycloakContext.Provider>;
 };

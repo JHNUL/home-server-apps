@@ -1,7 +1,7 @@
 {
-  "name": "vite-template-redux",
+  "name": "homeserver-ui",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0-SNAPSHOT",
   "type": "module",
   "scripts": {
     "build": "tsc -b && vite build",
