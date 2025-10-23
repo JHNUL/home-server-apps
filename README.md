@@ -8,6 +8,7 @@ Homeserver monorepo including the following components.
 |---------------------|-----------|------------------------------------------------------------------|--------------|
 | message-server      | service   | Service that listens to events and provides a rest api.          | Yes          |
 | homeserver-common   | library   | Includes common classes that might be used by multiple services. | Yes          |
+| homeserver-ui       | frontend  | React frontend for homeserver.                                   | No  |
 | homeserver-database | migration | Liquibase database migration scripts.                            | No  |
 | homeserver-keycloak | service   | Identity and access management service.                          | No  |
 

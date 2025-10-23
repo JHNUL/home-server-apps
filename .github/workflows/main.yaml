@@ -1,4 +1,4 @@
-name: Java CI with Maven
+name: Homeserver build and test pipeline
 
 on:
   push:
@@ -66,3 +66,27 @@ jobs:
 
       - name: Run tests
         run: mvn -B -q --projects message-server --also-make clean test
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22.x'
+          architecture: 'x64'
+          package-manager-cache: true
+
+      - name: Create frontend env file
+        working-directory: ./homeserver-ui
+        run: |
+          cat << EOF >> .env
+          VITE_KEYCLOAK_URL=
+          VITE_KEYCLOAK_REALM=
+          VITE_KEYCLOAK_CLIENT_ID=
+          EOF
+
+      - name: Install dependencies
+        working-directory: ./homeserver-ui
+        run: npm ci
+
+      - name: Run frontend tests
+        working-directory: ./homeserver-ui
+        run: npm run test
