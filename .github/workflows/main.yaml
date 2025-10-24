@@ -62,6 +62,9 @@ jobs:
           KC_DB_PASSWORD=${{ secrets.VERY_SECRET_PW }}
           KC_BOOTSTRAP_ADMIN_USERNAME=${{ secrets.VERY_SECRET_USER }}
           KC_BOOTSTRAP_ADMIN_PASSWORD=${{ secrets.VERY_SECRET_PW }}
+          KC_HTTP_MANAGEMENT_SCHEME=http
+          KC_HTTP_PORT=8888
+          KC_HTTP_ENABLED=true
           EOF
 
       - name: Run tests
