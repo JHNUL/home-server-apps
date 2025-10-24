@@ -1,0 +1,17 @@
+include:
+  - docker-compose.yml
+
+services:
+  server:
+    image: juhanir/message-server:1.0.0-SNAPSHOT
+    ports:
+      - "8080:8080"
+    networks:
+      - homeserver-network
+    env_file:
+      - server.env
+    depends_on:
+      liquibase:
+        condition: service_completed_successfully
+      keycloak:
+        condition: service_healthy
