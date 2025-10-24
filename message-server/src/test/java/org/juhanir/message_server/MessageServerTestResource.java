@@ -19,7 +19,7 @@ public class MessageServerTestResource implements QuarkusTestResourceLifecycleMa
     private static ComposeContainer containers;
 
     private static final Duration WAIT_TIME = Duration.of(30, ChronoUnit.SECONDS);
-    private static final String MQTT_CONTAINER = "mqtt_broker";
+    private static final String MQTT_CONTAINER = "broker";
     private static final String LIQUIBASE_CONTAINER = "liquibase";
     private static final String KEYCLOAK_CONTAINER = "keycloak";
 
