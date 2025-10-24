@@ -21,7 +21,7 @@ services:
     networks:
       - homeserver-network
 
-  mqtt_broker:
+  broker:
     image: eclipse-mosquitto:2.0.21
     ports:
       - "1883:1883"
@@ -49,8 +49,7 @@ services:
     depends_on:
       - kc-database
     ports:
-      - "8443:8443"
-      - "9000:9000"
+      - "8888:8888"
     volumes:
       - ./homeserver-realm-dev.json:/opt/keycloak/data/import/realm-import.json
     env_file:
@@ -58,6 +57,12 @@ services:
     command: start --verbose --import-realm --optimized
     networks:
       - homeserver-network
+    healthcheck:
+      test: ["CMD-SHELL", "{ printf 'HEAD /health/ready HTTP/1.0\r\n\r\n' >&0; grep 'HTTP/1.0 200'; } 0<>/dev/tcp/localhost/9000"]
+      interval: 10s
+      retries: 5
+      start_period: 15s
+      timeout: 10s
 
 volumes:
   homeserver-db-data:
