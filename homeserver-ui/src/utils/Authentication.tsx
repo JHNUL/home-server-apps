@@ -9,13 +9,13 @@ import { initKeycloak } from "./keycloakSingleton";
 /**
  * Authentication component. Unauthenticated users see nothing currently. The
  * Keycloak client requires login on init, so the auth code flow is started
- * immediately. Sets token and user info to state for API calls to use.
+ * immediately.
  */
 export const Authentication: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [ready, setReady] = useState<boolean>(false);
     const { showBoundary } = useErrorBoundary();
     const config = useAppSelector(selectConfig);
-    console.log("ready", ready);
+
     useEffect(() => {
         const doInit = async () => {
             try {
@@ -38,7 +38,7 @@ export const Authentication: React.FC<{ children: ReactNode }> = ({ children }) 
         config.appVars.KEYCLOAK_REALM,
         config.appVars.KEYCLOAK_CLIENT_ID,
     ]);
-    console.log("ready", ready);
+
     // TODO: is this needed? If yes, better UI
     if (!ready) return <div>Initializing keycloak client...</div>;
 

@@ -1,11 +1,11 @@
 import "./App.css";
-import { Counter } from "./features/counter/Counter";
+import { Device } from "./features/devices/Device";
 
 export const App = () => {
     return (
         <div className="App">
             <header className="App-header">
-                <Counter />
+                <Device />
             </header>
         </div>
     );

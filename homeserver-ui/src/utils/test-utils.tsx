@@ -5,7 +5,6 @@ import type { PropsWithChildren, ReactElement } from "react";
 import { Provider } from "react-redux";
 import type { AppStore, RootState } from "../app/store";
 import { makeStore } from "../app/store";
-import { KeycloakProvider } from "./KeycloakProvider";
 import { ErrorBoundary } from "react-error-boundary";
 import { ErrorComponent } from "./ErrorComponent";
 
@@ -57,9 +56,7 @@ export const renderWithProviders = (
 
     const Wrapper = ({ children }: PropsWithChildren) => (
         <ErrorBoundary FallbackComponent={ErrorComponent}>
-            <KeycloakProvider>
-                <Provider store={store}>{children}</Provider>
-            </KeycloakProvider>
+            <Provider store={store}>{children}</Provider>
         </ErrorBoundary>
     );
 

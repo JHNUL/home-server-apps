@@ -1,9 +1,9 @@
 import type { JSX } from "react";
 import { useAppDispatch } from "../../app/hooks/hooks";
-import styles from "./Counter.module.css";
+import styles from "./Device.module.css";
 import { fetchDevicesThunk } from "./deviceThunk";
 
-export const Counter = (): JSX.Element => {
+export const Device = (): JSX.Element => {
     const dispatch = useAppDispatch();
 
     return (

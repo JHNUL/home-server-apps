@@ -1,7 +1,7 @@
 import type { ThunkAction, UnknownAction } from "@reduxjs/toolkit";
 import type { RootState } from "../../app/store";
 import { setDevices, setDeviceStatus } from "./deviceSlice";
-import { getDevices } from "./counterAPI";
+import { getDevices } from "./deviceAPI";
 
 export const fetchDevicesThunk =
     (): ThunkAction<void, RootState, unknown, UnknownAction> => async (dispatch, getState) => {

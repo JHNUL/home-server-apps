@@ -1,7 +1,7 @@
 import type { Action, ThunkAction } from "@reduxjs/toolkit";
 import { combineSlices, configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
-import { deviceSlice } from "../features/counter/deviceSlice";
+import { deviceSlice } from "../features/devices/deviceSlice";
 import { quotesApiSlice } from "../features/quotes/quotesApiSlice";
 import { configSlice } from "../utils/configSlice";
 

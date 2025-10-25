@@ -1,6 +1,6 @@
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createAppSlice } from "../../app/createAppSlice";
-import type { Device } from "../../features/counter/types";
+import type { Device } from "../../features/devices/types";
 
 export type LoadingState = "idle" | "loading" | "failed";
 

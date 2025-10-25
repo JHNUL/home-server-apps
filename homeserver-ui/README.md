@@ -6,9 +6,10 @@ User interface for homeserver functionality.
 
 Create the file `homeserver-ui/.env.local` with the correct values for these variables:
 ```txt
-VITE_KEYCLOAK_URL=
-VITE_KEYCLOAK_REALM=
-VITE_KEYCLOAK_CLIENT_ID=
+VITE_KEYCLOAK_URL
+VITE_KEYCLOAK_REALM
+VITE_KEYCLOAK_CLIENT_ID
+VITE_MESSAGE_SERVER_API_URL
 ```
 
 Start the whole backend stack with:
