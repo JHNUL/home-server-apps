@@ -1,10 +1,12 @@
+import type { PayloadAction } from "@reduxjs/toolkit";
 import { createAppSlice } from "../../app/createAppSlice";
-import { getDevices } from "./counterAPI";
-import type { Device } from "./types";
+import type { Device } from "../../features/devices/types";
+
+export type LoadingState = "idle" | "loading" | "failed";
 
 export type CounterSliceState = {
     devices: Device[];
-    status: "idle" | "loading" | "failed";
+    status: LoadingState;
 };
 
 const initialState: CounterSliceState = {
@@ -13,7 +15,7 @@ const initialState: CounterSliceState = {
 };
 
 // If you are not using async thunks you can use the standalone `createSlice`.
-export const counterSlice = createAppSlice({
+export const deviceSlice = createAppSlice({
     name: "counter",
     // `createSlice` will infer the state type from the `initialState` argument
     initialState,
@@ -23,24 +25,13 @@ export const counterSlice = createAppSlice({
         // incrementByAmount: create.reducer((state, action: PayloadAction<number>) => {
         //     state.value += action.payload;
         // }),
-        fetchDevices: create.asyncThunk(
-            async (token: string) => {
-                const response = await getDevices(token);
-                return response.data;
-            },
-            {
-                pending: state => {
-                    state.status = "loading";
-                },
-                fulfilled: (state, action) => {
-                    state.status = "idle";
-                    state.devices = action.payload;
-                },
-                rejected: state => {
-                    state.status = "failed";
-                },
-            },
-        ),
+        setDeviceStatus: create.reducer((state, action: PayloadAction<LoadingState>) => {
+            state.status = action.payload;
+        }),
+        setDevices: create.reducer((state, action: PayloadAction<Device[]>) => {
+            state.status = "idle";
+            state.devices = action.payload;
+        }),
     }),
     // You can define your selectors here. These selectors receive the slice
     // state as their first argument.
@@ -51,10 +42,10 @@ export const counterSlice = createAppSlice({
 });
 
 // Action creators are generated for each case reducer function.
-export const { fetchDevices } = counterSlice.actions;
+export const { setDeviceStatus, setDevices } = deviceSlice.actions;
 
 // Selectors returned by `slice.selectors` take the root state as their first argument.
-export const { selectDevices, selectStatus } = counterSlice.selectors;
+export const { selectDevices, selectStatus } = deviceSlice.selectors;
 
 // We can also write thunks by hand, which may contain both sync and async logic.
 // Here's an example of conditionally dispatching actions based on current state.

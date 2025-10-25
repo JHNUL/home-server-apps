@@ -91,6 +91,10 @@ jobs:
         working-directory: ./homeserver-ui
         run: npm ci
 
+      - name: Build
+        working-directory: ./homeserver-ui
+        run: npm run build
+
       - name: Run frontend tests
         working-directory: ./homeserver-ui
         run: npm run test

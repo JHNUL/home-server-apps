@@ -1,12 +1,10 @@
 import type { JSX } from "react";
-import { useAppDispatch } from "../../app/hooks";
-import { useKeycloak } from "../../utils/KeycloakProvider";
-import styles from "./Counter.module.css";
-import { fetchDevices } from "./counterSlice";
+import { useAppDispatch } from "../../app/hooks/hooks";
+import styles from "./Device.module.css";
+import { fetchDevicesThunk } from "./deviceThunk";
 
-export const Counter = (): JSX.Element => {
+export const Device = (): JSX.Element => {
     const dispatch = useAppDispatch();
-    const { token } = useKeycloak();
 
     return (
         <div>
@@ -15,7 +13,7 @@ export const Counter = (): JSX.Element => {
                     className={styles.button}
                     aria-label="Fetch devices"
                     onClick={() => {
-                        void dispatch(fetchDevices(token ?? ""));
+                        dispatch(fetchDevicesThunk());
                     }}
                 >
                     Get
