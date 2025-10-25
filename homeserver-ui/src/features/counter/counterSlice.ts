@@ -1,5 +1,5 @@
 import { createAppSlice } from "../../app/createAppSlice";
-import { getDevices } from "./counterAPI";
+import { get } from "./counterAPI";
 import type { Device } from "./types";
 
 export type CounterSliceState = {
@@ -25,7 +25,7 @@ export const counterSlice = createAppSlice({
         // }),
         fetchDevices: create.asyncThunk(
             async (token: string) => {
-                const response = await getDevices(token);
+                const response = await get<Device[]>(token);
                 return response.data;
             },
             {
