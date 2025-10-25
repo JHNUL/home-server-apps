@@ -1,8 +1,5 @@
+import { getKeycloak } from "../../utils/keycloakSingleton";
 import type { Device } from "./types";
-
-const API_URL = import.meta.env.VITE_MESSAGE_SERVER_API_URL as string
-const DEVICES_URL = `${API_URL}/devices`
-
 
 type GenericFetchResponse<T> = {
     data: T;
@@ -13,14 +10,21 @@ type GenericFetchResponse<T> = {
  * Fetch all devices
  * @returns list of {@link Device}
  */
-export const getDevices = async (token: string) => {
-    return get<Device[]>(DEVICES_URL, token);
+export const getDevices = async (apiUrl: string) => {
+    return get<Device[]>(`${apiUrl}/devices`);
 };
 
-async function get<T>(url: string, token: string): Promise<GenericFetchResponse<T>> {
+async function get<T>(url: string): Promise<GenericFetchResponse<T>> {
+    const kc = getKeycloak();
+    await kc.updateToken(30);
+
+    if (!kc.token) {
+        return Promise.reject(Error("Keycloak client error: No bearer token available."));
+    }
+
     const result = await fetch(url, {
         headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${kc.token}`,
             Accept: "application/json",
         },
         method: "GET",
@@ -30,5 +34,6 @@ async function get<T>(url: string, token: string): Promise<GenericFetchResponse<
         return Promise.reject(new Error(`Failed to fetch ${String(result.status)}`));
     }
 
-    return (await result.json()) as GenericFetchResponse<T>;
+    const data = (await result.json()) as T;
+    return { data };
 }
