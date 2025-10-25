@@ -17,13 +17,19 @@ Run the following command:
 When running the image set the following environment variables:
 ```shell
 KC_DB=postgres
-KC_HOSTNAME=localhost
-KC_DB_URL=<DBURL>
-KC_DB_USERNAME=<DBUSERNAME>
-KC_DB_PASSWORD=<DBPASSWORD>
-KC_BOOTSTRAP_ADMIN_USERNAME=<ADMIN USERNAME>
-KC_BOOTSTRAP_ADMIN_PASSWORD=<ADMIN PASSWORD>
+KC_HTTP_MANAGEMENT_SCHEME=http
+KC_HTTP_PORT=8888
+KC_HTTP_ENABLED=true
+KC_HOSTNAME=http://localhost:8888
+KC_HOSTNAME_BACKCHANNEL_DYNAMIC=true
+KC_DB_URL=
+KC_DB_USERNAME=
+KC_DB_PASSWORD=
+KC_BOOTSTRAP_ADMIN_USERNAME=
+KC_BOOTSTRAP_ADMIN_PASSWORD=
 ```
+
+https://www.keycloak.org/server/all-config?options-filter=all
 
 ## Releases
 

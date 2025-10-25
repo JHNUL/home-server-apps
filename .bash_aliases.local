@@ -1,0 +1,6 @@
+alias HDC='docker compose -f docker/docker-compose.yml'
+alias HUP='docker compose -f docker/docker-compose.yml up -d --remove-orphans --force-recreate'
+alias HDOWN='docker compose -f docker/docker-compose.yml down --remove-orphans --volumes'
+alias HSDC='docker compose -f docker/docker-compose-server.yml'
+alias HSUP='docker compose -f docker/docker-compose-server.yml up -d --remove-orphans --force-recreate'
+alias HSDOWN='docker compose -f docker/docker-compose-server.yml down --remove-orphans --volumes'
