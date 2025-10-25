@@ -6,6 +6,7 @@ import { store } from "./app/store";
 import "./index.css";
 import { KeycloakProvider } from "./utils/KeycloakProvider";
 import { ErrorComponent } from "./utils/ErrorComponent";
+import { StrictMode } from "react";
 
 const container = document.getElementById("root");
 
@@ -15,9 +16,11 @@ if (container) {
     root.render(
         <ErrorBoundary FallbackComponent={ErrorComponent}>
             <KeycloakProvider>
-                <Provider store={store}>
-                    <App />
-                </Provider>
+                <StrictMode>
+                    <Provider store={store}>
+                        <App />
+                    </Provider>
+                </StrictMode>
             </KeycloakProvider>
         </ErrorBoundary>,
     );

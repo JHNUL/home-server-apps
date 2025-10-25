@@ -20,3 +20,15 @@ This starts all the backend components. If developing message-server simultaneou
 with the `docker-compose.yml` file in the same location and then start message-server normally
 with `mvn quarkus:dev`.
 
+The keycloak realm used for local development and tests creates two users at initialization
+that can be used out of the box:
+- testuser:testuser123 (has role user)
+- testadmin:testadmin123 (has role admin)
+
+
+Tear down cleanly (removes volumes) with:
+```sh
+docker compose -f docker/docker-compose-server.yml down --remove-orphans --volumes
+```
+
+To persist data across runs, teardown without the `--volumes` option.

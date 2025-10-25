@@ -4,10 +4,12 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { useErrorBoundary } from "react-error-boundary";
 import Keycloak from "keycloak-js";
 
+// TODO: check these somewhere else
 const keycloakVariables: string[] = [
     "VITE_KEYCLOAK_URL",
     "VITE_KEYCLOAK_REALM",
     "VITE_KEYCLOAK_CLIENT_ID",
+    "VITE_MESSAGE_SERVER_API_URL",
 ];
 
 type KeycloakContextValue = {
