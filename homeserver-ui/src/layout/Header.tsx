@@ -24,7 +24,7 @@ export const Header: React.FC = () => {
                                     Home Management
                                 </div>
                                 <div className="text-xs text-slate-500 dark:text-slate-400">
-                                    control your crib
+                                    <em>control your crib</em>
                                 </div>
                             </div>
                         </Link>
@@ -40,7 +40,7 @@ export const Header: React.FC = () => {
                                 <input
                                     id="top-search"
                                     className="block w-full rounded-md border border-slate-200 bg-white py-2 pl-10 pr-4 text-sm placeholder-slate-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 dark:bg-slate-800 dark:border-slate-700 dark:placeholder-slate-500"
-                                    placeholder="Search devices, rooms, automations..."
+                                    placeholder="Search something..."
                                 />
                                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                                     <svg
@@ -65,15 +65,9 @@ export const Header: React.FC = () => {
                     {/* Right: actions */}
                     <div className="flex items-center gap-3">
                         <nav className="hidden sm:flex items-center gap-2">
-                            <a className="text-sm px-3 py-1 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800">
+                            <Link to="/" className="text-sm px-3 py-1 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800">
                                 Devices
-                            </a>
-                            <a className="text-sm px-3 py-1 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800">
-                                Rooms
-                            </a>
-                            <a className="text-sm px-3 py-1 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800">
-                                Automations
-                            </a>
+                            </Link>
                         </nav>
 
                         <button

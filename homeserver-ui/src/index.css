@@ -1,5 +1,18 @@
 @import "tailwindcss";
 
+/*
+Tailwind needs to no which classes to include at build time so dynamically
+generated classnames are a problem. The below safelists a sensible default
+number of grid-cols-n classnames. If a grid of larger size is used via a 
+dynamic classname then it'll just look all wrong. Not great, but since dynamic
+column number resolution is done very much on purpose and the use case has
+practical limits (used in Table, no table will have 20+ columns) this is fine
+for now.
+
+See: https://tailwindcss.com/docs/detecting-classes-in-source-files#safelisting-with-ranges 
+*/
+@source inline("grid-cols-{1..20}");
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 .container-card {
