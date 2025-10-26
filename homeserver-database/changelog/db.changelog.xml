@@ -6,5 +6,4 @@
 
     <include file="releases/1.0.0/changelog.xml" relativeToChangelogFile="true"/>
 
-
 </databaseChangeLog>

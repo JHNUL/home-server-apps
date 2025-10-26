@@ -16,7 +16,7 @@ public record HumidityStatusResponse(
     public static HumidityStatusResponse fromHumidityStatus(HumidityStatus humidStatus) {
         return new HumidityStatusResponse(
                 humidStatus.getComponentId(),
-                humidStatus.getValue().doubleValue(),
+                humidStatus.getValue(),
                 humidStatus.getMeasurementTime(),
                 humidStatus.getDevice().getIdentifier()
         );

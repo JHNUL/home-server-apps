@@ -4,13 +4,19 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
 
-    <changeSet id="homeserver_1750357612" author="homeserver">
+    <property name="tag" value="1.0.0"/>
+
+    <changeSet id="homeserver_${tag}" author="homeserver">
         <sqlFile path="100_create_schema_sensor.sql" relativeToChangelogFile="true" stripComments="true"/>
         <sqlFile path="100_create_table_device_type.sql" relativeToChangelogFile="true" stripComments="true"/>
         <sqlFile path="100_populate_device_type.sql" relativeToChangelogFile="true" stripComments="true"/>
         <sqlFile path="100_create_table_device.sql" relativeToChangelogFile="true" stripComments="true"/>
         <sqlFile path="100_create_table_temperature_status.sql" relativeToChangelogFile="true" stripComments="true"/>
         <sqlFile path="100_create_table_humidity_status.sql" relativeToChangelogFile="true" stripComments="true"/>
+    </changeSet>
+
+    <changeSet id="tag_${tag}" author="homeserver">
+        <tagDatabase tag="${tag}"/>
     </changeSet>
 
 </databaseChangeLog>

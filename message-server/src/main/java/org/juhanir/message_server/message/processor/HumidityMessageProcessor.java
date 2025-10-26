@@ -40,7 +40,7 @@ public class HumidityMessageProcessor implements StatusMessageProcessor {
                     HumidityStatus hStatus = (HumidityStatus) measurement;
                     hStatus.setDevice(device);
                     DeviceTimeSeriesDataId dId = new DeviceTimeSeriesDataId()
-                            .setDeviceId(device.getId())
+                            .setIdentifier(device.getIdentifier())
                             .setMeasurementTime(hStatus.getMeasurementTime());
                     hStatus.setId(dId);
                     return deviceService.updateDeviceCommunication(device)

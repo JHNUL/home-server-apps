@@ -16,7 +16,7 @@ import java.util.List;
 @ApplicationScoped
 public class HumidityRepository implements PanacheRepositoryBase<HumidityStatus, DeviceTimeSeriesDataId> {
 
-    public Uni<List<HumidityStatus>> getMeasurementsFromDevice(long deviceId, TimeSeriesQueryParams params) {
+    public Uni<List<HumidityStatus>> getMeasurementsFromDevice(String identifier, TimeSeriesQueryParams params) {
 
         SensorDataQueryBuilder.QueryAndParams query = SensorDataQueryBuilder
                 .create()
@@ -24,7 +24,7 @@ public class HumidityRepository implements PanacheRepositoryBase<HumidityStatus,
                 .and()
                 .beforeTime(params.to, true)
                 .and()
-                .fromDevice(deviceId)
+                .fromDevice(identifier)
                 .build();
 
         Sort order = Sort.ascending("measurementTime");

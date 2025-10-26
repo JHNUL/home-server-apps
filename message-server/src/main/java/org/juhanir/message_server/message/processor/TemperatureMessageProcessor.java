@@ -40,7 +40,7 @@ public class TemperatureMessageProcessor implements StatusMessageProcessor {
                     TemperatureStatus tStatus = (TemperatureStatus) measurement;
                     tStatus.setDevice(device);
                     DeviceTimeSeriesDataId dId = new DeviceTimeSeriesDataId()
-                            .setDeviceId(device.getId())
+                            .setIdentifier(device.getIdentifier())
                             .setMeasurementTime(tStatus.getMeasurementTime());
                     tStatus.setId(dId);
                     return deviceService.updateDeviceCommunication(device)

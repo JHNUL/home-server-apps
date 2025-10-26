@@ -9,26 +9,28 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class SensorDataQueryBuilderTest {
 
+    private static final String IDENTIFIER = "abcdefg123456";
+
     @Test
     void doesNotAppendAdjacentOperators() {
         var q = SensorDataQueryBuilder
                 .create()
-                .fromDevice(1L)
+                .fromDevice(IDENTIFIER)
                 .and()
                 .and()
                 .or()
                 .beforeTime("2020-10-10T10:10:10Z", true)
                 .build();
-        assertEquals("device.id = :deviceId AND measurementTime <= :to", q.query());
+        assertEquals("device.identifier = :identifier AND measurementTime <= :to", q.query());
         assertEquals(Instant.parse("2020-10-10T10:10:10Z"), q.params().get("to"));
-        assertEquals(1L, q.params().get("deviceId"));
+        assertEquals(IDENTIFIER, q.params().get("identifier"));
     }
 
     @Test
     void complexValidQueryBuildsCorrectly() {
         var q = SensorDataQueryBuilder
                 .create()
-                .fromDevice(42L)
+                .fromDevice(IDENTIFIER)
                 .and()
                 .afterTime("2023-01-01T00:00:00Z", false)
                 .or()
@@ -36,11 +38,11 @@ public class SensorDataQueryBuilderTest {
                 .build();
 
         assertEquals(
-                "device.id = :deviceId AND measurementTime > :from OR measurementTime <= :to",
+                "device.identifier = :identifier AND measurementTime > :from OR measurementTime <= :to",
                 q.query()
         );
         assertEquals(3, q.params().size());
-        assertEquals(42L, q.params().get("deviceId"));
+        assertEquals(IDENTIFIER, q.params().get("identifier"));
         assertEquals(Instant.parse("2023-01-01T00:00:00Z"), q.params().get("from"));
         assertEquals(Instant.parse("2024-01-01T00:00:00Z"), q.params().get("to"));
     }
@@ -51,7 +53,7 @@ public class SensorDataQueryBuilderTest {
         assertThrows(IllegalArgumentException.class, () -> {
             SensorDataQueryBuilder
                     .create()
-                    .fromDevice(1L)
+                    .fromDevice(IDENTIFIER)
                     .beforeTime("2020-10-10T10:10:10Z", true)
                     .build();
         });
@@ -68,10 +70,10 @@ public class SensorDataQueryBuilderTest {
         var q = SensorDataQueryBuilder
                 .create()
                 .and()
-                .fromDevice(1L)
+                .fromDevice(IDENTIFIER)
                 .build();
-        assertEquals("device.id = :deviceId", q.query());
-        assertEquals(1L, q.params().get("deviceId"));
+        assertEquals("device.identifier = :identifier", q.query());
+        assertEquals(IDENTIFIER, q.params().get("identifier"));
     }
 
     @Test
@@ -79,7 +81,7 @@ public class SensorDataQueryBuilderTest {
         assertThrows(IllegalArgumentException.class, () -> {
             SensorDataQueryBuilder
                     .create()
-                    .fromDevice(1L)
+                    .fromDevice(IDENTIFIER)
                     .and()
                     .build();
         });
@@ -89,15 +91,15 @@ public class SensorDataQueryBuilderTest {
     void nullTimeSkipsFilter() {
         SensorDataQueryBuilder.QueryAndParams q = SensorDataQueryBuilder
                 .create()
-                .fromDevice(5L)
+                .fromDevice(IDENTIFIER)
                 .and()
                 .afterTime(null, true)
                 .and()
                 .beforeTime(null, true)
                 .build();
 
-        assertEquals("device.id = :deviceId", q.query());
+        assertEquals("device.identifier = :identifier", q.query());
         assertEquals(1, q.params().size());
-        assertEquals(5L, q.params().get("deviceId"));
+        assertEquals(IDENTIFIER, q.params().get("identifier"));
     }
 }

@@ -16,7 +16,7 @@ import java.util.List;
 @ApplicationScoped
 public class TemperatureRepository implements PanacheRepositoryBase<TemperatureStatus, DeviceTimeSeriesDataId> {
 
-    public Uni<List<TemperatureStatus>> getMeasurementsFromDevice(long deviceId, TimeSeriesQueryParams params) {
+    public Uni<List<TemperatureStatus>> getMeasurementsFromDevice(String identifier, TimeSeriesQueryParams params) {
 
         SensorDataQueryBuilder.QueryAndParams query = SensorDataQueryBuilder
                 .create()
@@ -24,7 +24,7 @@ public class TemperatureRepository implements PanacheRepositoryBase<TemperatureS
                 .and()
                 .beforeTime(params.to, true)
                 .and()
-                .fromDevice(deviceId)
+                .fromDevice(identifier)
                 .build();
 
         Sort order = Sort.ascending("measurementTime");

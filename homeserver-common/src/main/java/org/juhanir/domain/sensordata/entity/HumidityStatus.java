@@ -46,7 +46,13 @@ public class HumidityStatus implements DeviceStatusMeasurement {
      * because this field is part of composite primary key.
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "device_id", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(
+            name = "identifier",
+            referencedColumnName = "identifier",
+            nullable = false,
+            insertable = false,
+            updatable = false
+    )
     private Device device;
 
     public Integer getComponentId() {
