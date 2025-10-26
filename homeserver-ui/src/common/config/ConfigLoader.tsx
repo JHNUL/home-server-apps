@@ -1,5 +1,5 @@
 import { useEffect, type ReactNode } from "react";
-import { useAppDispatch, useAppSelector } from "../app/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "../../app/hooks/hooks";
 import type { Browser, OperatingSystem } from "./configSlice";
 import {
     selectConfig,

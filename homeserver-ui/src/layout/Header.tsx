@@ -1,7 +1,7 @@
 import type React from "react";
 import { Link } from "react-router";
 import { useAppSelector } from "../app/hooks/hooks";
-import { selectUsername } from "../utils/authSlice";
+import { selectUsername } from "../common/authentication/authSlice";
 
 export const Header: React.FC = () => {
     const userName = useAppSelector(selectUsername);

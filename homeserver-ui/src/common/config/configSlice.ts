@@ -1,5 +1,5 @@
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { createAppSlice } from "../app/createAppSlice";
+import { createAppSlice } from "../../app/createAppSlice";
 
 export type AppEnvironmentVariables = {
     KEYCLOAK_URL: string;

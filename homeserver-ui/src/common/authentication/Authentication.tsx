@@ -3,10 +3,10 @@ import type React from "react";
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { useErrorBoundary } from "react-error-boundary";
-import { useAppDispatch, useAppSelector } from "../app/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "../../app/hooks/hooks";
 import type { UserName } from "./authSlice";
 import { setEmail, setResourceRoles, setRoles, setUsername } from "./authSlice";
-import { selectConfig } from "./configSlice";
+import { selectConfig } from "../config/configSlice";
 import { initKeycloak } from "./keycloakSingleton";
 
 /**
