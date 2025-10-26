@@ -17,8 +17,8 @@ public record TemperatureStatusResponse(
     public static TemperatureStatusResponse fromTemperatureStatus(TemperatureStatus tempStatus) {
         return new TemperatureStatusResponse(
                 tempStatus.getComponentId(),
-                tempStatus.getValueCelsius().doubleValue(),
-                tempStatus.getValueFahrenheit().doubleValue(),
+                tempStatus.getValueCelsius(),
+                tempStatus.getValueFahrenheit(),
                 tempStatus.getMeasurementTime(),
                 tempStatus.getDevice().getIdentifier()
         );

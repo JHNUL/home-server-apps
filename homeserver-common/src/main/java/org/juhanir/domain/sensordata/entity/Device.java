@@ -12,7 +12,7 @@ import java.util.Objects;
 public class Device extends BaseEntity {
 
     /**
-     * Device identifier, should be unique
+     * Device identifier, must be unique
      */
     @NotNull
     @Column(name = "identifier")

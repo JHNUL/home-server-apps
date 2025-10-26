@@ -35,9 +35,9 @@ public final class SensorDataQueryBuilder {
         return this;
     }
 
-    public SensorDataQueryBuilder fromDevice(long deviceId) {
-        doAppend("device.id", "=", "deviceId");
-        parameters.putIfAbsent("deviceId", deviceId);
+    public SensorDataQueryBuilder fromDevice(String identifier) {
+        doAppend("device.identifier", "=", "identifier");
+        parameters.putIfAbsent("identifier", identifier);
         return this;
     }
 

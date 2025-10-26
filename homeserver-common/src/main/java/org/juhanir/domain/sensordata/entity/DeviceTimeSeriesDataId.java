@@ -17,8 +17,8 @@ public class DeviceTimeSeriesDataId implements Serializable {
      * Spatial component of the composite primary key of a time-series data record.
      */
     @NotNull
-    @Column(name = "device_id")
-    private Integer deviceId;
+    @Column(name = "identifier")
+    private String identifier;
 
     /**
      * Temporal component of the composite primary key of a time-series data record.
@@ -27,8 +27,8 @@ public class DeviceTimeSeriesDataId implements Serializable {
     @Column(name = "measurement_time")
     private Instant measurementTime;
 
-    public DeviceTimeSeriesDataId setDeviceId(Integer deviceId) {
-        this.deviceId = deviceId;
+    public DeviceTimeSeriesDataId setIdentifier(String identifier) {
+        this.identifier = identifier;
         return this;
     }
 

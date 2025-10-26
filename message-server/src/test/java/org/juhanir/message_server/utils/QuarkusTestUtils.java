@@ -112,7 +112,7 @@ public abstract class QuarkusTestUtils {
         List<Object> params = new ArrayList<>();
 
         sb.append("""
-                INSERT INTO sensor.temperature_status (device_id, measurement_time, component_id, value_celsius, value_fahrenheit) VALUES
+                INSERT INTO sensor.temperature_status (identifier, measurement_time, component_id, value_celsius, value_fahrenheit) VALUES
                 """);
 
         int index = 0;
@@ -120,7 +120,7 @@ public abstract class QuarkusTestUtils {
             if (index > 0) sb.append(", ");
             sb.append("(?, ?, ?, ?, ?)");
 
-            params.add(temp.getDevice().getId());
+            params.add(temp.getDevice().getIdentifier());
             params.add(temp.getMeasurementTime());
             params.add(temp.getComponentId());
             params.add(temp.getValueCelsius());
@@ -150,7 +150,7 @@ public abstract class QuarkusTestUtils {
         List<Object> params = new ArrayList<>();
 
         sb.append("""
-                INSERT INTO sensor.humidity_status (device_id, measurement_time, component_id, value) VALUES
+                INSERT INTO sensor.humidity_status (identifier, measurement_time, component_id, value) VALUES
                 """);
 
         int index = 0;
@@ -158,7 +158,7 @@ public abstract class QuarkusTestUtils {
             if (index > 0) sb.append(", ");
             sb.append("(?, ?, ?, ?)");
 
-            params.add(hum.getDevice().getId());
+            params.add(hum.getDevice().getIdentifier());
             params.add(hum.getMeasurementTime());
             params.add(hum.getComponentId());
             params.add(hum.getValue());
@@ -180,19 +180,19 @@ public abstract class QuarkusTestUtils {
     /**
      * Create rows of humidity data with random values
      *
-     * @param deviceId  device id for the measurements
+     * @param identifier  identifier for the measurements
      * @param startDate timestamp for start data, e.g. '2025-01-01'
      * @param endDate   timestamp for start data, e.g. '2025-01-10'
      * @param interval  time interval, e.g. '1 hour'
      */
-    public void seedRandomHumidityData(long deviceId, String startDate, String endDate, String interval) {
+    public void seedRandomHumidityData(String identifier, String startDate, String endDate, String interval) {
         String nativeQuery = """
-                SELECT %s as device_id,
+                SELECT '%s' as identifier,
                     measurement_time,
                     0 as component_id,
                     random()*50 as value
                 FROM generate_series('%s', '%s', interval '%s') as measurement_time;
-                """.formatted(deviceId, startDate, endDate, interval);
+                """.formatted(identifier, startDate, endDate, interval);
         executeTransactionalNativeQuery(nativeQuery);
     }
 
