@@ -5,9 +5,9 @@ import { Provider } from "react-redux";
 import { App } from "./App";
 import { store } from "./app/store";
 import "./index.css";
-import { Authentication } from "./utils/Authentication";
-import { ConfigLoader } from "./utils/ConfigLoader";
-import { ErrorComponent } from "./utils/ErrorComponent";
+import { Authentication } from "./common/authentication/Authentication";
+import { ConfigLoader } from "./common/config/ConfigLoader";
+import { ErrorComponent } from "./common/ErrorComponent";
 
 const container = document.getElementById("root");
 

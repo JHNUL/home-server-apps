@@ -5,7 +5,7 @@ import { renderWithProviders } from "./utils/test-utils";
 test("App landingpage", () => {
     renderWithProviders(<App />);
 
-    const loggedInLabel = screen.getByText<HTMLLabelElement>("Get");
+    const loggedInLabel = screen.getByText<HTMLLabelElement>("Home Management");
 
     expect(loggedInLabel).toBeVisible();
 });

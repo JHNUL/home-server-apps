@@ -1,24 +1,47 @@
 import type { JSX } from "react";
-import { useAppDispatch } from "../../app/hooks/hooks";
-import styles from "./Device.module.css";
-import { fetchDevicesThunk } from "./deviceThunk";
+import Table from "../../common/table/Table";
+import { TableCell } from "../../common/table/TableCell";
+import TableRow from "../../common/table/TableRow";
+import { useGetDevicesQuery } from "./deviceApiSlice";
+import { Device as IoTDevice } from "./types";
 
 export const Device = (): JSX.Element => {
-    const dispatch = useAppDispatch();
+    const { data, isError, isLoading, isSuccess } = useGetDevicesQuery();
 
-    return (
-        <div>
-            <div className={styles.row}>
-                <button
-                    className={styles.button}
-                    aria-label="Fetch devices"
-                    onClick={() => {
-                        dispatch(fetchDevicesThunk());
-                    }}
-                >
-                    Get
-                </button>
+    const renderTable = (devices: IoTDevice[]) => {
+        return (
+            <div className="container-card">
+                <h2 className="text-lg font-semibold mb-4">Devices</h2>
+                <Table headers={["Identifier", "Device Type", "Created", "Last Online"]}>
+                    {devices.map(device => (
+                        <TableRow
+                            key={device.id}
+                            onClick={() => {
+                                console.log("Clicked", device.identifier);
+                            }}
+                        >
+                            <TableCell>{device.identifier}</TableCell>
+                            <TableCell>{device.deviceType}</TableCell>
+                            <TableCell>{device.createdAt}</TableCell>
+                            <TableCell>{device.latestCommunication}</TableCell>
+                        </TableRow>
+                    ))}
+                </Table>
             </div>
-        </div>
-    );
+        );
+    };
+
+    if (isError) {
+        console.error("ERROR");
+    }
+
+    if (isLoading) {
+        console.log("LOADING");
+    }
+
+    if (isSuccess) {
+        return renderTable(data);
+    }
+
+    return renderTable([]);
 };

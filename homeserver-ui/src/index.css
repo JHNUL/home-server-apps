@@ -1,13 +1,20 @@
-body {
-  margin: 0;
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
-    "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+@import "tailwindcss";
 
-code {
-  font-family:
-    source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+/*
+Tailwind needs to no which classes to include at build time so dynamically
+generated classnames are a problem. The below safelists a sensible default
+number of grid-cols-n classnames. If a grid of larger size is used via a 
+dynamic classname then it'll just look all wrong. Not great, but since dynamic
+column number resolution is done very much on purpose and the use case has
+practical limits (used in Table, no table will have 20+ columns) this is fine
+for now.
+
+See: https://tailwindcss.com/docs/detecting-classes-in-source-files#safelisting-with-ranges 
+*/
+@source inline("grid-cols-{1..20}");
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+.container-card {
+    @apply rounded-2xl p-4 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 shadow-sm;
 }

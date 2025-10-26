@@ -6,7 +6,7 @@ import { Provider } from "react-redux";
 import type { AppStore, RootState } from "../app/store";
 import { makeStore } from "../app/store";
 import { ErrorBoundary } from "react-error-boundary";
-import { ErrorComponent } from "./ErrorComponent";
+import { ErrorComponent } from "../common/ErrorComponent";
 
 /**
  * This type extends the default options for

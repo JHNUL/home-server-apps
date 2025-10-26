@@ -1,12 +1,15 @@
-import "./App.css";
+import { BrowserRouter, Route, Routes } from "react-router";
 import { Device } from "./features/devices/Device";
+import { Layout } from "./layout/Layout";
 
 export const App = () => {
     return (
-        <div className="App">
-            <header className="App-header">
-                <Device />
-            </header>
-        </div>
+        <BrowserRouter>
+            <Layout>
+                <Routes>
+                    <Route path="/" element={<Device />} />
+                </Routes>
+            </Layout>
+        </BrowserRouter>
     );
 };
