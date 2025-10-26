@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /*
-Tailwind needs to no which classes to include at build time so dynamically
+Tailwind needs to know which classes to include at build time so dynamically
 generated classnames are a problem. The below safelists a sensible default
 number of grid-cols-n classnames. If a grid of larger size is used via a 
 dynamic classname then it'll just look all wrong. Not great, but since dynamic
