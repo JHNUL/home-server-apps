@@ -1,8 +1,11 @@
+import type { KeycloakTokenParsed } from "keycloak-js";
 import type React from "react";
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { useErrorBoundary } from "react-error-boundary";
-import { useAppSelector } from "../app/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "../app/hooks/hooks";
+import type { UserName } from "./authSlice";
+import { setEmail, setResourceRoles, setRoles, setUsername } from "./authSlice";
 import { selectConfig } from "./configSlice";
 import { initKeycloak } from "./keycloakSingleton";
 
@@ -15,8 +18,19 @@ export const Authentication: React.FC<{ children: ReactNode }> = ({ children }) 
     const [ready, setReady] = useState<boolean>(false);
     const { showBoundary } = useErrorBoundary();
     const config = useAppSelector(selectConfig);
+    const dispatch = useAppDispatch();
 
     useEffect(() => {
+        const parseUserName = (parsedToken?: KeycloakTokenParsed): UserName => {
+            const familyName = parsedToken ? (parsedToken.family_name as string) : "";
+            const givenName = parsedToken ? (parsedToken.given_name as string) : "";
+            return { familyName, givenName };
+        };
+
+        const parseEmail = (parsedToken?: KeycloakTokenParsed): string => {
+            return parsedToken ? (parsedToken.email as string) : "";
+        };
+
         const doInit = async () => {
             try {
                 const conn = {
@@ -25,6 +39,11 @@ export const Authentication: React.FC<{ children: ReactNode }> = ({ children }) 
                     clientId: config.appVars.KEYCLOAK_CLIENT_ID,
                 };
                 const keycloak = await initKeycloak(conn);
+
+                dispatch(setUsername(parseUserName(keycloak.tokenParsed)));
+                dispatch(setEmail(parseEmail(keycloak.tokenParsed)));
+                dispatch(setRoles(keycloak.realmAccess?.roles ?? []));
+                dispatch(setResourceRoles(keycloak.resourceAccess ?? {}));
                 setReady(keycloak.authenticated);
             } catch (error: unknown) {
                 const msg = error instanceof Error ? `: ${error.message}` : "";
@@ -37,6 +56,7 @@ export const Authentication: React.FC<{ children: ReactNode }> = ({ children }) 
         config.appVars.KEYCLOAK_URL,
         config.appVars.KEYCLOAK_REALM,
         config.appVars.KEYCLOAK_CLIENT_ID,
+        dispatch,
     ]);
 
     // TODO: is this needed? If yes, better UI

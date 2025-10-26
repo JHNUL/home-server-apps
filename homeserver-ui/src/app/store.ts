@@ -4,10 +4,10 @@ import { setupListeners } from "@reduxjs/toolkit/query";
 import { deviceSlice } from "../features/devices/deviceSlice";
 import { quotesApiSlice } from "../features/quotes/quotesApiSlice";
 import { configSlice } from "../utils/configSlice";
+import { authSlice } from "../utils/authSlice";
 
-// `combineSlices` automatically combines the reducers using
-// their `reducerPath`s, therefore we no longer need to call `combineReducers`.
-const rootReducer = combineSlices(deviceSlice, quotesApiSlice, configSlice);
+
+const rootReducer = combineSlices(deviceSlice, quotesApiSlice, configSlice, authSlice);
 // Infer the `RootState` type from the root reducer
 export type RootState = ReturnType<typeof rootReducer>;
 

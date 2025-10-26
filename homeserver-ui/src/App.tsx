@@ -1,5 +1,4 @@
 import { BrowserRouter, Route, Routes } from "react-router";
-import "./App.css";
 import { Device } from "./features/devices/Device";
 import { Layout } from "./layout/Layout";
 
