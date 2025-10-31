@@ -26,6 +26,9 @@ that can be used out of the box:
 - testuser:testuser123 (has role user)
 - testadmin:testadmin123 (has role admin)
 
+Run `npm run dev` to start the UI in development mode (hot reload and all dat jive).
+
+To seed some test data, use `mqtt_seeder.sh`.
 
 Tear down cleanly (removes volumes) with:
 ```sh
