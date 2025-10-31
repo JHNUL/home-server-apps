@@ -69,6 +69,12 @@ mvn --projects message-server --also-make clean package -Dquarkus.package.jar.ty
 
 The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
 
+Building the docker image:
+
+```shell
+mvn --projects message-server --also-make clean package -P build-image
+```
+
 ## OpenAPI specification
 
 Packaging the application also creates the OpenAPI specifications from the API interface. Generated specs are

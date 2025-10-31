@@ -4,9 +4,11 @@ import { TableCell } from "../../common/table/TableCell";
 import TableRow from "../../common/table/TableRow";
 import { useGetDevicesQuery } from "./deviceApiSlice";
 import { Device as IoTDevice } from "./types";
+import { useNavigate } from "react-router";
 
 export const Device = (): JSX.Element => {
     const { data, isError, isLoading, isSuccess } = useGetDevicesQuery();
+    const navigate = useNavigate();
 
     const renderTable = (devices: IoTDevice[]) => {
         return (
@@ -17,7 +19,7 @@ export const Device = (): JSX.Element => {
                         <TableRow
                             key={device.id}
                             onClick={() => {
-                                console.log("Clicked", device.identifier);
+                                navigate(`/device/${device.identifier}`);
                             }}
                         >
                             <TableCell>{device.identifier}</TableCell>

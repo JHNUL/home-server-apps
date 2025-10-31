@@ -4,8 +4,9 @@ import { setupListeners } from "@reduxjs/toolkit/query";
 import { deviceApiSlice } from "../features/devices/deviceApiSlice";
 import { authSlice } from "../common/authentication/authSlice";
 import { configSlice } from "../common/config/configSlice";
+import { deviceDataApiSlice } from "../features/deviceData/deviceDataApiSlice";
 
-const rootReducer = combineSlices(deviceApiSlice, configSlice, authSlice);
+const rootReducer = combineSlices(deviceApiSlice, deviceDataApiSlice, configSlice, authSlice);
 // Infer the `RootState` type from the root reducer
 export type RootState = ReturnType<typeof rootReducer>;
 
@@ -17,7 +18,10 @@ export const makeStore = (preloadedState?: Partial<RootState>) => {
         // Adding the api middleware enables caching, invalidation, polling,
         // and other useful features of `rtk-query`.
         middleware: getDefaultMiddleware => {
-            return getDefaultMiddleware().concat(deviceApiSlice.middleware);
+            return getDefaultMiddleware().concat(
+                deviceApiSlice.middleware,
+                deviceDataApiSlice.middleware,
+            );
         },
         preloadedState,
     });
