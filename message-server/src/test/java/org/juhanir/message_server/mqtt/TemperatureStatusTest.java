@@ -65,7 +65,6 @@ public class TemperatureStatusTest extends QuarkusTestUtils {
                     .statusCode(200)
                     .body("size()", equalTo(1))
                     .body("[0].deviceIdentifier", equalTo(SENDER))
-                    .body("[0].componentId", equalTo(2))
                     .body("[0].valueCelsius", equalTo(19.6f))
                     .body("[0].valueFahrenheit", equalTo(67.3f))
                     .body("[0].measurementTime", matchesPattern(DATETIME_PATTERN));
@@ -88,7 +87,6 @@ public class TemperatureStatusTest extends QuarkusTestUtils {
                     .statusCode(200)
                     .body("size()", equalTo(1))
                     .body("[0].deviceIdentifier", equalTo(SENDER))
-                    .body("[0].componentId", equalTo(1))
                     .body("[0].valueCelsius", equalTo(29.6f))
                     .body("[0].valueFahrenheit", equalTo(71.3f))
                     .body("[0].measurementTime", matchesPattern(DATETIME_PATTERN));

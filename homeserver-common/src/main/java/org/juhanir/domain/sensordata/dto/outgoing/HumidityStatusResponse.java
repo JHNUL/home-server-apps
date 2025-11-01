@@ -1,6 +1,6 @@
 package org.juhanir.domain.sensordata.dto.outgoing;
 
-import org.juhanir.domain.sensordata.entity.HumidityStatus;
+import org.juhanir.domain.sensordata.entity.SignalData;
 
 import java.time.Instant;
 
@@ -8,15 +8,13 @@ import java.time.Instant;
  * Data transfer object for outgoing humidity readings via Websocket or REST API.
  */
 public record HumidityStatusResponse(
-        int componentId,
-        double value,
+        Double value,
         Instant measurementTime,
         String deviceIdentifier) {
 
-    public static HumidityStatusResponse fromHumidityStatus(HumidityStatus humidStatus) {
+    public static HumidityStatusResponse fromHumidityStatus(SignalData humidStatus) {
         return new HumidityStatusResponse(
-                humidStatus.getComponentId(),
-                humidStatus.getValue(),
+                humidStatus.getRelativeHumidity(),
                 humidStatus.getMeasurementTime(),
                 humidStatus.getDevice().getIdentifier()
         );

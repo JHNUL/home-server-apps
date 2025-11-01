@@ -5,7 +5,7 @@ import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import org.juhanir.domain.sensordata.dto.outgoing.TemperatureStatusResponse;
 import org.juhanir.domain.sensordata.entity.Device;
-import org.juhanir.domain.sensordata.entity.TemperatureStatus;
+import org.juhanir.domain.sensordata.entity.SignalData;
 import org.juhanir.message_server.MessageServerTestResource;
 import org.juhanir.message_server.rest.api.Role;
 import org.juhanir.message_server.utils.QuarkusTestUtils;
@@ -157,14 +157,13 @@ public class TemperatureResourceTest extends QuarkusTestUtils {
 
     private void createMeasurementsCountingDownFromBaseTime(String deviceIdentifier, Instant baseTime, int numberOfMinutes) {
         Device device = getDevice(deviceIdentifier);
-        List<TemperatureStatus> temps = IntStream
+        List<SignalData> temps = IntStream
                 .range(0, numberOfMinutes)
-                .mapToObj(i -> new TemperatureStatus()
+                .mapToObj(i -> new SignalData()
                         .setDevice(device)
-                        .setComponentId(0)
                         .setMeasurementTime(baseTime.minusSeconds(i * 60L))
-                        .setValueCelsius(10.0)
-                        .setValueFahrenheit(50.0))
+                        .setTemperatureCelsius(10.0)
+                        .setTemperatureFahrenheit(50.0))
                 .toList();
         createTemperatureMeasurements(temps);
     }

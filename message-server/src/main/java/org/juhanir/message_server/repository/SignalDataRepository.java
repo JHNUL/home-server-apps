@@ -6,7 +6,7 @@ import io.quarkus.panache.common.Sort;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.juhanir.domain.sensordata.entity.DeviceTimeSeriesDataId;
-import org.juhanir.domain.sensordata.entity.TemperatureStatus;
+import org.juhanir.domain.sensordata.entity.SignalData;
 import org.juhanir.message_server.rest.api.TimeSeriesQueryParams;
 import org.juhanir.message_server.rest.utils.ParseUtil;
 import org.juhanir.message_server.rest.utils.SensorDataQueryBuilder;
@@ -14,9 +14,9 @@ import org.juhanir.message_server.rest.utils.SensorDataQueryBuilder;
 import java.util.List;
 
 @ApplicationScoped
-public class TemperatureRepository implements PanacheRepositoryBase<TemperatureStatus, DeviceTimeSeriesDataId> {
+public class SignalDataRepository implements PanacheRepositoryBase<SignalData, DeviceTimeSeriesDataId> {
 
-    public Uni<List<TemperatureStatus>> getMeasurementsFromDevice(String identifier, TimeSeriesQueryParams params) {
+    public Uni<List<SignalData>> getMeasurementsFromDevice(String identifier, TimeSeriesQueryParams params) {
 
         SensorDataQueryBuilder.QueryAndParams query = SensorDataQueryBuilder
                 .create()

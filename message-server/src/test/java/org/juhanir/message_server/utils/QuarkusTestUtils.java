@@ -5,8 +5,7 @@ import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.hibernate.reactive.mutiny.Mutiny;
 import org.juhanir.domain.sensordata.entity.Device;
-import org.juhanir.domain.sensordata.entity.HumidityStatus;
-import org.juhanir.domain.sensordata.entity.TemperatureStatus;
+import org.juhanir.domain.sensordata.entity.SignalData;
 import org.juhanir.message_server.rest.api.Role;
 import org.juhanir.message_server.rest.utils.AccessTokenResponse;
 
@@ -19,8 +18,7 @@ import static io.restassured.RestAssured.given;
 
 public abstract class QuarkusTestUtils {
 
-    public static final String EMPTY_HUMIDITY_MEASUREMENTS = "TRUNCATE TABLE sensor.humidity_status;";
-    public static final String EMPTY_TEMPERATURE_MEASUREMENTS = "TRUNCATE TABLE sensor.temperature_status;";
+    public static final String EMPTY_MEASUREMENTS = "TRUNCATE TABLE sensor.signal_data;";
     /**
      * Test users are created by default by importing a dev/test realm via docker compose.
      */
@@ -41,6 +39,7 @@ public abstract class QuarkusTestUtils {
     /**
      * Authenticate as a user with the given role to test RBAC-protected
      * endpoints.
+     *
      * @return {@link  io.restassured.specification.RequestSpecification} for chaining
      */
     public RequestSpecification authenticateUsingRole(String role) {
@@ -92,39 +91,38 @@ public abstract class QuarkusTestUtils {
      * Delete all measurements from sensor.humidity table.
      */
     public void deleteAllHumidityMeasurements() {
-        executeTransactionalNativeQuery(EMPTY_HUMIDITY_MEASUREMENTS);
+        executeTransactionalNativeQuery(EMPTY_MEASUREMENTS);
     }
 
     /**
      * Delete all measurements from sensor.temperature table.
      */
     public void deleteAllTemperatureMeasurements() {
-        executeTransactionalNativeQuery(EMPTY_TEMPERATURE_MEASUREMENTS);
+        executeTransactionalNativeQuery(EMPTY_MEASUREMENTS);
     }
 
     /**
      * Create temperature measurements to database.
      */
-    public void createTemperatureMeasurements(Iterable<TemperatureStatus> temps) {
+    public void createTemperatureMeasurements(Iterable<SignalData> temps) {
         if (!temps.iterator().hasNext()) return;
 
         StringBuilder sb = new StringBuilder();
         List<Object> params = new ArrayList<>();
 
         sb.append("""
-                INSERT INTO sensor.temperature_status (identifier, measurement_time, component_id, value_celsius, value_fahrenheit) VALUES
+                INSERT INTO sensor.signal_data (identifier, measurement_time, temperature_celsius, temperature_fahrenheit) VALUES
                 """);
 
         int index = 0;
-        for (TemperatureStatus temp : temps) {
+        for (SignalData temp : temps) {
             if (index > 0) sb.append(", ");
-            sb.append("(?, ?, ?, ?, ?)");
+            sb.append("(?, ?, ?, ?)");
 
             params.add(temp.getDevice().getIdentifier());
             params.add(temp.getMeasurementTime());
-            params.add(temp.getComponentId());
-            params.add(temp.getValueCelsius());
-            params.add(temp.getValueFahrenheit());
+            params.add(temp.getTemperatureCelsius());
+            params.add(temp.getTemperatureFahrenheit());
 
             index++;
         }
@@ -143,25 +141,24 @@ public abstract class QuarkusTestUtils {
     /**
      * Create humidity measurements to database.
      */
-    public void createHumidityMeasurements(Iterable<HumidityStatus> humids) {
+    public void createHumidityMeasurements(Iterable<SignalData> humids) {
         if (!humids.iterator().hasNext()) return;
 
         StringBuilder sb = new StringBuilder();
         List<Object> params = new ArrayList<>();
 
         sb.append("""
-                INSERT INTO sensor.humidity_status (identifier, measurement_time, component_id, value) VALUES
+                INSERT INTO sensor.signal_data (identifier, measurement_time, relative_humidity) VALUES
                 """);
 
         int index = 0;
-        for (HumidityStatus hum : humids) {
+        for (SignalData hum : humids) {
             if (index > 0) sb.append(", ");
-            sb.append("(?, ?, ?, ?)");
+            sb.append("(?, ?, ?)");
 
             params.add(hum.getDevice().getIdentifier());
             params.add(hum.getMeasurementTime());
-            params.add(hum.getComponentId());
-            params.add(hum.getValue());
+            params.add(hum.getRelativeHumidity());
 
             index++;
         }
@@ -180,17 +177,16 @@ public abstract class QuarkusTestUtils {
     /**
      * Create rows of humidity data with random values
      *
-     * @param identifier  identifier for the measurements
-     * @param startDate timestamp for start data, e.g. '2025-01-01'
-     * @param endDate   timestamp for start data, e.g. '2025-01-10'
-     * @param interval  time interval, e.g. '1 hour'
+     * @param identifier identifier for the measurements
+     * @param startDate  timestamp for start data, e.g. '2025-01-01'
+     * @param endDate    timestamp for start data, e.g. '2025-01-10'
+     * @param interval   time interval, e.g. '1 hour'
      */
     public void seedRandomHumidityData(String identifier, String startDate, String endDate, String interval) {
         String nativeQuery = """
                 SELECT '%s' as identifier,
                     measurement_time,
-                    0 as component_id,
-                    random()*50 as value
+                    random()*50 as relative_humidity
                 FROM generate_series('%s', '%s', interval '%s') as measurement_time;
                 """.formatted(identifier, startDate, endDate, interval);
         executeTransactionalNativeQuery(nativeQuery);

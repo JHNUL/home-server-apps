@@ -4,8 +4,7 @@ import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import org.juhanir.domain.sensordata.entity.Device;
 import org.juhanir.domain.sensordata.entity.DeviceTypeName;
-import org.juhanir.domain.sensordata.entity.HumidityStatus;
-import org.juhanir.domain.sensordata.entity.TemperatureStatus;
+import org.juhanir.domain.sensordata.entity.SignalData;
 import org.juhanir.message_server.MessageServerTestResource;
 import org.juhanir.message_server.rest.api.Role;
 import org.juhanir.message_server.utils.QuarkusTestUtils;
@@ -143,17 +142,15 @@ public class DeviceResourceTest extends QuarkusTestUtils {
 
     private void createMeasurementsForDevice(String identifier) {
         Device device = getDevice(identifier);
-        var hm = new HumidityStatus()
+        var hm = new SignalData()
                 .setDevice(device)
-                .setComponentId(0)
                 .setMeasurementTime(Instant.now())
-                .setValue(24.0);
-        var tm = new TemperatureStatus()
+                .setRelativeHumidity(24.0);
+        var tm = new SignalData()
                 .setDevice(device)
-                .setComponentId(0)
                 .setMeasurementTime(Instant.now())
-                .setValueCelsius(10.0)
-                .setValueFahrenheit(50.0);
+                .setTemperatureCelsius(10.0)
+                .setTemperatureFahrenheit(50.0);
         createHumidityMeasurements(List.of(hm));
         createTemperatureMeasurements(List.of(tm));
     }

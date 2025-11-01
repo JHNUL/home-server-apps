@@ -3,7 +3,8 @@ CREATE TABLE sensor.device (
     identifier VARCHAR(255),
     device_type INTEGER NOT NULL,
     created_at TIMESTAMPTZ DEFAULT NOW(),
-    latest_communication TIMESTAMPTZ DEFAULT NOW()
+    latest_communication TIMESTAMPTZ DEFAULT NOW(),
+    is_disabled BOOLEAN DEFAULT false
 );
 
 -- identifier is unique

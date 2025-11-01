@@ -12,8 +12,7 @@ import org.juhanir.domain.sensordata.dto.outgoing.DeviceResponse;
 import org.juhanir.domain.sensordata.dto.outgoing.HumidityStatusResponse;
 import org.juhanir.domain.sensordata.dto.outgoing.TemperatureStatusResponse;
 import org.juhanir.message_server.repository.DeviceRepository;
-import org.juhanir.message_server.repository.HumidityRepository;
-import org.juhanir.message_server.repository.TemperatureRepository;
+import org.juhanir.message_server.repository.SignalDataRepository;
 import org.juhanir.message_server.rest.api.DeviceApi;
 import org.juhanir.message_server.rest.api.TimeSeriesQueryParams;
 
@@ -23,17 +22,14 @@ public class DeviceResource implements DeviceApi {
 
     private static final Logger LOG = Logger.getLogger(DeviceResource.class);
 
-    private final TemperatureRepository temperatureStorage;
-    private final HumidityRepository humidityStorage;
+    private final SignalDataRepository signalDataStorage;
     private final DeviceRepository deviceStorage;
 
     @Inject
     public DeviceResource(
-            TemperatureRepository temperatureStorage,
-            HumidityRepository humidityStorage,
+            SignalDataRepository signalDataStorage,
             DeviceRepository deviceStorage) {
-        this.temperatureStorage = temperatureStorage;
-        this.humidityStorage = humidityStorage;
+        this.signalDataStorage = signalDataStorage;
         this.deviceStorage = deviceStorage;
     }
 
@@ -68,7 +64,7 @@ public class DeviceResource implements DeviceApi {
                 .ifNull()
                 .failWith(new NotFoundException("No device found with identifier %s".formatted(deviceIdentifier)))
                 .onItem()
-                .transformToUni(device -> temperatureStorage
+                .transformToUni(device -> signalDataStorage
                         .getMeasurementsFromDevice(device.getIdentifier(), queryParams)
                         .map(temps -> {
                             List<TemperatureStatusResponse> body = temps
@@ -87,7 +83,7 @@ public class DeviceResource implements DeviceApi {
                 .ifNull()
                 .failWith(new NotFoundException("No device found with identifier %s".formatted(deviceIdentifier)))
                 .onItem()
-                .transformToUni(device -> humidityStorage
+                .transformToUni(device -> signalDataStorage
                         .getMeasurementsFromDevice(device.getIdentifier(), queryParams)
                         .map(humids -> {
                             List<HumidityStatusResponse> body = humids

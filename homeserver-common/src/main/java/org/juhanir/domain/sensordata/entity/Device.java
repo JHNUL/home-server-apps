@@ -40,16 +40,17 @@ public class Device extends BaseEntity {
     private Instant latestCommunication;
 
     /**
-     * The temperature readings belonging to this device.
+     * Is the device disabled
      */
-    @OneToMany(mappedBy = "device", cascade = CascadeType.ALL)
-    private List<TemperatureStatus> temperatureStatuses;
+    @NotNull
+    @Column(name = "is_disabled")
+    private Boolean isDisabled;
 
     /**
-     * The humidity readings belonging to this device.
+     * The signal data readings belonging to this device.
      */
     @OneToMany(mappedBy = "device", cascade = CascadeType.ALL)
-    private List<HumidityStatus> humidityStatuses;
+    private List<SignalData> signalData;
 
     public String getIdentifier() {
         return identifier;
@@ -69,21 +70,12 @@ public class Device extends BaseEntity {
         return this;
     }
 
-    public List<TemperatureStatus> getTemperatureStatuses() {
-        return temperatureStatuses;
+    public List<SignalData> getSignalData() {
+        return signalData;
     }
 
-    public Device setTemperatureStatuses(List<TemperatureStatus> temperatureStatuses) {
-        this.temperatureStatuses = temperatureStatuses;
-        return this;
-    }
-
-    public List<HumidityStatus> getHumidityStatuses() {
-        return humidityStatuses;
-    }
-
-    public Device setHumidityStatuses(List<HumidityStatus> humidityStatuses) {
-        this.humidityStatuses = humidityStatuses;
+    public Device setSignalData(List<SignalData> signalData) {
+        this.signalData = signalData;
         return this;
     }
 
@@ -105,6 +97,15 @@ public class Device extends BaseEntity {
         return this;
     }
 
+    public Boolean getDisabled() {
+        return isDisabled;
+    }
+
+    public Device setDisabled(Boolean disabled) {
+        isDisabled = disabled;
+        return this;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
@@ -122,8 +123,9 @@ public class Device extends BaseEntity {
         return "Device{" +
                 "identifier='" + identifier + '\'' +
                 ", deviceType=" + deviceType +
-                ", temperatureStatuses=" + temperatureStatuses +
-                ", humidityStatuses=" + humidityStatuses +
+                ", createdAt=" + createdAt +
+                ", latestCommunication=" + latestCommunication +
+                ", signalData=" + signalData +
                 '}';
     }
 }

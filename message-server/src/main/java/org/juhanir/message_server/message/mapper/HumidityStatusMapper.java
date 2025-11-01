@@ -6,8 +6,10 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.juhanir.domain.sensordata.dto.incoming.HumidityStatusMqttPayload;
 import org.juhanir.domain.sensordata.entity.DeviceStatusMeasurement;
-import org.juhanir.domain.sensordata.entity.HumidityStatus;
+import org.juhanir.domain.sensordata.entity.SignalData;
 import org.juhanir.message_server.mqtt.StatusMessageType;
+
+import java.time.Instant;
 
 @ApplicationScoped
 public class HumidityStatusMapper implements StatusMessageMapper {
@@ -26,6 +28,9 @@ public class HumidityStatusMapper implements StatusMessageMapper {
 
     @Override
     public DeviceStatusMeasurement mapFromMqtt(String payload) throws JsonProcessingException {
-        return HumidityStatus.fromMqttPayload(mapper.readValue(payload, HumidityStatusMqttPayload.class));
+        final HumidityStatusMqttPayload humidityStatus = mapper.readValue(payload, HumidityStatusMqttPayload.class);
+        return new SignalData()
+                .setRelativeHumidity(humidityStatus.getValue())
+                .setMeasurementTime(Instant.now());
     }
 }

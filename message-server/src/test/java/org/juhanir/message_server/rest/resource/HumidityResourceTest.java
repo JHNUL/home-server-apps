@@ -5,7 +5,7 @@ import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import org.juhanir.domain.sensordata.dto.outgoing.HumidityStatusResponse;
 import org.juhanir.domain.sensordata.entity.Device;
-import org.juhanir.domain.sensordata.entity.HumidityStatus;
+import org.juhanir.domain.sensordata.entity.SignalData;
 import org.juhanir.message_server.MessageServerTestResource;
 import org.juhanir.message_server.rest.api.Role;
 import org.juhanir.message_server.utils.QuarkusTestUtils;
@@ -160,13 +160,12 @@ public class HumidityResourceTest extends QuarkusTestUtils {
 
     private void createMeasurementsCountingDownFromBaseTime(String deviceIdentifier, Instant baseTime, int numberOfMinutes) {
         Device device = getDevice(deviceIdentifier);
-        List<HumidityStatus> hums = IntStream
+        List<SignalData> hums = IntStream
                 .range(0, numberOfMinutes)
-                .mapToObj(i -> new HumidityStatus()
+                .mapToObj(i -> new SignalData()
                         .setDevice(device)
-                        .setComponentId(0)
                         .setMeasurementTime(baseTime.minusSeconds(i * 60L))
-                        .setValue(24.0))
+                        .setRelativeHumidity(24.0))
                 .toList();
         createHumidityMeasurements(hums);
     }
