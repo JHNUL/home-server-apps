@@ -17,7 +17,8 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.matchesPattern;
 import static org.juhanir.message_server.utils.TestConstants.DATETIME_PATTERN;
 import static org.juhanir.message_server.utils.TestConstants.TEMPERATURE_URL_TPL;
 
@@ -34,7 +35,6 @@ public class TemperatureStatusTest extends QuarkusTestUtils {
     void setUp() {
         client = MqttClient.create(Vertx.vertx());
         client.connectAndAwait(1883, "localhost");
-        deleteAllTemperatureMeasurements();
     }
 
     @AfterAll

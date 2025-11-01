@@ -27,7 +27,6 @@ public class HumidityResourceTest extends QuarkusTestUtils {
 
     @BeforeEach
     void setUp() {
-        deleteAllHumidityMeasurements();
     }
 
     @ParameterizedTest()

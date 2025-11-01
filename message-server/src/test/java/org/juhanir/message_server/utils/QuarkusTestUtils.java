@@ -82,23 +82,9 @@ public abstract class QuarkusTestUtils {
     /**
      * Deletes all devices from sensor.device table.
      */
-    public void deleteAllDevices() {
-        String nativeQuery = "DELETE FROM sensor.device;";
+    public void deleteDevice(String identifier) {
+        String nativeQuery = "DELETE FROM sensor.device WHERE identifier = %s;".formatted(identifier);
         executeTransactionalNativeQuery(nativeQuery);
-    }
-
-    /**
-     * Delete all measurements from sensor.humidity table.
-     */
-    public void deleteAllHumidityMeasurements() {
-        executeTransactionalNativeQuery(EMPTY_MEASUREMENTS);
-    }
-
-    /**
-     * Delete all measurements from sensor.temperature table.
-     */
-    public void deleteAllTemperatureMeasurements() {
-        executeTransactionalNativeQuery(EMPTY_MEASUREMENTS);
     }
 
     /**

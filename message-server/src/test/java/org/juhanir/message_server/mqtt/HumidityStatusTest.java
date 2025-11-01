@@ -35,7 +35,6 @@ public class HumidityStatusTest extends QuarkusTestUtils {
     void setUp() {
         client = MqttClient.create(Vertx.vertx());
         client.connectAndAwait(1883, "localhost");
-        deleteAllHumidityMeasurements();
     }
 
     @AfterAll

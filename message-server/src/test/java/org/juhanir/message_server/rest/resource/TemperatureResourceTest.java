@@ -27,7 +27,6 @@ public class TemperatureResourceTest extends QuarkusTestUtils {
 
     @BeforeEach
     void setUp() {
-        deleteAllTemperatureMeasurements();
     }
 
     @ParameterizedTest()
