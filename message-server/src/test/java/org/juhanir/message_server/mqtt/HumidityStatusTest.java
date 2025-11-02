@@ -16,11 +16,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
+import java.util.UUID;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.matchesPattern;
+import static org.hamcrest.Matchers.*;
 import static org.juhanir.message_server.utils.TestConstants.DATETIME_PATTERN;
-import static org.juhanir.message_server.utils.TestConstants.HUMIDITY_URL_TPL;
 
 
 @QuarkusTest
@@ -28,8 +27,6 @@ import static org.juhanir.message_server.utils.TestConstants.HUMIDITY_URL_TPL;
 public class HumidityStatusTest extends QuarkusTestUtils {
 
     private static MqttClient client;
-    private static final String SENDER = "shellyid-123123";
-    private static final String TOPIC = "%s/status/humidity:0".formatted(SENDER);
 
     @BeforeEach
     void setUp() {
@@ -46,26 +43,30 @@ public class HumidityStatusTest extends QuarkusTestUtils {
 
     @Test
     void sentHumidityStatusMessageCanBeFetchedViaRestApi() {
+        String device = UUID.randomUUID().toString();
         String message = """
                 {
                   "id": 1,
                   "rh": 99
                 }""";
-        client.publishAndAwait(TOPIC, Buffer.buffer(message), MqttQoS.EXACTLY_ONCE, false, false);
+        client.publishAndAwait("%s/status/humidity:0".formatted(device), Buffer.buffer(message), MqttQoS.EXACTLY_ONCE, false, false);
         AwaitUtils.awaitAssertion(() -> {
             authenticateUsingRole("user")
-                    .get(HUMIDITY_URL_TPL.formatted(SENDER, ""))
+                    .get("/signaldata?device=%s".formatted(device))
                     .then()
                     .statusCode(200)
                     .body("size()", equalTo(1))
-                    .body("[0].deviceIdentifier", equalTo(SENDER))
-                    .body("[0].value", equalTo(99.0f))
-                    .body("[0].measurementTime", matchesPattern(DATETIME_PATTERN));
+                    .body("[0].deviceIdentifier", equalTo(device))
+                    .body("[0].measurementTime", matchesPattern(DATETIME_PATTERN))
+                    .body("[0].temperatureCelsius", nullValue())
+                    .body("[0].temperatureFahrenheit", nullValue())
+                    .body("[0].relativeHumidity", equalTo(99.0f));
         });
     }
 
     @Test
     void invalidHumidityMessageIsNotPersisted() {
+        String device = UUID.randomUUID().toString();
         String invalidMessage = """
                 {
                   "testing": true
@@ -75,27 +76,30 @@ public class HumidityStatusTest extends QuarkusTestUtils {
                   "id": 1,
                   "rh": 57.6
                 }""";
-        client.publishAndAwait(TOPIC, Buffer.buffer(invalidMessage), MqttQoS.EXACTLY_ONCE, false, false);
-        client.publishAndAwait(TOPIC, Buffer.buffer(validMessage), MqttQoS.EXACTLY_ONCE, false, false);
+        client.publishAndAwait("%s/status/humidity:0".formatted(device), Buffer.buffer(invalidMessage), MqttQoS.EXACTLY_ONCE, false, false);
+        client.publishAndAwait("%s/status/humidity:0".formatted(device), Buffer.buffer(validMessage), MqttQoS.EXACTLY_ONCE, false, false);
         AwaitUtils.awaitAssertion(() -> {
             authenticateUsingRole("user")
-                    .get(HUMIDITY_URL_TPL.formatted(SENDER, ""))
+                    .get("/signaldata?device=%s".formatted(device))
                     .then()
                     .statusCode(200)
                     .body("size()", equalTo(1))
-                    .body("[0].deviceIdentifier", equalTo(SENDER))
-                    .body("[0].value", equalTo(57.6f))
-                    .body("[0].measurementTime", matchesPattern(DATETIME_PATTERN));
+                    .body("[0].deviceIdentifier", equalTo(device))
+                    .body("[0].measurementTime", matchesPattern(DATETIME_PATTERN))
+                    .body("[0].temperatureCelsius", nullValue())
+                    .body("[0].temperatureFahrenheit", nullValue())
+                    .body("[0].relativeHumidity", equalTo(57.6f));
         });
     }
 
     @Test
-    void humidityStatusMessagesForNonExistingDeviceReturnsNotFound() {
-        AwaitUtils.awaitAssertionMaintained(() -> {
+    void humidityStatusMessagesForNonExistingDeviceReturnsEmptyList() {
+        AwaitUtils.awaitAssertion(() -> {
             authenticateUsingRole("user")
-                    .get(HUMIDITY_URL_TPL.formatted("qwerty123456-foobar", ""))
+                    .get("/signaldata?device=0xcafebabe")
                     .then()
-                    .statusCode(404);
+                    .statusCode(200)
+                    .body("size()", equalTo(0));
         });
     }
 

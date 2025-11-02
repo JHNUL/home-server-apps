@@ -129,17 +129,13 @@ public class DeviceResourceTest extends QuarkusTestUtils {
 
     private void createMeasurementsForDevice(String identifier) {
         Device device = getDevice(identifier);
-        var hm = new SignalData()
+        var m = new SignalData()
                 .setDevice(device)
                 .setMeasurementTime(Instant.now())
-                .setRelativeHumidity(24.0);
-        var tm = new SignalData()
-                .setDevice(device)
-                .setMeasurementTime(Instant.now())
+                .setRelativeHumidity(24.0)
                 .setTemperatureCelsius(10.0)
                 .setTemperatureFahrenheit(50.0);
-        createHumidityMeasurements(List.of(hm));
-        createTemperatureMeasurements(List.of(tm));
+        createMeasurements(List.of(m));
     }
 
 }

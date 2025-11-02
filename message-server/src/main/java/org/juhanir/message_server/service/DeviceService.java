@@ -36,7 +36,8 @@ public class DeviceService {
                                             .setDeviceType(deviceType)
                                             .setIdentifier(deviceIdentifier)
                                             .setCreatedAt(now)
-                                            .setLatestCommunication(now);
+                                            .setLatestCommunication(now)
+                                            .setDisabled(false);
                                     return deviceRepository.persist(device);
                                 }));
     }

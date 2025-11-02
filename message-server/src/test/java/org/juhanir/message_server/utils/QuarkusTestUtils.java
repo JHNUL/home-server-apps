@@ -18,7 +18,6 @@ import static io.restassured.RestAssured.given;
 
 public abstract class QuarkusTestUtils {
 
-    public static final String EMPTY_MEASUREMENTS = "TRUNCATE TABLE sensor.signal_data;";
     /**
      * Test users are created by default by importing a dev/test realm via docker compose.
      */
@@ -80,71 +79,28 @@ public abstract class QuarkusTestUtils {
     }
 
     /**
-     * Deletes all devices from sensor.device table.
+     * Create measurements to database.
      */
-    public void deleteDevice(String identifier) {
-        String nativeQuery = "DELETE FROM sensor.device WHERE identifier = %s;".formatted(identifier);
-        executeTransactionalNativeQuery(nativeQuery);
-    }
-
-    /**
-     * Create temperature measurements to database.
-     */
-    public void createTemperatureMeasurements(Iterable<SignalData> temps) {
-        if (!temps.iterator().hasNext()) return;
+    public void createMeasurements(Iterable<SignalData> measurements) {
+        if (!measurements.iterator().hasNext()) return;
 
         StringBuilder sb = new StringBuilder();
         List<Object> params = new ArrayList<>();
 
         sb.append("""
-                INSERT INTO sensor.signal_data (identifier, measurement_time, temperature_celsius, temperature_fahrenheit) VALUES
+                INSERT INTO sensor.signal_data (identifier, measurement_time, relative_humidity, temperature_celsius, temperature_fahrenheit) VALUES
                 """);
 
         int index = 0;
-        for (SignalData temp : temps) {
+        for (SignalData sd : measurements) {
             if (index > 0) sb.append(", ");
-            sb.append("(?, ?, ?, ?)");
+            sb.append("(?, ?, ?, ?, ?)");
 
-            params.add(temp.getDevice().getIdentifier());
-            params.add(temp.getMeasurementTime());
-            params.add(temp.getTemperatureCelsius());
-            params.add(temp.getTemperatureFahrenheit());
-
-            index++;
-        }
-
-        String sql = sb.toString();
-
-        sessionFactory.withTransaction((session, tx) -> {
-            var query = session.createNativeQuery(sql);
-            for (int i = 0; i < params.size(); i++) {
-                query.setParameter(i + 1, params.get(i));
-            }
-            return query.executeUpdate();
-        }).await().indefinitely();
-    }
-
-    /**
-     * Create humidity measurements to database.
-     */
-    public void createHumidityMeasurements(Iterable<SignalData> humids) {
-        if (!humids.iterator().hasNext()) return;
-
-        StringBuilder sb = new StringBuilder();
-        List<Object> params = new ArrayList<>();
-
-        sb.append("""
-                INSERT INTO sensor.signal_data (identifier, measurement_time, relative_humidity) VALUES
-                """);
-
-        int index = 0;
-        for (SignalData hum : humids) {
-            if (index > 0) sb.append(", ");
-            sb.append("(?, ?, ?)");
-
-            params.add(hum.getDevice().getIdentifier());
-            params.add(hum.getMeasurementTime());
-            params.add(hum.getRelativeHumidity());
+            params.add(sd.getDevice().getIdentifier());
+            params.add(sd.getMeasurementTime());
+            params.add(sd.getRelativeHumidity());
+            params.add(sd.getTemperatureCelsius());
+            params.add(sd.getTemperatureFahrenheit());
 
             index++;
         }
