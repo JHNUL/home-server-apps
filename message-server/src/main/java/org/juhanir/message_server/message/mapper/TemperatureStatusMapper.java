@@ -6,8 +6,10 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.juhanir.domain.sensordata.dto.incoming.TemperatureStatusMqttPayload;
 import org.juhanir.domain.sensordata.entity.DeviceStatusMeasurement;
-import org.juhanir.domain.sensordata.entity.TemperatureStatus;
+import org.juhanir.domain.sensordata.entity.SignalData;
 import org.juhanir.message_server.mqtt.StatusMessageType;
+
+import java.time.Instant;
 
 @ApplicationScoped
 public class TemperatureStatusMapper implements StatusMessageMapper {
@@ -26,6 +28,10 @@ public class TemperatureStatusMapper implements StatusMessageMapper {
 
     @Override
     public DeviceStatusMeasurement mapFromMqtt(String payload) throws JsonProcessingException {
-        return TemperatureStatus.fromMqttPayload(mapper.readValue(payload, TemperatureStatusMqttPayload.class));
+        final TemperatureStatusMqttPayload temperatureStatus = mapper.readValue(payload, TemperatureStatusMqttPayload.class);
+        return new SignalData()
+                .setTemperatureCelsius(temperatureStatus.getValueCelsius())
+                .setTemperatureFahrenheit(temperatureStatus.getValueFahrenheit())
+                .setMeasurementTime(Instant.now());
     }
 }

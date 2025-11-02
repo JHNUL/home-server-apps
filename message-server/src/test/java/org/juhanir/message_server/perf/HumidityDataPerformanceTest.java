@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import java.util.function.Supplier;
 
 import static io.restassured.RestAssured.given;
-import static org.juhanir.message_server.utils.TestConstants.HUMIDITY_URL_TPL;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Tag("performance")
@@ -40,14 +39,14 @@ public class HumidityDataPerformanceTest extends QuarkusTestUtils {
     void performanceTest() {
         perfTestAssert("Query from the beginning of dataset", QUERY_NFR_TIME_LIMIT_MS, () ->
                 authenticateUsingRole(Role.USER)
-                        .get(HUMIDITY_URL_TPL.formatted(identifier, "?from=2024-01-01T06:06:06Z&to=2024-01-01T06:26:06Z"))
+                        .get("/signaldata?device=%s&from=%s&to=%s".formatted(identifier, "2024-01-01T06:06:06Z", "2024-01-01T06:26:06Z"))
                         .then()
                         .statusCode(200)
         );
 
         perfTestAssert("Query from the end of dataset", QUERY_NFR_TIME_LIMIT_MS, () ->
                 authenticateUsingRole(Role.USER)
-                        .get(HUMIDITY_URL_TPL.formatted(identifier, "?from=2024-12-31T06:06:06Z&to=2024-12-31T06:26:06Z"))
+                        .get("/signaldata?device=%s&from=%s&to=%s".formatted(identifier, "2024-12-31T06:06:06Z", "2024-12-31T06:26:06Z"))
                         .then()
                         .statusCode(200)
         );

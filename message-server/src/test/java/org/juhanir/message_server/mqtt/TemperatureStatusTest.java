@@ -16,10 +16,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
+import java.util.UUID;
 
 import static org.hamcrest.Matchers.*;
 import static org.juhanir.message_server.utils.TestConstants.DATETIME_PATTERN;
-import static org.juhanir.message_server.utils.TestConstants.TEMPERATURE_URL_TPL;
 
 
 @QuarkusTest
@@ -34,7 +34,6 @@ public class TemperatureStatusTest extends QuarkusTestUtils {
     void setUp() {
         client = MqttClient.create(Vertx.vertx());
         client.connectAndAwait(1883, "localhost");
-        deleteAllTemperatureMeasurements();
     }
 
     @AfterAll
@@ -46,6 +45,7 @@ public class TemperatureStatusTest extends QuarkusTestUtils {
 
     @Test
     void invalidTemperatureMessageIsNotPersisted() {
+        String device = UUID.randomUUID().toString();
         String invalidMessage = """
                 {
                   "testing": true
@@ -56,52 +56,54 @@ public class TemperatureStatusTest extends QuarkusTestUtils {
                   "tC": 19.6,
                   "tF": 67.3
                 }""";
-        client.publishAndAwait(TOPIC, Buffer.buffer(invalidMessage), MqttQoS.EXACTLY_ONCE, false, false);
-        client.publishAndAwait(TOPIC, Buffer.buffer(validMessage), MqttQoS.EXACTLY_ONCE, false, false);
+        client.publishAndAwait("%s/status/temperature:0".formatted(device), Buffer.buffer(invalidMessage), MqttQoS.EXACTLY_ONCE, false, false);
+        client.publishAndAwait("%s/status/temperature:0".formatted(device), Buffer.buffer(validMessage), MqttQoS.EXACTLY_ONCE, false, false);
         AwaitUtils.awaitAssertion(() -> {
             authenticateUsingRole("user")
-                    .get(TEMPERATURE_URL_TPL.formatted(SENDER, ""))
+                    .get("/signaldata?device=%s".formatted(device))
                     .then()
                     .statusCode(200)
                     .body("size()", equalTo(1))
-                    .body("[0].deviceIdentifier", equalTo(SENDER))
-                    .body("[0].componentId", equalTo(2))
-                    .body("[0].valueCelsius", equalTo(19.6f))
-                    .body("[0].valueFahrenheit", equalTo(67.3f))
+                    .body("[0].deviceIdentifier", equalTo(device))
+                    .body("[0].temperatureCelsius", equalTo(19.6f))
+                    .body("[0].temperatureFahrenheit", equalTo(67.3f))
+                    .body("[0].relativeHumidity", nullValue())
                     .body("[0].measurementTime", matchesPattern(DATETIME_PATTERN));
         });
     }
 
     @Test
     void sentTemperatureStatusMessageCanBeFetchedViaRestApi() {
+        String device = UUID.randomUUID().toString();
         String message = """
                 {
                   "id": 1,
                   "tC": 29.6,
                   "tF": 71.3
                 }""";
-        client.publishAndAwait(TOPIC, Buffer.buffer(message), MqttQoS.EXACTLY_ONCE, false, false);
+        client.publishAndAwait("%s/status/temperature:0".formatted(device), Buffer.buffer(message), MqttQoS.EXACTLY_ONCE, false, false);
         AwaitUtils.awaitAssertion(() -> {
             authenticateUsingRole("user")
-                    .get(TEMPERATURE_URL_TPL.formatted(SENDER, ""))
+                    .get("/signaldata?device=%s".formatted(device))
                     .then()
                     .statusCode(200)
                     .body("size()", equalTo(1))
-                    .body("[0].deviceIdentifier", equalTo(SENDER))
-                    .body("[0].componentId", equalTo(1))
-                    .body("[0].valueCelsius", equalTo(29.6f))
-                    .body("[0].valueFahrenheit", equalTo(71.3f))
+                    .body("[0].deviceIdentifier", equalTo(device))
+                    .body("[0].temperatureCelsius", equalTo(29.6f))
+                    .body("[0].temperatureFahrenheit", equalTo(71.3f))
+                    .body("[0].relativeHumidity", nullValue())
                     .body("[0].measurementTime", matchesPattern(DATETIME_PATTERN));
         });
     }
 
     @Test
     void temperatureStatusMessagesForNonExistingDeviceReturnsNotFound() {
-        AwaitUtils.awaitAssertionMaintained(() -> {
+        AwaitUtils.awaitAssertion(() -> {
             authenticateUsingRole("user")
-                    .get(TEMPERATURE_URL_TPL.formatted("qwerty123456-foobar", ""))
+                    .get("/signaldata?device=0xcafebabe")
                     .then()
-                    .statusCode(404);
+                    .statusCode(200)
+                    .body("size()", equalTo(0));
         });
     }
 

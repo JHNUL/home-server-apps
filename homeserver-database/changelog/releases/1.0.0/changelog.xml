@@ -11,8 +11,7 @@
         <sqlFile path="100_create_table_device_type.sql" relativeToChangelogFile="true" stripComments="true"/>
         <sqlFile path="100_populate_device_type.sql" relativeToChangelogFile="true" stripComments="true"/>
         <sqlFile path="100_create_table_device.sql" relativeToChangelogFile="true" stripComments="true"/>
-        <sqlFile path="100_create_table_temperature_status.sql" relativeToChangelogFile="true" stripComments="true"/>
-        <sqlFile path="100_create_table_humidity_status.sql" relativeToChangelogFile="true" stripComments="true"/>
+        <sqlFile path="100_create_table_signal_data.sql" relativeToChangelogFile="true" stripComments="true"/>
     </changeSet>
 
     <changeSet id="tag_${tag}" author="homeserver">

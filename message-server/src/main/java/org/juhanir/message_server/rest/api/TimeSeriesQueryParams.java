@@ -5,6 +5,8 @@ import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.QueryParam;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 
+import java.util.List;
+
 public class TimeSeriesQueryParams {
 
     @QueryParam("from")
@@ -23,14 +25,27 @@ public class TimeSeriesQueryParams {
     )
     public String to;
 
+    @QueryParam("offset")
+    @DefaultValue("0")
+    @Parameter(description = "Pagination offset")
+    public int offset;
+
     @QueryParam("limit")
     @DefaultValue("100")
     @Parameter(description = "Maximum number of results")
-    public String limit;
+    public int limit;
 
     @QueryParam("sort")
-    @DefaultValue("asc")
+    @DefaultValue("desc")
     @Parameter(description = "Sort order for time: asc|desc")
     public String sort;
+
+    @QueryParam("device")
+    @Parameter(description = "Device id. These can be chained.")
+    public List<String> deviceIdentifiers;
+
+    @QueryParam("signal")
+    @Parameter(description = "Signal name. These can be chained.")
+    public List<String> signals;
 
 }

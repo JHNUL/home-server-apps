@@ -6,24 +6,24 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.juhanir.domain.sensordata.entity.DeviceStatusMeasurement;
 import org.juhanir.domain.sensordata.entity.DeviceTimeSeriesDataId;
-import org.juhanir.domain.sensordata.entity.HumidityStatus;
+import org.juhanir.domain.sensordata.entity.SignalData;
 import org.juhanir.message_server.mqtt.StatusMessageType;
-import org.juhanir.message_server.repository.HumidityRepository;
+import org.juhanir.message_server.repository.SignalDataRepository;
 import org.juhanir.message_server.service.DeviceService;
 
 @ApplicationScoped
 public class HumidityMessageProcessor implements StatusMessageProcessor {
 
-    private final HumidityRepository humidityRepository;
+    private final SignalDataRepository signalDataStorage;
     private final EventBus eventBus;
     private final DeviceService deviceService;
 
     @Inject
     public HumidityMessageProcessor(
-            HumidityRepository humidityRepository,
+            SignalDataRepository signalDataStorage,
             EventBus eventBus,
             DeviceService deviceService) {
-        this.humidityRepository = humidityRepository;
+        this.signalDataStorage = signalDataStorage;
         this.eventBus = eventBus;
         this.deviceService = deviceService;
     }
@@ -37,7 +37,7 @@ public class HumidityMessageProcessor implements StatusMessageProcessor {
     public Uni<Void> process(DeviceStatusMeasurement measurement, String deviceIdentifier) {
         return deviceService.findOrCreateDevice(deviceIdentifier)
                 .onItem().transformToUni(device -> {
-                    HumidityStatus hStatus = (HumidityStatus) measurement;
+                    SignalData hStatus = (SignalData) measurement;
                     hStatus.setDevice(device);
                     DeviceTimeSeriesDataId dId = new DeviceTimeSeriesDataId()
                             .setIdentifier(device.getIdentifier())
@@ -46,7 +46,7 @@ public class HumidityMessageProcessor implements StatusMessageProcessor {
                     return deviceService.updateDeviceCommunication(device)
                             .onItem()
                             .ignore()
-                            .andSwitchTo(() -> humidityRepository.persist(hStatus));
+                            .andSwitchTo(() -> signalDataStorage.persist(hStatus));
                 })
                 .onItem().transform(ts -> eventBus.send("message", String.valueOf(ts.getMeasurementTime())))
                 .replaceWithVoid();

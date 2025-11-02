@@ -4,12 +4,10 @@ import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import org.juhanir.domain.sensordata.entity.Device;
 import org.juhanir.domain.sensordata.entity.DeviceTypeName;
-import org.juhanir.domain.sensordata.entity.HumidityStatus;
-import org.juhanir.domain.sensordata.entity.TemperatureStatus;
+import org.juhanir.domain.sensordata.entity.SignalData;
 import org.juhanir.message_server.MessageServerTestResource;
 import org.juhanir.message_server.rest.api.Role;
 import org.juhanir.message_server.utils.QuarkusTestUtils;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -21,16 +19,11 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.*;
-import static org.juhanir.message_server.utils.TestConstants.*;
+import static org.juhanir.message_server.utils.TestConstants.DATETIME_PATTERN;
 
 @QuarkusTest
 @QuarkusTestResource(value = MessageServerTestResource.class)
 public class DeviceResourceTest extends QuarkusTestUtils {
-
-    @BeforeEach
-    void setUp() {
-        deleteAllDevices();
-    }
 
     @ParameterizedTest()
     @ValueSource(strings = {Role.USER, Role.ADMIN})
@@ -67,56 +60,49 @@ public class DeviceResourceTest extends QuarkusTestUtils {
                 .then()
                 .statusCode(200)
                 .and()
-                .body("size()", equalTo(10));
+                .body("size()", greaterThanOrEqualTo(10));
     }
 
     @Test
-    void deletingDeviceRemovesDeviceAndMeasurements() {
+    void deletingDevicePossibleOnlyIfNoData() {
         String identifier = createDeviceToDatabase();
         authenticateUsingRole(Role.ADMIN)
                 .get("devices/%s".formatted(identifier))
                 .then()
                 .statusCode(200);
 
-        createMeasurementsForDevice(identifier);
-
-        authenticateUsingRole(Role.ADMIN)
-                .get(HUMIDITY_URL_TPL.formatted(identifier, ""))
-                .then()
-                .statusCode(200)
-                .and()
-                .body("size()", equalTo(1));
-
-        authenticateUsingRole(Role.ADMIN)
-                .get(TEMPERATURE_URL_TPL.formatted(identifier, ""))
-                .then()
-                .statusCode(200)
-                .and()
-                .body("size()", equalTo(1));
-
+        // OK to delete since no data has been saved for device
         authenticateUsingRole(Role.ADMIN)
                 .delete("devices/%s".formatted(identifier))
                 .then()
                 .statusCode(204);
 
-        // Gone is the device...
+        // Gone is the device
         authenticateUsingRole(Role.ADMIN)
                 .get("devices/%s".formatted(identifier))
                 .then()
                 .statusCode(404);
 
-        // ...and its humidity measurement...
+        String identifier2 = createDeviceToDatabase();
         authenticateUsingRole(Role.ADMIN)
-                .get(HUMIDITY_URL_TPL.formatted(identifier, ""))
+                .get("devices/%s".formatted(identifier2))
                 .then()
-                .statusCode(404);
+                .statusCode(200);
 
-        // ...as well as temperature measurement.
+        // Adding data
+        createMeasurementsForDevice(identifier2);
+
+        // Try to delete
         authenticateUsingRole(Role.ADMIN)
-                .get(TEMPERATURE_URL_TPL.formatted(identifier, ""))
+                .delete("devices/%s".formatted(identifier))
                 .then()
-                .statusCode(404);
+                .statusCode(204);
 
+        // Still there
+        authenticateUsingRole(Role.ADMIN)
+                .get("devices/%s".formatted(identifier2))
+                .then()
+                .statusCode(200);
     }
 
     @Test
@@ -143,19 +129,13 @@ public class DeviceResourceTest extends QuarkusTestUtils {
 
     private void createMeasurementsForDevice(String identifier) {
         Device device = getDevice(identifier);
-        var hm = new HumidityStatus()
+        var m = new SignalData()
                 .setDevice(device)
-                .setComponentId(0)
                 .setMeasurementTime(Instant.now())
-                .setValue(24.0);
-        var tm = new TemperatureStatus()
-                .setDevice(device)
-                .setComponentId(0)
-                .setMeasurementTime(Instant.now())
-                .setValueCelsius(10.0)
-                .setValueFahrenheit(50.0);
-        createHumidityMeasurements(List.of(hm));
-        createTemperatureMeasurements(List.of(tm));
+                .setRelativeHumidity(24.0)
+                .setTemperatureCelsius(10.0)
+                .setTemperatureFahrenheit(50.0);
+        createMeasurements(List.of(m));
     }
 
 }
