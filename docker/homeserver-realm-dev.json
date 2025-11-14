@@ -34,7 +34,8 @@
       "clientAuthenticatorType": "client-secret",
       "redirectUris": [
         "http://localhost:8080/*",
-        "http://localhost:3030/*"
+        "http://localhost:3030/*",
+        "http://localhost/*"
       ],
       "webOrigins": [
         "*"

@@ -1,0 +1,11 @@
+include:
+  - docker-compose.yml
+  - docker-compose-server.yml
+
+services:
+  ui:
+    image: juhanir/homeserver-ui:1.0.0
+    ports:
+      - "80:80"
+    networks:
+      - homeserver-network

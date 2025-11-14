@@ -27,6 +27,14 @@ In `./docker`:
 - copy the `kc-db.env.example` file as `kc-db.env` and set the database username and password.
 - copy the `keycloak.env.example` file as `keycloak.env` and set the values.
 
+### Demo stack
+
+- docker and docker compose required
+- bash recommended (bash-isms can and do occur in scripts)
+
+Long story short, use the script `run.sh` at project root. This will spin up the entire environment.
+There's a test user with credentials testuser:testuser123 that you can log in with.
+
 ### Development environment
 
 Set up the environment:
