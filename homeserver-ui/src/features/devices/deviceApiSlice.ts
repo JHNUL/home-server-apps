@@ -11,7 +11,10 @@ export const deviceApiSlice = createApi({
         getDevices: build.query<Device[], void>({
             query: () => ({ url: "devices" }),
         }),
+        getDevice: build.query<Device, string>({
+            query: identifier => ({ url: `devices/${identifier}` }),
+        }),
     }),
 });
 
-export const { useGetDevicesQuery } = deviceApiSlice;
+export const { useGetDevicesQuery, useGetDeviceQuery } = deviceApiSlice;

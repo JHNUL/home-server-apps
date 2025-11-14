@@ -1,7 +1,7 @@
-export type TemperatureStatus = {
-    componentId: number;
-    valueCelsius: number;
-    valueFahrenheit: number;
-    measurementTime: string;
+export type DeviceSignalData = {
     deviceIdentifier: string;
+    temperatureCelsius: number;
+    temperatureFahrenheit: number;
+    measurementTime: string;
+    relativeHumidity: number;
 }
