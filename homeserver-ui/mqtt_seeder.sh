@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 if ! command -v mosquitto_pub >/dev/null 2>&1; then
-    echo mosquitto cli tools not found
-    exit 1
+    echo "mosquitto cli tools not found, cannot seed data"
+    exit 0
 fi
 
 for i in {1..100}; do

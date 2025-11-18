@@ -57,7 +57,7 @@ public final class SignalDataQueryBuilder {
 
     public QueryAndParams build() throws IllegalArgumentException {
         String queryString = "%s%s%s".formatted(joiner, query.isEmpty() ? "" : " WHERE ", String.join(" ", query));
-        LOG.infof("Building query string: %s", queryString);
+        LOG.debugf("Building query string: %s", queryString);
         int counter = 3;
         for (String piece : query) {
             if (OPERATORS.contains(piece)) {

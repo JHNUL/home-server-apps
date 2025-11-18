@@ -28,7 +28,7 @@ that can be used out of the box:
 
 Run `npm run dev` to start the UI in development mode (hot reload and all dat jive).
 
-To seed some test data, use `mqtt_seeder.sh`.
+To seed some test data, use `mqtt_seeder.sh` (requires mosquitto CLI tools).
 
 Tear down cleanly (removes volumes) with:
 ```sh

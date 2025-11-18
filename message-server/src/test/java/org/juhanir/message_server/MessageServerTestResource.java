@@ -38,7 +38,6 @@ public class MessageServerTestResource implements QuarkusTestResourceLifecycleMa
                 .waitingFor(MQTT_CONTAINER, mosquittoWaitStrategy)
                 .waitingFor(LIQUIBASE_CONTAINER, liquibaseWaitStrategy)
                 .waitingFor(KEYCLOAK_CONTAINER, keycloakWaitStrategy)
-                .withLocalCompose(false)
                 .withBuild(false);
 
         containers.start();

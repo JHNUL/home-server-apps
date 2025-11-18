@@ -27,6 +27,17 @@ In `./docker`:
 - copy the `kc-db.env.example` file as `kc-db.env` and set the database username and password.
 - copy the `keycloak.env.example` file as `keycloak.env` and set the values.
 
+### Demo stack
+
+- docker and docker compose required
+- bash recommended (bash-isms can and do occur in scripts)
+
+Long story short, use the script `run.sh` at project root. This will spin up the entire environment.
+Navigate to `http://localhost`. A test user with credentials testuser:testuser123 is created automatically
+that you can log in with.
+
+Use `homeserver-ui/mqtt_seeder.sh` to send some data.
+
 ### Development environment
 
 Set up the environment:
