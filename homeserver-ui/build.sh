@@ -2,9 +2,8 @@
 
 set -euo pipefail
 
-: "${1:?version argument required}"
-version="$1"
-push="${2:-false}"
+package_json_version=$(grep version package.json | head -n 1 | cut -d ":" -f2 | tr -d "\",[:space:]")
+push="${1:-false}"
 
 DIR=$(dirname $0)
 
@@ -14,8 +13,8 @@ cd $DIR
 
 npm test && npm run build
 
-docker build . -t "juhanir/homeserver-ui:${version}"
+docker build . -t "juhanir/homeserver-ui:${package_json_version}"
 
 if [ "$push" = "true" ]; then
-    docker push "juhanir/homeserver-ui:${version}"
+    docker push "juhanir/homeserver-ui:${package_json_version}"
 fi
