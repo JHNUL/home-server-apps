@@ -36,3 +36,7 @@ docker compose -f docker/docker-compose-server.yml down --remove-orphans --volum
 ```
 
 To persist data across runs, teardown without the `--volumes` option.
+
+## Data visualization
+
+Uses [Recharts](https://recharts.github.io/en-US/api/) components.
