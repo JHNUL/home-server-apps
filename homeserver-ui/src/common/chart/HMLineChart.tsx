@@ -16,8 +16,6 @@ export const HMLineChart: React.FC<LineChartProps> = ({ data }) => {
         return { name: d.measurementTime, value: d.temperatureCelsius };
     });
 
-    console.log(mappedData);
-
     return (
         <div style={{ width: "100%" }}>
             <LineChart
